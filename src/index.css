@@ -1,0 +1,559 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/inter";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+:root {
+  --accent: #2B7FFF;
+  --accent-ink: #1a1305;
+
+  --bg: oklch(0.2475 0.0041 264.49);
+  --bg-2: oklch(0.195 0.006 264);
+  --surface: oklch(0.215 0.007 264);
+  --surface-2: oklch(0.245 0.008 264);
+  --surface-hi: oklch(0.275 0.009 264);
+  --line: oklch(1 0 0 / 0.09);
+  --line-2: oklch(1 0 0 / 0.14);
+  --ink: oklch(0.965 0.003 264);
+  --ink-2: oklch(0.74 0.006 264);
+  --ink-3: oklch(0.56 0.006 264);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 48px -12px rgba(0, 0, 0, 0.7);
+
+  /* note tints (desaturated, dark) */
+  --t-default: var(--surface);
+  --t-slate: oklch(0.255 0.024 248);
+  --t-teal: oklch(0.262 0.026 192);
+  --t-moss: oklch(0.265 0.03 150);
+  --t-sand: oklch(0.272 0.03 80);
+  --t-rose: oklch(0.268 0.032 22);
+  --t-plum: oklch(0.262 0.03 322);
+
+  --r-card: 16px;
+  --gap: 14px;
+  --pad-card: 16px;
+  --col: 248px;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+[data-theme='light'] {
+  --accent: #2B7FFF;
+  --bg: oklch(0.9702 0 0);
+  --bg-2: oklch(0.95 0.004 95);
+  --surface: oklch(1 0 0);
+  --surface-2: oklch(0.975 0.003 95);
+  --surface-hi: oklch(0.955 0.004 95);
+  --line: oklch(0 0 0 / 0.1);
+  --line-2: oklch(0 0 0 / 0.16);
+  --ink: oklch(0.22 0.01 95);
+  --ink-2: oklch(0.42 0.01 95);
+  --ink-3: oklch(0.58 0.01 95);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 8px 24px -10px rgba(0, 0, 0, 0.18);
+  --shadow-lg: 0 16px 48px -14px rgba(0, 0, 0, 0.28);
+  --t-default: var(--surface);
+  --t-slate: oklch(0.955 0.018 248);
+  --t-teal: oklch(0.957 0.026 192);
+  --t-moss: oklch(0.96 0.03 150);
+  --t-sand: oklch(0.965 0.035 85);
+  --t-rose: oklch(0.962 0.03 22);
+  --t-plum: oklch(0.96 0.026 322);
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.mono {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+::selection {
+  background: color-mix(in oklch, var(--accent) 40%, transparent);
+}
+
+/* scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-2) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--line-2);
+  border-radius: 6px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-3);
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+button {
+  font-family: inherit;
+}
+input,
+textarea {
+  font-family: inherit;
+}
+
+#root {
+  height: 100%;
+}
+
+.masonry.grid-view {
+  column-width: var(--col);
+  column-gap: 16px;
+}
+.masonry.grid-view > * {
+  width: 100%;
+  margin: 0 0 16px;
+  break-inside: avoid;
+  display: block;
+}
+.masonry.rows-view {
+  display: flex;
+  flex-direction: column;
+  margin-inline: auto;
+  gap: var(--gap);
+  max-width: 660px;
+}
+
+/* ── code block syntax highlighting (Prism, theme-aware) ── */
+.code-hl {
+  --code-comment: #8b95b3;
+  --code-punctuation: var(--ink-2);
+  --code-keyword: #c792ea;
+  --code-string: #5af78e;
+  --code-number: #f78c6c;
+  --code-function: #82aaff;
+  --code-operator: #89ddff;
+  --code-tag: #ff6e88;
+  --code-attr: #ffd96b;
+}
+[data-theme='light'] .code-hl {
+  --code-comment: #8a919a;
+  --code-keyword: #c41d7f;
+  --code-string: #1a9e3f;
+  --code-number: #d4630a;
+  --code-function: #1f6feb;
+  --code-operator: #0a99c2;
+  --code-tag: #e5484d;
+  --code-attr: #b7791f;
+}
+.code-hl .token.comment,
+.code-hl .token.prolog,
+.code-hl .token.doctype,
+.code-hl .token.cdata {
+  color: var(--code-comment);
+  font-style: italic;
+}
+.code-hl .token.punctuation {
+  color: var(--code-punctuation);
+}
+.code-hl .token.property,
+.code-hl .token.tag,
+.code-hl .token.symbol,
+.code-hl .token.deleted {
+  color: var(--code-tag);
+}
+.code-hl .token.boolean,
+.code-hl .token.number,
+.code-hl .token.constant {
+  color: var(--code-number);
+}
+.code-hl .token.selector,
+.code-hl .token.string,
+.code-hl .token.char,
+.code-hl .token.attr-value,
+.code-hl .token.inserted {
+  color: var(--code-string);
+}
+.code-hl .token.operator,
+.code-hl .token.entity,
+.code-hl .token.url {
+  color: var(--code-operator);
+}
+.code-hl .token.atrule,
+.code-hl .token.keyword {
+  color: var(--code-keyword);
+}
+.code-hl .token.function,
+.code-hl .token.class-name {
+  color: var(--code-function);
+}
+.code-hl .token.attr-name,
+.code-hl .token.regex,
+.code-hl .token.important,
+.code-hl .token.variable,
+.code-hl .token.builtin {
+  color: var(--code-attr);
+}
+.code-hl .token.important,
+.code-hl .token.bold {
+  font-weight: 600;
+}
+.code-hl .token.italic {
+  font-style: italic;
+}
+
+/* ── rich text (TipTap) — restore typography stripped by Tailwind preflight ── */
+.rich-content {
+  outline: none;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink);
+  word-break: break-word;
+}
+.rich-content:focus {
+  outline: none;
+}
+.rich-content > * + * {
+  margin-top: 0.5em;
+}
+.rich-content h1 {
+  font-size: 1.4em;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.rich-content h2 {
+  font-size: 1.2em;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.rich-content strong {
+  font-weight: 600;
+}
+.rich-content em {
+  font-style: italic;
+}
+.rich-content ul {
+  list-style: disc;
+  padding-left: 1.3em;
+}
+.rich-content ol {
+  list-style: decimal;
+  padding-left: 1.3em;
+}
+.rich-content li {
+  margin: 0.15em 0;
+}
+/* task list (checkboxes) */
+.rich-content ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+}
+.rich-content ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55em;
+}
+.rich-content ul[data-type="taskList"] li > label {
+  flex: 0 0 auto;
+  margin-top: 0.15em;
+  user-select: none;
+}
+.rich-content ul[data-type="taskList"] li > div {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.rich-content ul[data-type="taskList"] input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+.rich-content ul[data-type="taskList"] li[data-checked="true"] > div {
+  color: var(--ink-3);
+  text-decoration: line-through;
+}
+/* read-only: checkboxes reflect state but aren't clickable */
+.rich-readonly input[type="checkbox"] {
+  pointer-events: none;
+}
+/* hide old-format deadline picker elements stored in preview HTML */
+.rich-readonly .task-deadline {
+  display: none;
+}
+/* dim deadline chip on completed tasks */
+.rich-readonly ul[data-type="taskList"] li[data-checked="true"][data-deadline]::after {
+  opacity: 0.4;
+}
+
+/* task item deadline picker (editor node view) */
+.rich-content ul[data-type="taskList"] li > .task-deadline {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.task-deadline-input {
+  font-size: 11px;
+  font-family: inherit;
+  color: var(--ink-3);
+  background: var(--surface-hi);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1px 5px;
+  color-scheme: dark;
+}
+[data-theme="light"] .task-deadline-input {
+  color-scheme: light;
+}
+.task-deadline-input.overdue {
+  color: #e06c75;
+}
+.task-deadline-clear {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border: none;
+  background: transparent;
+  border-radius: 5px;
+  color: var(--ink-3);
+  font-size: 11px;
+  cursor: pointer;
+}
+.task-deadline-clear:hover {
+  background: var(--surface-hi);
+  color: var(--ink);
+}
+/* read-only cards: surface the stored deadline (raw ISO) as a chip */
+.rich-readonly ul[data-type="taskList"] li[data-deadline]::after {
+  content: attr(data-deadline);
+  flex: 0 0 auto;
+  font-size: 11px;
+  white-space: nowrap;
+  color: var(--ink-3);
+  margin-top: 2px;
+}
+.rich-content a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.rich-content code {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.88em;
+  background: var(--surface-hi);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+.rich-content pre {
+  background: var(--bg-2);
+  padding: 10px 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.88em;
+}
+.rich-content pre code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* code block node view: a header bar (language picker + copy) above the code */
+.rich-content .code-block {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-2);
+  margin: 0.5em 0;
+}
+.rich-content .code-block-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--line);
+}
+.rich-content .code-block > pre {
+  margin: 0;
+  border-radius: 0;
+  background: transparent; /* the wrapper provides the frame now */
+}
+.code-block-lang,
+.code-block-copy {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10.5px;
+  color: var(--ink-3);
+  background: var(--surface-hi);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.14s, background 0.14s;
+}
+.code-block-lang {
+  padding: 2px 4px;
+  color-scheme: dark;
+}
+[data-theme="light"] .code-block-lang {
+  color-scheme: light;
+}
+.code-block-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+}
+.code-block-lang:hover,
+.code-block-copy:hover {
+  color: var(--ink);
+  background: var(--surface-2);
+}
+.rich-content blockquote {
+  border-left: 3px solid var(--line-2);
+  padding-left: 0.85em;
+  color: var(--ink-2);
+}
+.rich-content hr {
+  border: none;
+  border-top: 1px solid var(--line-2);
+  margin: 0.75em 0;
+}
+/* Placeholder extension: shows data-placeholder on the empty first line */
+.rich-content p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--ink-3);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: 'Inter Variable', sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}

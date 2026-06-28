@@ -1,0 +1,186 @@
+import { useAtom } from "jotai";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  editingIdAtom,
+  editingDocAtom,
+  hasChangedAtom,
+  isNewNoteAtom,
+  editingCategoryIdsAtom,
+} from "@/store/document";
+import type { DocumentPayload } from "@/lib/types";
+import { newId, deriveListFields } from "@/lib/utils";
+import { request } from "@/lib/api-client";
+import type { IApi } from "@/lib/types";
+import { urls } from "@/lib/urls";
+
+interface NoteDetail {
+  id: string;
+  title: string;
+  content: string;
+  todos: unknown[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+function isEmptyHtml(html: string): boolean {
+  const parsed = new DOMParser().parseFromString(html, "text/html");
+  const hasText = (parsed.body.textContent ?? "").trim().length > 0;
+  const hasTask = parsed.querySelector('[data-type="taskItem"]') != null;
+  return !hasText && !hasTask;
+}
+
+export function useDocumentActions() {
+  const queryClient = useQueryClient();
+  const [editingId, setEditingId] = useAtom(editingIdAtom);
+  const [, setEditingDoc] = useAtom(editingDocAtom);
+  const [hasChanged, setHasChanged] = useAtom(hasChangedAtom);
+  const [isNewNote, setIsNewNote] = useAtom(isNewNoteAtom);
+  const [categoryIds, setCategoryIds] = useAtom(editingCategoryIdsAtom);
+
+  const openNew = () => {
+    const id = newId();
+    setHasChanged(false);
+    setIsNewNote(true);
+    setEditingDoc({
+      id,
+      content: "",
+      preview: "",
+      todoSummary: { total: 0, done: 0 },
+      updatedAt: Date.now(),
+      categories: []
+    });
+    setEditingId(id);
+  };
+
+  const autoSave = async (
+    payload: DocumentPayload,
+    overrideCategoryIds?: string[],
+  ) => {
+    if (!editingId) return;
+    // Don't create a brand-new empty note solely from a category change
+    if (isNewNote && !hasChanged && overrideCategoryIds !== undefined) return;
+    setHasChanged(true);
+
+    const ids = overrideCategoryIds ?? categoryIds;
+    const diff = payload.todoDiff;
+    const todoDiff = diff
+      ? {
+          added: diff.added.map((t) => ({
+            id: t.id,
+            checked: t.checked,
+            text: t.text,
+            deadline: t.deadline,
+            priority: t.priority,
+          })),
+          updated: diff.updated.map((u) => ({
+            id: u.id,
+            fields: Object.fromEntries(
+              u.changedFields.map((f) => [f, u.after[f]]),
+            ),
+          })),
+          removed: diff.removed.map((t) => t.id),
+        }
+      : undefined;
+
+    try {
+      if (isNewNote) {
+        await request<IApi<NoteDetail>>(urls.Notes, {
+          method: "POST",
+          body: { id: editingId, content: payload.content },
+        });
+        setIsNewNote(false);
+        await request(urls.Note(editingId), {
+          method: "PATCH",
+          body: {
+            content: payload.content,
+            preview: payload.preview,
+            todoDiff,
+            categoryIds: ids,
+          },
+        });
+      } else {
+        await request(urls.Note(editingId), {
+          method: "PATCH",
+          body: {
+            content: payload.content,
+            preview: payload.preview,
+            todoDiff,
+            categoryIds: ids,
+          },
+        });
+      }
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+    } catch (err) {
+      console.error("Auto-save failed:", err);
+    }
+  };
+
+  const closeEditor = async (finalContent: string) => {
+    const id = editingId;
+    const changed = hasChanged;
+    const wasNew = isNewNote;
+    setEditingId(null);
+    setEditingDoc(null);
+    setHasChanged(false);
+    setIsNewNote(false);
+    setCategoryIds([]);
+
+    if (!id) return;
+
+    if (wasNew && !changed) {
+      return;
+    }
+
+    if (isEmptyHtml(finalContent)) {
+      if (!wasNew) {
+        try {
+          await request(urls.Note(id), { method: "DELETE" });
+        } catch (err) {
+          console.error("Failed to delete empty note:", err);
+        }
+      }
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+    } else if (changed) {
+      try {
+        await request(urls.Note(id), {
+          method: "PATCH",
+          body: {
+            content: finalContent,
+            preview: deriveListFields(finalContent).preview,
+            categoryIds,
+          },
+        });
+      } catch (err) {
+        console.error("Final save failed:", err);
+      }
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+    }
+  };
+
+  const deleteDoc = async () => {
+    const id = editingId;
+    const wasNew = isNewNote;
+    setEditingId(null);
+    setEditingDoc(null);
+    setHasChanged(false);
+    setIsNewNote(false);
+    setCategoryIds([]);
+    if (id && !wasNew) {
+      try {
+        await request(urls.Note(id), { method: "DELETE" });
+        queryClient.invalidateQueries({ queryKey: ["notes"] });
+      } catch (err) {
+        console.error("Failed to delete note:", err);
+      }
+    }
+  };
+
+  return {
+    openNew,
+    autoSave,
+    closeEditor,
+    deleteDoc,
+    categoryIds,
+    setCategoryIds,
+  };
+}
