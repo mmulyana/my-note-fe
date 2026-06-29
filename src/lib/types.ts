@@ -21,13 +21,18 @@ export interface AuthData {
 }
 
 export interface Todo {
-  id: string;
-  text: string;
-  done: boolean;
-  todoBlockId?: string;
+  id: string
+  noteId: string
+  text: string
+  checked: boolean
+  deadline: string // "2026-06-26";
+  priority: TodoPriority
+  createdAt: string
+  updatedAt: string
 }
 
 export interface TodoGroup {
+  noteId: string;
   title: string | null;
   todos: Todo[];
 }
@@ -47,11 +52,7 @@ export interface TodoPayload {
   priority: TodoPriority;
 }
 
-export type TodoField =
-  | "checked"
-  | "text"
-  | "deadline"
-  | "priority"
+export type TodoField = "checked" | "text" | "deadline" | "priority";
 
 export interface UpdatedTodo {
   id: string;

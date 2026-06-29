@@ -47,14 +47,14 @@ export function DocumentCard({ doc }: DocumentCardProps) {
 
   return (
     <article
-      className="group relative cursor-pointer rounded-[14px] border border-(--line) bg-(--surface) text-(--ink) overflow-hidden outline-none transition-[box-shadow,border-color,transform] duration-150 hover:shadow-(--shadow) hover:border-(--line-2) focus-visible:shadow-[0_0_0_2px_var(--accent)]"
+      className="group relative cursor-pointer rounded-[14px] border border-(--line) bg-(--surface) text-(--ink) overflow-hidden outline-none transition-[box-shadow,border-color,transform] duration-150 hover:shadow-(--shadow) hover:border-(--line-2) focus-visible:shadow-[0_0_0_2px_var(--accent)] "
       tabIndex={0}
       onClick={handleOpen}
       onKeyDown={(e) => e.key === "Enter" && handleOpen()}
     >
       {doc.preview ? (
         <div
-          className="rich-content rich-readonly px-4 pt-3.5 pb-1 max-h-80 overflow-hidden mask-[linear-gradient(to_bottom,black_78%,transparent)]"
+          className="rich-content rich-readonly px-4 pt-3.5 pb-1 max-h-80 overflow-hidden mask-[linear-gradient(to_bottom,black_78%,transparent)] hover:select-none"
           dangerouslySetInnerHTML={{ __html: doc.preview }}
         />
       ) : (

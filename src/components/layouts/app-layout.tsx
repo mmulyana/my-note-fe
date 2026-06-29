@@ -21,7 +21,7 @@ export default function AppLayout() {
       />
       <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
         <Topbar onMobileMenuToggle={() => setMobileOpen((o) => !o)} />
-        <main className="flex-1 pr-4 py-1 overflow-y-auto min-w-0 transition-[padding-right] duration-200 ease-[ease]">
+        <main className="flex-1 px-4 lg:px-0 lg:pr-4 py-1 overflow-y-auto min-w-0 transition-[padding-right] duration-200 ease-[ease]">
           <Outlet />
         </main>
       </div>
