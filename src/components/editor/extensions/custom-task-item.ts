@@ -35,6 +35,14 @@ export const CustomTaskItem = TaskItem.extend({
     };
   },
 
+  addKeyboardShortcuts() {
+    return {
+      ...this.parent?.(),
+      // prevent Tab from creating nested task items
+      Tab: () => true,
+    };
+  },
+
   addNodeView() {
     return ReactNodeViewRenderer(TaskItemView);
   },

@@ -11,7 +11,7 @@ export function useDocumentEditor(initialContent: string) {
       StarterKit.configure({ codeBlock: false }),
       CustomCodeBlock,
       TaskList,
-      CustomTaskItem.configure({ nested: true }),
+      CustomTaskItem.configure({ nested: false }),
       Placeholder.configure({
         placeholder: "Write something",
       }),
