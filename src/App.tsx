@@ -6,6 +6,7 @@ import TrashPage from '@/pages/trash-page';
 import TodosPage from '@/pages/todos-page';
 import LoginPage from '@/pages/login-page';
 import HomePage from '@/pages/home-page';
+import CategoryPage from '@/pages/category-page';
 
 const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
@@ -18,6 +19,7 @@ const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
           { index: true, element: <HomePage /> },
+          { path: 'category/:name', element: <CategoryPage /> },
           { path: 'todos', element: <TodosPage /> },
           { path: 'trash', element: <TrashPage /> },
         ],

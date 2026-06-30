@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { cn } from "../../lib/utils";
 import {
   IconCheck,
@@ -22,6 +23,9 @@ export function CategoryItem({
 }: CategoryItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(cat.name);
+  const [searchParams] = useSearchParams();
+
+  const isActive = searchParams.get("category") === cat.name;
 
   const handleEdit = () => {
     if (editName.trim()) {
@@ -33,31 +37,49 @@ export function CategoryItem({
   return (
     <div
       className={cn(
-        "flex items-center h-9 px-2 rounded-md text-sm font-medium text-ink-2 cursor-pointer transition-[background,color] duration-150 hover:bg-surface-2 hover:text-ink group",
+        "flex items-center h-9 px-2 rounded-md text-sm font-medium text-ink-2 transition-[background,color] duration-150 group",
         open ? "gap-2" : "justify-center gap-0 px-0",
+        isActive
+          ? "bg-gray-200 dark:bg-[#18191D] text-ink font-semibold"
+          : "hover:bg-surface-2 hover:text-ink",
       )}
     >
-      <div className="w-5 h-5 flex justify-center items-center">
-      <IconTagFilled size={16} className="shrink-0" />
-      </div>
-
-      {open && !isEditing && <span className="flex-1 whitespace-nowrap overflow-hidden">{cat.name}</span>}
-
-      {open && isEditing && (
-        <input
-          autoFocus
-          type="text"
-          value={editName}
-          onChange={(e) => setEditName(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleEdit();
-            if (e.key === "Escape") setIsEditing(false);
-          }}
-          className="flex-1 border-0 bg-transparent outline-none text-ink-2 text-[14.5px] font-medium p-0 min-w-0 font-[inherit]"
-          onClick={(e) => e.stopPropagation()}
-        />
+      {/* Link area: icon + text — navigates to /?category=name */}
+      {!isEditing ? (
+        <Link
+          to={`/category/${encodeURIComponent(cat.name)}`}
+          className="flex items-center gap-2 flex-1 min-w-0 h-full"
+        >
+          <div className="w-5 h-5 flex justify-center items-center">
+            <IconTagFilled size={16} className="shrink-0" />
+          </div>
+          {open && (
+            <span className="flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
+              {cat.name}
+            </span>
+          )}
+        </Link>
+      ) : (
+        <>
+          <div className="w-5 h-5 flex justify-center items-center">
+            <IconTagFilled size={16} className="shrink-0" />
+          </div>
+          <input
+            autoFocus
+            type="text"
+            value={editName}
+            onChange={(e) => setEditName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleEdit();
+              if (e.key === "Escape") setIsEditing(false);
+            }}
+            className="flex-1 border-0 bg-transparent outline-none text-ink-2 text-[14.5px] font-medium p-0 min-w-0 font-[inherit]"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </>
       )}
 
+      {/* Action buttons — not part of the link */}
       {open && (
         <div className="flex-none flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-120 ml-auto">
           {isEditing ? (
@@ -94,6 +116,7 @@ export function CategoryItem({
                 title="Edit"
                 onClick={(e) => {
                   e.stopPropagation();
+                  e.preventDefault();
                   setIsEditing(true);
                 }}
               >
@@ -105,6 +128,7 @@ export function CategoryItem({
                 title="Remove"
                 onClick={(e) => {
                   e.stopPropagation();
+                  e.preventDefault();
                   onRemove(cat.id);
                 }}
               >

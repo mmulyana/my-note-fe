@@ -141,3 +141,22 @@ export function relative(ms: number): string {
     return "";
   }
 }
+
+export function buildQuery(
+  baseUrl: string,
+  params: Record<string, string | number | boolean | undefined | null | any>
+) {
+  const query = Object.entries(params)
+    .filter(([, value]) => value !== undefined && value !== null && value !== '')
+    .flatMap(([key, value]) => {
+      if (Array.isArray(value)) {
+        return value
+          .filter(val => val !== undefined && val !== null && val !== '')
+          .map(val => `${key}[]=${encodeURIComponent(String(val))}`)
+      }
+      return `${key}=${encodeURIComponent(String(value))}`
+    })
+    .join('&')
+
+  return query ? `${baseUrl}?${query}` : baseUrl
+}
