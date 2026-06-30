@@ -7,4 +7,5 @@ export const urls = {
   Categories: "/categories",
   Login: "/auth/login",
   Register: "/auth/register",
+  Me: "/auth/me",
 };

@@ -18,6 +18,7 @@ export interface IApi<T = void> {
 export interface AuthData {
   accessToken: string;
   expiresAt: number;
+  email: string;
 }
 
 export interface Todo {

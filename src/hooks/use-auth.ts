@@ -1,10 +1,12 @@
 import { useCallback } from 'react';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { authTokenAtom } from '@/store/auth';
+import { profileAtom } from '@/store/profile';
 import { clearToken, setToken } from '@/lib/auth';
 
 export function useAuth() {
   const [token, setTokenState] = useAtom(authTokenAtom);
+  const setProfile = useSetAtom(profileAtom);
 
   const login = useCallback(
     (accessToken: string, expiresAt?: number) => {
@@ -17,7 +19,8 @@ export function useAuth() {
   const logout = useCallback(() => {
     clearToken();
     setTokenState(null);
-  }, [setTokenState]);
+    setProfile(null);
+  }, [setTokenState, setProfile]);
 
   return { token, isAuthenticated: !!token, login, logout };
 }

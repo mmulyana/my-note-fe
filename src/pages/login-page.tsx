@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSetAtom } from "jotai";
 import { useState } from "react";
 import { authTokenAtom } from "@/store/auth";
+import { profileAtom } from "@/store/profile";
 import { useApi } from "@/hooks/use-api";
 import type { AuthData, IApi } from "@/lib/types";
 import { setToken } from "@/lib/auth";
@@ -14,6 +15,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const setAuthToken = useSetAtom(authTokenAtom);
+  const setProfile = useSetAtom(profileAtom);
 
   const { mutate } = useApi<
     IApi<AuthData>,
@@ -31,6 +33,7 @@ export default function LoginPage() {
         onSuccess: (res) => {
           setToken(res.data.accessToken, res.data.expiresAt);
           setAuthToken(res.data.accessToken);
+          setProfile({ email: res.data.email });
           navigate("/")
         },
       },
