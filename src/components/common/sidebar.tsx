@@ -116,7 +116,7 @@ export const Sidebar = memo(function Sidebar({
   return (
     <nav
       className={cn(
-        "fixed left-0 top-0 h-full z-50 w-64 overflow-y-auto p-4 bg-white",
+        "fixed left-0 top-0 h-full z-50 w-64 overflow-y-auto p-4 bg-surface",
         "transition-transform duration-200 ease-in-out",
         mobileOpen ? "translate-x-0" : "-translate-x-full",
         "md:static md:translate-x-0 md:transition-[width] md:bg-transparent",
@@ -136,11 +136,11 @@ export const Sidebar = memo(function Sidebar({
           )}
         >
           <IconFileFilled
-            className="shrink-0 text-gray-800"
+            className="shrink-0 text-ink"
             height={20}
             width={20}
           />
-          <p className="text-sm font-semibold text-nowrap">My Note</p>
+          <p className="text-sm font-semibold text-nowrap text-ink">My Note</p>
         </div>
         <button
           onClick={() => setSidebar(!sidebar)}
