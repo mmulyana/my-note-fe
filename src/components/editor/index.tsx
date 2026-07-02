@@ -6,6 +6,7 @@ import { useDocumentEditor } from "@/hooks/use-editor";
 import { useApi } from "@/hooks/use-api";
 import { CategoryPicker } from "@/components/common/category-picker";
 import { NoteDropdown } from "@/components/common/note-dropdown";
+import { InsertImageMenu } from "@/components/editor/insert-image-menu";
 import type { DocItem, DocumentPayload, IApi } from "@/lib/types";
 import { urls } from "@/lib/urls";
 
@@ -100,6 +101,7 @@ export function Editor({
             <span className="text-[11px] text-(--ink-3)">
               {STATUS_TEXT[status]}
             </span>
+            <InsertImageMenu editor={editor} />
             <CategoryPicker
               selectedIds={categoryIds}
               onChange={(ids) => {
