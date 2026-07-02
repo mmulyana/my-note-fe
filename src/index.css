@@ -386,6 +386,67 @@ textarea {
   border-radius: 8px;
   border: 1px solid var(--line);
 }
+/* saved/read-only HTML: plain <img data-align="…">, aligned via margin */
+.rich-content img[data-align="left"] {
+  margin-right: auto;
+}
+.rich-content img[data-align="center"] {
+  margin-left: auto;
+  margin-right: auto;
+}
+.rich-content img[data-align="right"] {
+  margin-left: auto;
+}
+
+/* editor node view: a box that hugs the image (see image-view.tsx) so the
+   settings button anchors to the image's own corner, not the editor's */
+.rich-image-wrapper {
+  position: relative;
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+}
+.rich-image-wrapper[data-align="left"] {
+  margin-right: auto;
+}
+.rich-image-wrapper[data-align="center"] {
+  margin-left: auto;
+  margin-right: auto;
+}
+.rich-image-wrapper[data-align="right"] {
+  margin-left: auto;
+}
+.rich-image-wrapper .rich-image {
+  /* width is set inline per-node only when a width/maxWidth attr exists
+     (see image-view.tsx) — a blanket width: 100% here would recreate the
+     circular fit-content sizing bug for the "natural size" case */
+  height: 100%;
+  margin: 0;
+}
+.rich-image-settings-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: none;
+  background: color-mix(in oklch, var(--surface) 78%, transparent);
+  color: var(--ink-2);
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.14s, background 0.14s, color 0.14s;
+}
+.rich-image-wrapper:hover .rich-image-settings-btn,
+.rich-image-settings-btn[data-state="open"] {
+  opacity: 1;
+}
+.rich-image-settings-btn:hover {
+  background: var(--surface-hi);
+  color: var(--ink);
+}
 .rich-content code {
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 0.88em;
