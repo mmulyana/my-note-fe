@@ -8,35 +8,20 @@ import { urls } from "@/lib/urls";
 import { cn, newId } from "@/lib/utils";
 import { TaskCheckbox } from "@/components/editor/task-checkbox";
 
-type Tab = "all" | "grouped";
-
 type UpdatePayload = { id: string } & Partial<Pick<Todo, "text" | "checked" | "deadline" | "priority">>;
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: "all", label: "All" },
-  { id: "grouped", label: "Grouped" },
-];
-
 export default function TodosPage() {
-  const [activeTab, setActiveTab] = useState<Tab>("all");
   const queryClient = useQueryClient();
 
-  const { data: allData, isLoading: allLoading } = useApi<IApi<Todo[]>>({
-    url: urls.Todos,
-    queryKey: ["todos"],
-  });
-
-  const { data: groupedData, isLoading: groupedLoading } = useApi<IApi<TodoGroup[]>>({
+  const { data: groupedData, isLoading } = useApi<IApi<TodoGroup[]>>({
     url: urls.TodosGrouped,
     queryKey: ["todos-grouped"],
-    enabled: activeTab === "grouped",
   });
 
   const { mutate: updateTodo } = useMutation({
     mutationFn: ({ id, ...body }: UpdatePayload) =>
       request(urls.Todo(id), { method: "PATCH", body }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
       queryClient.invalidateQueries({ queryKey: ["todos-grouped"] });
     },
   });
@@ -44,7 +29,6 @@ export default function TodosPage() {
   const { mutate: deleteTodo } = useMutation({
     mutationFn: (id: string) => request(urls.Todo(id), { method: "DELETE" }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
       queryClient.invalidateQueries({ queryKey: ["todos-grouped"] });
     },
   });
@@ -53,59 +37,28 @@ export default function TodosPage() {
     mutationFn: (body: { id: string; noteId: string; text: string; lastTodoId?: string }) =>
       request(urls.Todos, { method: "POST", body }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
       queryClient.invalidateQueries({ queryKey: ["todos-grouped"] });
       queryClient.invalidateQueries({ queryKey: ["notes"] });
     },
   });
 
-  const todos = allData?.data ?? [];
   const groups = groupedData?.data ?? [];
-  const isLoading = activeTab === "all" ? allLoading : groupedLoading;
 
   return (
     <div className="max-w-165 mx-auto py-4">
-      <div className="flex gap-1 mb-4 border-b border-line">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={cn(
-              "px-3 py-2 text-sm font-medium transition-colors duration-120 border-b-2 -mb-px",
-              activeTab === tab.id
-                ? "border-ink text-ink"
-                : "border-transparent text-ink-3 hover:text-ink-2",
-            )}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
       {isLoading ? (
         <div className="flex flex-col items-center gap-2 py-22.5 px-5 text-center text-ink-3">
           <div className="text-sm">Loading...</div>
         </div>
-      ) : activeTab === "all" ? (
-        <div className="flex flex-col gap-0.5">
-          {todos.map((todo) => (
-            <TodoItem key={todo.id} todo={todo} onUpdate={updateTodo} onDelete={deleteTodo} />
-          ))}
-          {todos.length > 0 && (
-            <AddTodoRow
-              noteId={todos[todos.length - 1].noteId}
-              lastTodoId={todos[todos.length - 1].id}
-              onCreate={createTodo}
-            />
-          )}
-          {todos.length === 0 && <EmptyState />}
-        </div>
       ) : groups.length === 0 ? (
         <EmptyState />
       ) : (
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-4">
           {groups.map((group) => (
-            <div key={group.noteId} className="flex flex-col gap-0.5">
+            <div
+              key={group.noteId}
+              className="flex flex-col gap-0.5 rounded-xl bg-(--surface) border border-(--line) p-3"
+            >
               <p className="text-xs font-semibold text-ink-3 uppercase tracking-wider px-1 mb-1.5">
                 {group.title ?? "Untitled"}
               </p>
