@@ -467,6 +467,51 @@ textarea {
   border-top: 1px solid var(--line-2);
   margin: 0.75em 0;
 }
+/* Notion-style block drag handle (floating element positioned by the
+   drag-handle plugin at the left edge of the hovered block) */
+.drag-handle {
+  z-index: 10;
+}
+.drag-handle-btn {
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 21px;
+  margin-right: 4px;
+  border-radius: 5px;
+  color: var(--ink-3);
+  cursor: grab;
+  transition: background 0.14s, color 0.14s;
+}
+/* per-block alignment (data-node-type is set from DragHandle's onNodeChange) */
+.drag-handle-btn[data-node-type="listItem"] {
+  /* bullet/number markers render inside the list's 1.3em left padding, so a
+     handle flush against the <li> covers the marker — shift it past it */
+  transform: translateX(-18px);
+}
+.drag-handle-btn[data-node-type="heading"] {
+  /* headings have taller first lines; keep the grip on its center */
+  margin-top: 3px;
+}
+.drag-handle-btn[data-node-type="codeBlock"] {
+  /* line the grip up with the code block's toolbar row */
+  margin-top: 5px;
+}
+.drag-handle-btn:hover {
+  background: var(--surface-hi);
+  color: var(--ink);
+}
+.drag-handle[data-dragging="true"] .drag-handle-btn,
+.drag-handle-btn:active {
+  cursor: grabbing;
+}
+/* blocks picked up by the drag handle */
+.rich-content .ProseMirror-selectednoderange,
+.rich-content .ProseMirror-selectednode {
+  background: color-mix(in oklch, var(--accent) 12%, transparent);
+  border-radius: 6px;
+}
+
 /* Placeholder extension: shows data-placeholder on the empty first line */
 .rich-content p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);

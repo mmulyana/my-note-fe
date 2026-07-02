@@ -9,7 +9,11 @@ import { CustomCodeBlock } from "../components/editor/extensions/code-block";
 export function useDocumentEditor(initialContent: string) {
   return useEditor({
     extensions: [
-      StarterKit.configure({ codeBlock: false }),
+      StarterKit.configure({
+        codeBlock: false,
+        // visible drop indicator while dragging blocks in both themes
+        dropcursor: { color: "var(--accent)", width: 2 },
+      }),
       CustomCodeBlock,
       TaskList,
       CustomTaskItem.configure({ nested: false }),

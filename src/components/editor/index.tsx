@@ -1,6 +1,8 @@
-import { IconTagFilled } from "@tabler/icons-react";
-import { useCallback, useEffect } from "react";
+import { IconGripVertical, IconTagFilled } from "@tabler/icons-react";
+import { useCallback, useEffect, useRef } from "react";
 import { EditorContent } from "@tiptap/react";
+import { DragHandle } from "@tiptap/extension-drag-handle-react";
+import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 import { useAutoSave, type SaveStatus } from "@/hooks/use-autosave";
 import { useDocumentEditor } from "@/hooks/use-editor";
 import { useApi } from "@/hooks/use-api";
@@ -63,6 +65,19 @@ export function Editor({
     onClose(editor ? editor.getHTML() : doc.content);
   }, [editor, onClose, doc.content]);
 
+  // tag the grip with the hovered node's type so CSS can align it per block
+  // (stable ref: DragHandle re-registers its plugin when this prop changes)
+  const gripRef = useRef<HTMLDivElement>(null);
+  const handleDragNodeChange = useCallback(
+    ({ node }: { node: ProseMirrorNode | null }) => {
+      const grip = gripRef.current;
+      if (!grip) return;
+      if (node) grip.setAttribute("data-node-type", node.type.name);
+      else grip.removeAttribute("data-node-type");
+    },
+    [],
+  );
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") handleClose();
@@ -82,6 +97,23 @@ export function Editor({
       >
         <div className="flex flex-col gap-2.5 px-5 pt-4.5 pb-2">
           <EditorContent editor={editor} />
+          {editor && (
+            <DragHandle
+              editor={editor}
+              // edge detection deducts 500×depth near a node's top/left edge,
+              // which excludes one-line task items (depth 2) entirely
+              nested={{ edgeDetection: "none" }}
+              onNodeChange={handleDragNodeChange}
+            >
+              <div
+                ref={gripRef}
+                className="drag-handle-btn"
+                title="Drag to move"
+              >
+                <IconGripVertical size={13} />
+              </div>
+            </DragHandle>
+          )}
         </div>
         <footer className="flex items-center gap-2 pt-2 px-3.5 pb-3">
           {selectedCategories.length > 0 && (
