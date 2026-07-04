@@ -9,7 +9,8 @@ import { urls } from "@/lib/urls";
 import { Editor } from ".";
 
 export default function EditorWrapper() {
-  const { autoSave, closeEditor, deleteDoc, categoryIds, setCategoryIds } = useDocumentActions();
+  const { autoSave, closeEditor, deleteDoc, categoryIds, setCategoryIds, folderId, setFolderId } =
+    useDocumentActions();
   const editingDoc = useAtomValue(editingDocAtom);
   const isNewNote = useAtomValue(isNewNoteAtom);
 
@@ -44,6 +45,8 @@ export default function EditorWrapper() {
         onDelete={deleteDoc}
         categoryIds={categoryIds}
         onCategoryChange={setCategoryIds}
+        folderId={folderId}
+        onFolderChange={setFolderId}
       />
     );
   }

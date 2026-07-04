@@ -5,6 +5,7 @@ export type Notes = {
   todoSummary: { total: number; done: number };
   categories: { id: string; name: string }[];
   updatedAt: string;
+  folder?: { id: string, name: string, color: string } | null
 };
 
 export type GridView = "grid-view" | "rows-view";
@@ -82,6 +83,8 @@ export interface DocItem {
   preview: string;
   todoSummary: { total: number; done: number };
   categories: { id: string; name: string }[];
+  folderId?: string | null;
+  folder?: { id: string, name: string, color: string } | null
   updatedAt: number;
 }
 
@@ -91,6 +94,8 @@ export interface NoteDetail {
   content: string;
   todos: unknown[];
   categories: { id: string; userId: string; name: string }[];
+  folderId?: string | null;
   createdAt: string;
   updatedAt: string;
+  folder?: { id: string, name: string, color: string } | null
 }

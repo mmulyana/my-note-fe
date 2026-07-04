@@ -49,7 +49,7 @@ export default function FoldersWrapper({ sidebar }: Props) {
     });
     if (response.message.includes("updated")) {
       queryClient.setQueryData(
-        ["categories"],
+        ["folders"],
         (prev: IApi<any[]> | undefined) => {
           if (!prev) return prev;
           return {

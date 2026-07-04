@@ -6,21 +6,25 @@ import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 import { useAutoSave, type SaveStatus } from "@/hooks/use-autosave";
 import { useDocumentEditor } from "@/hooks/use-editor";
 import { CategoryPicker } from "@/components/editor/category-picker";
-import { NoteDropdown } from "@/components/common/note-dropdown";
+import { FolderPicker } from "@/components/editor/folder-picker";
 import { InsertImageMenu } from "@/components/editor/insert-image-menu";
 import type { DocItem, DocumentPayload } from "@/lib/types";
+import { NoteDropdown } from "./note-dropdown";
 
 interface EditorProps {
   doc: DocItem;
   onAutoSave: (
     payload: DocumentPayload,
     overrideCategoryIds?: string[],
+    overrideFolderId?: string | null,
   ) => void;
   onClose: (finalContent: string) => void;
   onDelete: () => void;
   onArchive?: () => void;
   categoryIds?: string[];
   onCategoryChange?: (ids: string[]) => void;
+  folderId?: string | null;
+  onFolderChange?: (id: string | null) => void;
 }
 
 const STATUS_TEXT: Record<SaveStatus, string> = {
@@ -38,13 +42,15 @@ export function Editor({
   onArchive,
   categoryIds = [],
   onCategoryChange,
+  folderId = null,
+  onFolderChange,
 }: EditorProps) {
   const editor = useDocumentEditor(doc.content);
 
   const { status, triggerSave } = useAutoSave({
     editor,
-    onSave: async (payload, overrideCategoryIds) => {
-      onAutoSave(payload, overrideCategoryIds);
+    onSave: async (payload, overrideCategoryIds, overrideFolderId) => {
+      onAutoSave(payload, overrideCategoryIds, overrideFolderId);
     },
   });
 
@@ -111,6 +117,13 @@ export function Editor({
               onChange={(ids) => {
                 onCategoryChange?.(ids);
                 triggerSave(ids);
+              }}
+            />
+            <FolderPicker
+              selectedId={folderId}
+              onChange={(id) => {
+                onFolderChange?.(id);
+                triggerSave(undefined, id);
               }}
             />
           </div>

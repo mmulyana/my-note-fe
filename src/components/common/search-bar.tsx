@@ -18,7 +18,7 @@ export function SearchBar() {
         onKeyDown={(e) => e.key === "Escape" && setQuery("")}
         placeholder="Cari catatan…"
         aria-label="Cari catatan"
-        className="h-9 w-full rounded-[10px] border border-(--line) bg-(--surface) pl-9 pr-9 text-sm text-(--ink) placeholder:text-(--ink-3) outline-none transition-[border-color,box-shadow] duration-150"
+        className="h-8 w-full rounded-[10px] border border-(--line) bg-(--surface) pl-9 pr-9 text-sm text-(--ink) placeholder:text-(--ink-3) outline-none transition-[border-color,box-shadow] duration-150"
       />
       {query && (
         <button

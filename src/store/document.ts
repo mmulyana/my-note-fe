@@ -15,3 +15,6 @@ export const isNewNoteAtom = atom(false);
 
 /** Category IDs currently selected for the open note */
 export const editingCategoryIdsAtom = atom<string[]>([]);
+
+/** Folder ID currently selected for the open note */
+export const editingFolderIdAtom = atom<string | null>(null);

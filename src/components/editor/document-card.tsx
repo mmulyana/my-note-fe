@@ -1,10 +1,11 @@
-import { IconPlus, IconTagFilled } from "@tabler/icons-react";
+import { IconFolderFilled, IconPlus, IconTagFilled } from "@tabler/icons-react";
 import { useSetAtom } from "jotai";
 import {
   editingIdAtom,
   editingDocAtom,
   hasChangedAtom,
   editingCategoryIdsAtom,
+  editingFolderIdAtom,
 } from "@/store/document";
 import type { DocItem, IApi, NoteDetail } from "@/lib/types";
 import { request } from "@/lib/api-client";
@@ -20,6 +21,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
   const setEditingDoc = useSetAtom(editingDocAtom);
   const setHasChanged = useSetAtom(hasChangedAtom);
   const setEditingCategoryIds = useSetAtom(editingCategoryIdsAtom);
+  const setEditingFolderId = useSetAtom(editingFolderIdAtom);
 
   const { total, done } = doc.todoSummary;
 
@@ -28,6 +30,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
       const detail = await request<IApi<NoteDetail>>(urls.Note(doc.id));
       setHasChanged(false);
       setEditingCategoryIds((detail.data.categories ?? []).map((c) => c.id));
+      setEditingFolderId(detail.data.folderId ?? null);
       setEditingDoc({
         id: detail.data.id,
         content: detail.data.content,
@@ -37,7 +40,9 @@ export function DocumentCard({ doc }: DocumentCardProps) {
           id,
           name,
         })),
+        folderId: detail.data.folderId ?? null,
         updatedAt: new Date(detail.data.updatedAt).getTime(),
+        folder: detail.data.folder
       });
       setEditingId(doc.id);
     } catch (err) {
@@ -101,14 +106,14 @@ export function DocumentCard({ doc }: DocumentCardProps) {
           {doc.categories.length > 0 && (
             <div className="flex gap-1 items-center text-sm">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs text-(--ink-2) border border-(--line)">
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-(--ink-2) border border-(--line)">
                   <IconTagFilled size={12} />
                   {doc.categories?.[0].name}
                 </span>
               </div>
               {doc.categories.length > 1 && (
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs text-(--ink-2) border border-(--line)">
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-(--ink-2) border border-(--line)">
                     <IconTagFilled size={12} />
                     <span className="flex items-center">
                       <IconPlus size={9} />
@@ -117,6 +122,14 @@ export function DocumentCard({ doc }: DocumentCardProps) {
                   </span>
                 </div>
               )}
+            </div>
+          )}
+          {doc.folder && (
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-(--ink-2) border border-(--line)">
+                <IconFolderFilled size={12} />
+                {doc.folder.name}
+              </span>
             </div>
           )}
         </div>

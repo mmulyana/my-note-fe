@@ -26,6 +26,7 @@ export function toDocItem(n: Notes): DocItem {
     todoSummary: n.todoSummary,
     categories: n.categories ?? [],
     updatedAt: new Date(n.updatedAt).getTime(),
+    folder: n.folder
   };
 }
 

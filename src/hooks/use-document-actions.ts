@@ -6,6 +6,7 @@ import {
   hasChangedAtom,
   isNewNoteAtom,
   editingCategoryIdsAtom,
+  editingFolderIdAtom,
 } from "@/store/document";
 import type { DocumentPayload } from "@/lib/types";
 import { newId, deriveListFields } from "@/lib/utils";
@@ -36,6 +37,7 @@ export function useDocumentActions() {
   const [hasChanged, setHasChanged] = useAtom(hasChangedAtom);
   const [isNewNote, setIsNewNote] = useAtom(isNewNoteAtom);
   const [categoryIds, setCategoryIds] = useAtom(editingCategoryIdsAtom);
+  const [folderId, setFolderId] = useAtom(editingFolderIdAtom);
 
   const openNew = () => {
     const id = newId();
@@ -55,13 +57,17 @@ export function useDocumentActions() {
   const autoSave = async (
     payload: DocumentPayload,
     overrideCategoryIds?: string[],
+    overrideFolderId?: string | null,
   ) => {
     if (!editingId) return;
-    // Don't create a brand-new empty note solely from a category change
-    if (isNewNote && !hasChanged && overrideCategoryIds !== undefined) return;
+    // Don't create a brand-new empty note solely from a category/folder change
+    const isMetadataOnlyChange =
+      overrideCategoryIds !== undefined || overrideFolderId !== undefined;
+    if (isNewNote && !hasChanged && isMetadataOnlyChange) return;
     setHasChanged(true);
 
     const ids = overrideCategoryIds ?? categoryIds;
+    const fId = overrideFolderId !== undefined ? overrideFolderId : folderId;
     const diff = payload.todoDiff;
     const todoDiff = diff
       ? {
@@ -96,6 +102,7 @@ export function useDocumentActions() {
             preview: payload.preview,
             todoDiff,
             categoryIds: ids,
+            folderId: fId,
           },
         });
       } else {
@@ -106,6 +113,7 @@ export function useDocumentActions() {
             preview: payload.preview,
             todoDiff,
             categoryIds: ids,
+            folderId: fId,
           },
         });
       }
@@ -124,6 +132,7 @@ export function useDocumentActions() {
     setHasChanged(false);
     setIsNewNote(false);
     setCategoryIds([]);
+    setFolderId(null);
 
     if (!id) return;
 
@@ -148,6 +157,7 @@ export function useDocumentActions() {
             content: finalContent,
             preview: deriveListFields(finalContent).preview,
             categoryIds,
+            folderId,
           },
         });
       } catch (err) {
@@ -165,6 +175,7 @@ export function useDocumentActions() {
     setHasChanged(false);
     setIsNewNote(false);
     setCategoryIds([]);
+    setFolderId(null);
     if (id && !wasNew) {
       try {
         await request(urls.Note(id), { method: "DELETE" });
@@ -182,5 +193,7 @@ export function useDocumentActions() {
     deleteDoc,
     categoryIds,
     setCategoryIds,
+    folderId,
+    setFolderId,
   };
 }

@@ -1,5 +1,11 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { IconCheck, IconPencil, IconPlus, IconTagFilled, IconX } from "@tabler/icons-react";
+import {
+  IconCheck,
+  IconPencil,
+  IconPlus,
+  IconTagFilled,
+  IconX,
+} from "@tabler/icons-react";
 import { useState } from "react";
 import { request } from "@/lib/api-client";
 import type { IApi } from "@/lib/types";
@@ -7,6 +13,7 @@ import { urls } from "@/lib/urls";
 import { useApi } from "@/hooks/use-api";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
+import { query } from "@/lib/query";
 
 type Props = {
   sidebar: boolean;
@@ -61,6 +68,7 @@ export default function CategoriesWrapper({ sidebar }: Props) {
         },
       );
     }
+    queryClient.invalidateQueries({ queryKey: [query.Notes] });
   };
 
   const handleEditCategory = async (id: string, name: string) => {
@@ -82,6 +90,7 @@ export default function CategoriesWrapper({ sidebar }: Props) {
         },
       );
     }
+    queryClient.invalidateQueries({ queryKey: [query.Notes] });
   };
 
   if (!sidebar) return null;
@@ -137,12 +146,7 @@ interface ListProps {
   onEdit: (id: string, name: string) => void;
 }
 
-export function ListItem({
-  data,
-  open,
-  onRemove,
-  onEdit,
-}: ListProps) {
+export function ListItem({ data, open, onRemove, onEdit }: ListProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(data.name);
 

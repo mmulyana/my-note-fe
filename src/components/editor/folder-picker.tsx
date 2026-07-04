@@ -1,4 +1,4 @@
-import { IconTagFilled, IconPlus } from "@tabler/icons-react";
+import { IconFolderFilled } from "@tabler/icons-react";
 import { useApi } from "@/hooks/use-api";
 import { urls } from "@/lib/urls";
 import type { IApi } from "@/lib/types";
@@ -10,30 +10,27 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface Category {
+interface Folder {
   id: string;
   name: string;
 }
 
-interface CategoryPickerProps {
-  selectedIds: string[];
-  onChange: (ids: string[]) => void;
+interface FolderPickerProps {
+  selectedId: string | null;
+  onChange: (id: string | null) => void;
 }
 
-export function CategoryPicker({ selectedIds, onChange }: CategoryPickerProps) {
-  const { data } = useApi<IApi<Category[]>>({
-    url: urls.Categories,
-    queryKey: ["categories"],
+export function FolderPicker({ selectedId, onChange }: FolderPickerProps) {
+  const { data } = useApi<IApi<Folder[]>>({
+    url: urls.Folder,
+    queryKey: ["folders"],
   });
 
-  const categories = data?.data ?? [];
+  const folders = data?.data ?? [];
+  const selected = folders.find((f) => f.id === selectedId);
 
   const toggle = (id: string) => {
-    onChange(
-      selectedIds.includes(id)
-        ? selectedIds.filter((x) => x !== id)
-        : [...selectedIds, id],
-    );
+    onChange(selectedId === id ? null : id);
   };
 
   return (
@@ -42,15 +39,8 @@ export function CategoryPicker({ selectedIds, onChange }: CategoryPickerProps) {
         className="inline-flex items-center justify-center gap-1 rounded-[10px] border border-(--line) bg-(--surface) hover:bg-accent text-(--ink-3) transition-[background,color,border-color] duration-150 hover:bg-surface-hi hover:text-ink hover:border-(--line-2) outline-none disabled:opacity-40 disabled:pointer-events-none px-2.5 text-xs hover:cursor-pointer"
         onClick={(e) => e.stopPropagation()}
       >
-        <IconPlus size={16} className="shrink-0" />
-        Add Category
-        {selectedIds.length > 0 && (
-          <>
-            <div className="h-4 w-px bg-gray-200"></div>
-            <IconTagFilled size={12} className="text-(--ink-2) shrink-0" />
-            <span className="font-semibold">{selectedIds.length}</span>
-          </>
-        )}
+        <IconFolderFilled size={16} className="shrink-0" />
+        {selected ? selected.name : "Add Folder"}
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
@@ -59,23 +49,23 @@ export function CategoryPicker({ selectedIds, onChange }: CategoryPickerProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.08em] text-(--ink-3) px-2 py-1">
-          Kategori
+          Folder
         </DropdownMenuLabel>
 
-        {categories.length === 0 ? (
+        {folders.length === 0 ? (
           <p className="px-2 py-1.5 text-[12px] text-(--ink-3)">
-            Belum ada kategori
+            Belum ada folder
           </p>
         ) : (
-          categories.map((cat) => (
+          folders.map((folder) => (
             <DropdownMenuCheckboxItem
-              key={cat.id}
-              checked={selectedIds.includes(cat.id)}
-              onCheckedChange={() => toggle(cat.id)}
+              key={folder.id}
+              checked={selectedId === folder.id}
+              onCheckedChange={() => toggle(folder.id)}
               onSelect={(e) => e.preventDefault()}
               className="text-[13px] text-(--ink-2) rounded-lg cursor-pointer focus:bg-accent focus:text-accent-foreground"
             >
-              {cat.name}
+              {folder.name}
             </DropdownMenuCheckboxItem>
           ))
         )}

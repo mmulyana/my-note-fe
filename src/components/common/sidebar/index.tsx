@@ -27,8 +27,8 @@ export const Sidebar = memo(function Sidebar() {
   return (
     <nav
       className={cn(
-        "h-full overflow-y-auto p-4 transition-[width] duration-200 ease-in-out",
-        sidebar ? "w-64" : "w-fit lg:p-2",
+        "h-full overflow-y-auto p-3.5 transition-all duration-300",
+        sidebar ? "w-64" : "w-fit lg:p-3.5",
       )}
     >
       <div
@@ -53,13 +53,13 @@ export const Sidebar = memo(function Sidebar() {
         <button
           onClick={() => setSidebar(!sidebar)}
           className={cn(
-            "h-8 w-8 justify-center flex items-center text-ink-2 hover:bg-surface-hi hover:text-ink rounded-[10px] transition-[background,color,transform] duration-150 active:scale-[0.94]",
-            !sidebar && "w-10.5 h-10.5",
+            "h-8 w-8 justify-center flex items-center text-ink-2 hover:bg-(--surface-hi) hover:text-ink rounded-[10px] transition-[background,color,transform] duration-150 active:scale-[0.94] hover:cursor-pointer",
+            !sidebar && "w-8 h-8",
           )}
         >
           <IconLayoutSidebarFilled
-            width={18}
-            height={18}
+            width={20}
+            height={20}
             className="text-ink-3"
           />
         </button>
@@ -77,7 +77,7 @@ export const Sidebar = memo(function Sidebar() {
                 isActive
                   ? "bg-gray-200 dark:bg-[#18191D] text-ink font-semibold"
                   : "hover:bg-surface-2 hover:text-ink",
-                !sidebar && "justify-center px-0 gap-0 h-10.5! w-10.5!",
+                !sidebar && "justify-center px-0 gap-0 h-8 w-8",
               )
             }
           >
