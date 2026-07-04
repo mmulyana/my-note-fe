@@ -9,31 +9,31 @@ import { urls } from "@/lib/urls";
 import { Editor } from ".";
 
 export default function EditorWrapper() {
-  const { autoSave, closeEditor, deleteDoc, categoryIds, setCategoryIds, folderId, setFolderId } =
+  const { autoSave, closeEditor, deleteDoc, labelIds, setLabelIds, folderId, setFolderId } =
     useDocumentActions();
   const editingDoc = useAtomValue(editingDocAtom);
   const isNewNote = useAtomValue(isNewNoteAtom);
 
-  // Read category name from route param /category/:name
-  const { name: categoryName } = useParams<{ name: string }>();
+  // Read label name from route param /label/:name
+  const { name: labelName } = useParams<{ name: string }>();
 
-  const { data: categoriesData } = useApi<IApi<{ id: string; name: string }[]>>({
-    url: urls.Categories,
-    queryKey: ["categories"],
+  const { data: labelsData } = useApi<IApi<{ id: string; name: string }[]>>({
+    url: urls.Labels,
+    queryKey: ["labels"],
   });
 
-  const categoryIdFromParam = useMemo(() => {
-    if (!categoryName) return undefined;
-    const match = (categoriesData?.data ?? []).find((c) => c.name === categoryName);
+  const labelIdFromParam = useMemo(() => {
+    if (!labelName) return undefined;
+    const match = (labelsData?.data ?? []).find((c) => c.name === labelName);
     return match?.id;
-  }, [categoryName, categoriesData]);
+  }, [labelName, labelsData]);
 
-  // Pre-fill categoryIds when opening a new note on a category page
+  // Pre-fill labelIds when opening a new note on a label page
   useEffect(() => {
-    if (isNewNote && categoryIdFromParam && categoryIds.length === 0) {
-      setCategoryIds([categoryIdFromParam]);
+    if (isNewNote && labelIdFromParam && labelIds.length === 0) {
+      setLabelIds([labelIdFromParam]);
     }
-  }, [isNewNote, categoryIdFromParam, categoryIds.length, setCategoryIds]);
+  }, [isNewNote, labelIdFromParam, labelIds.length, setLabelIds]);
 
   if (editingDoc) {
     return (
@@ -43,8 +43,8 @@ export default function EditorWrapper() {
         onAutoSave={autoSave}
         onClose={closeEditor}
         onDelete={deleteDoc}
-        categoryIds={categoryIds}
-        onCategoryChange={setCategoryIds}
+        labelIds={labelIds}
+        onLabelChange={setLabelIds}
         folderId={folderId}
         onFolderChange={setFolderId}
       />

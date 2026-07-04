@@ -9,7 +9,7 @@ interface UseAutoSaveOptions {
   editor: Editor | null;
   onSave: (
     payload: DocumentPayload,
-    overrideCategoryIds?: string[],
+    overrideLabelIds?: string[],
     overrideFolderId?: string | null,
   ) => Promise<void> | void;
   delay?: number;
@@ -42,15 +42,15 @@ export function useAutoSave({ editor, onSave, delay = 1500 }: UseAutoSaveOptions
     return { content, preview, todos, todoDiff };
   }, [editor]);
 
-  // note: used for non-editor changes (e.g. category/folder picks)
-  const triggerSave = useCallback(async (overrideCategoryIds?: string[], overrideFolderId?: string | null) => {
+  // note: used for non-editor changes (e.g. label/folder picks)
+  const triggerSave = useCallback(async (overrideLabelIds?: string[], overrideFolderId?: string | null) => {
     if (!editor) return;
     const payload = buildPayload();
     if (!payload) return;
     if (timerRef.current) clearTimeout(timerRef.current);
     dirtyRef.current = false;
     setStatus("saving");
-    await onSaveRef.current(payload, overrideCategoryIds, overrideFolderId);
+    await onSaveRef.current(payload, overrideLabelIds, overrideFolderId);
     setStatus(dirtyRef.current ? "dirty" : "saved");
     setLastSavedAt(new Date());
   }, [editor, buildPayload]);

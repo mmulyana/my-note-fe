@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import NewNoteButton from "./new-note-button";
-import CategoriesWrapper from "./categories-wrapper";
+import LabelsWrapper from "./labels-wrapper";
 import FoldersWrapper from "./folders-wrapper";
 
 const navItems = [
@@ -86,7 +86,7 @@ export const Sidebar = memo(function Sidebar() {
           </NavLink>
         ))}
       </div>
-      <CategoriesWrapper sidebar={sidebar} />
+      <LabelsWrapper sidebar={sidebar} />
       <FoldersWrapper sidebar={sidebar} />
     </nav>
   );

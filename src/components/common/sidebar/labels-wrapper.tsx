@@ -1,9 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
 import {
   IconCheck,
+  IconHash,
   IconPencil,
   IconPlus,
-  IconTagFilled,
   IconX,
 } from "@tabler/icons-react";
 import { useState } from "react";
@@ -18,77 +18,45 @@ import { query } from "@/lib/query";
 type Props = {
   sidebar: boolean;
 };
-export default function CategoriesWrapper({ sidebar }: Props) {
+export default function LabelsWrapper({ sidebar }: Props) {
   const queryClient = useQueryClient();
 
-  const [newName, setNewName] = useState("");
-
   const { data } = useApi<IApi<any[]>>({
-    url: urls.Categories,
-    queryKey: ["categories"],
+    url: urls.Labels,
+    queryKey: ["labels"],
   });
 
-  const { mutate: createCatagory } = useApi<IApi<any>, Partial<any>>({
-    url: urls.Categories,
-    method: "POST",
-    onSuccess: (res) => {
-      queryClient.setQueryData(
-        ["categories"],
-        (prev: IApi<any[]> | undefined) => {
-          if (!prev) return res;
-          return {
-            ...prev,
-            data: [...(prev.data || []), res.data],
-          };
-        },
-      );
-    },
-  });
-
-  const addCategory = () => {
-    const name = newName.trim();
-    if (!name) return;
-    createCatagory({ name });
-    setNewName("");
-  };
-
-  const removeCategory = async (id: string) => {
-    const response = await request<IApi<any>>(`${urls.Categories}/${id}`, {
+  const removeLabel = async (id: string) => {
+    const response = await request<IApi<any>>(`${urls.Labels}/${id}`, {
       method: "DELETE",
     });
     if (response.message.includes("deleted")) {
-      queryClient.setQueryData(
-        ["categories"],
-        (prev: IApi<any[]> | undefined) => {
-          if (!prev) return prev;
-          return {
-            ...prev,
-            data: prev.data.filter((c) => c.id !== id),
-          };
-        },
-      );
+      queryClient.setQueryData(["labels"], (prev: IApi<any[]> | undefined) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          data: prev.data.filter((c) => c.id !== id),
+        };
+      });
     }
     queryClient.invalidateQueries({ queryKey: [query.Notes] });
   };
 
-  const handleEditCategory = async (id: string, name: string) => {
-    const response = await request<IApi<any>>(`${urls.Categories}/${id}`, {
+  const handleEditLabel = async (id: string, name: string) => {
+    const response = await request<IApi<any>>(`${urls.Labels}/${id}`, {
       method: "PATCH",
       body: {
         name,
       },
     });
     if (response.message.includes("updated")) {
-      queryClient.setQueryData(
-        ["categories"],
-        (prev: IApi<any[]> | undefined) => {
-          if (!prev) return prev;
-          return {
-            ...prev,
-            data: prev.data.map((c) => (c.id === id ? { ...c, name } : c)),
-          };
-        },
-      );
+      queryClient.setQueryData(["labels"], (prev: IApi<any[]> | undefined) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          data: prev.data.map((c) => (c.id === id ? { ...c, name } : c)),
+        };
+      });
     }
     queryClient.invalidateQueries({ queryKey: [query.Notes] });
   };
@@ -97,56 +65,35 @@ export default function CategoriesWrapper({ sidebar }: Props) {
 
   return (
     <>
-      {sidebar && (
-        <div className="flex flex-col gap-0.5 mt-5">
-          <div className="text-xs tracking-[0.08em] text-(--ink-3) px-2 mb-1">
-            Categories
-          </div>
-          <div className="max-h-24 overflow-y-auto">
-            {data?.data?.map((data) => {
-              return (
-                <ListItem
-                  key={data.id}
-                  data={data}
-                  open={sidebar}
-                  onRemove={removeCategory}
-                  onEdit={handleEditCategory}
-                />
-              );
-            })}
-          </div>
-
-          {sidebar && (
-            <div className="flex items-center gap-2 h-9 px-2 rounded-md text-sm cursor-default group mt-1">
-              <div className="w-5 h-5 flex justify-center items-center">
-                <IconPlus size={16} className="shrink-0 text-ink-2" />
-              </div>
-              <input
-                className="flex-1 border-0 bg-transparent outline-none text-ink-2 text-[14.5px] font-medium p-0 min-w-0 font-[inherit] placeholder:text-ink-3 placeholder:font-normal"
-                placeholder="New category"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") addCategory();
-                  if (e.key === "Escape") setNewName("");
-                }}
+      <div className="flex flex-col gap-0.5 mt-5">
+        <div className="text-xs text-(--ink-3) px-2 font-medium">Labels</div>
+        <div className="max-h-24 overflow-y-auto">
+          {data?.data?.map((data) => {
+            return (
+              <ListItem
+                key={data.id}
+                data={data}
+                open={sidebar}
+                onRemove={removeLabel}
+                onEdit={handleEditLabel}
               />
-            </div>
-          )}
+            );
+          })}
         </div>
-      )}
+        <NewLabel />
+      </div>
     </>
   );
 }
 
-interface ListProps {
+type ListProps = {
   data: any;
   open: boolean;
   onRemove: (id: string) => void;
   onEdit: (id: string, name: string) => void;
-}
+};
 
-export function ListItem({ data, open, onRemove, onEdit }: ListProps) {
+function ListItem({ data, open, onRemove, onEdit }: ListProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(data.name);
 
@@ -162,18 +109,15 @@ export function ListItem({ data, open, onRemove, onEdit }: ListProps) {
       className={cn(
         "flex items-center h-9 px-2 rounded-md text-sm font-medium text-ink-2 transition-[background,color] duration-150 group",
         open ? "gap-2" : "justify-center gap-0 px-0",
-        // isActive
-        //   ? "bg-gray-200 dark:bg-[#18191D] text-ink font-semibold"
-        //   : "hover:bg-surface-2 hover:text-ink",
       )}
     >
       {!isEditing ? (
         <Link
-          to={`/category/${encodeURIComponent(data.name)}`}
+          to={`/label/${encodeURIComponent(data.name)}`}
           className="flex items-center gap-2 flex-1 min-w-0 h-full"
         >
           <div className="w-5 h-5 flex justify-center items-center">
-            <IconTagFilled size={16} className="shrink-0" />
+            <IconHash size={16} className="shrink-0" />
           </div>
           {open && (
             <span className="flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
@@ -184,7 +128,7 @@ export function ListItem({ data, open, onRemove, onEdit }: ListProps) {
       ) : (
         <>
           <div className="w-5 h-5 flex justify-center items-center">
-            <IconTagFilled size={16} className="shrink-0" />
+            <IconHash size={16} className="shrink-0" />
           </div>
           <input
             autoFocus
@@ -259,6 +203,49 @@ export function ListItem({ data, open, onRemove, onEdit }: ListProps) {
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+function NewLabel() {
+  const queryClient = useQueryClient();
+  const [newName, setNewName] = useState("");
+  const { mutate: createLabel } = useApi<IApi<any>, Partial<any>>({
+    url: urls.Labels,
+    method: "POST",
+    onSuccess: (res) => {
+      queryClient.setQueryData(["labels"], (prev: IApi<any[]> | undefined) => {
+        if (!prev) return res;
+        return {
+          ...prev,
+          data: [...(prev.data || []), res.data],
+        };
+      });
+    },
+  });
+
+  const addLabel = () => {
+    const name = newName.trim();
+    if (!name) return;
+    createLabel({ name });
+    setNewName("");
+  };
+
+  return (
+    <div className="flex items-center gap-2 h-9 px-2 rounded-md text-sm cursor-default group mt-1">
+      <div className="w-5 h-5 flex justify-center items-center">
+        <IconPlus size={16} className="shrink-0 text-ink-2" />
+      </div>
+      <input
+        className="flex-1 border-0 bg-transparent outline-none text-ink-2 text-[14.5px] font-medium p-0 min-w-0 font-[inherit] placeholder:text-ink-3 placeholder:font-normal"
+        placeholder="New label"
+        value={newName}
+        onChange={(e) => setNewName(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") addLabel();
+          if (e.key === "Escape") setNewName("");
+        }}
+      />
     </div>
   );
 }

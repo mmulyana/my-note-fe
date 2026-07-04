@@ -13,8 +13,8 @@ export const hasChangedAtom = atom(false);
 /** Whether this is a brand-new note (not yet persisted to the backend) */
 export const isNewNoteAtom = atom(false);
 
-/** Category IDs currently selected for the open note */
-export const editingCategoryIdsAtom = atom<string[]>([]);
+/** Label IDs currently selected for the open note */
+export const editingLabelIdsAtom = atom<string[]>([]);
 
 /** Folder ID currently selected for the open note */
 export const editingFolderIdAtom = atom<string | null>(null);

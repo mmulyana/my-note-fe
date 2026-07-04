@@ -10,7 +10,7 @@ import { urls } from "@/lib/urls";
 export default function FolderPage() {
   const { name } = useParams<{ name: string }>();
 
-  const { data: categoriesData } = useApi<IApi<{ id: string; name: string }[]>>(
+  const { data: foldersData } = useApi<IApi<{ id: string; name: string }[]>>(
     {
       url: urls.Folder,
       queryKey: ["folders"],
@@ -19,9 +19,9 @@ export default function FolderPage() {
 
   const folderId = useMemo(() => {
     if (!name) return undefined;
-    const match = (categoriesData?.data ?? []).find((c) => c.name === name);
+    const match = (foldersData?.data ?? []).find((c) => c.name === name);
     return match?.id;
-  }, [name, categoriesData]);
+  }, [name, foldersData]);
 
   const { data: notesData } = useApi<IApi<Notes[]>>({
     url: buildQuery(urls.Notes, { folderId }),

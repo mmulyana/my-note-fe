@@ -7,24 +7,24 @@ import type { DocItem, IApi, Notes } from "@/lib/types";
 import { buildQuery, toDocItem } from "@/lib/utils";
 import { urls } from "@/lib/urls";
 
-export default function CategoryPage() {
-  const { name: categoryName } = useParams<{ name: string }>();
+export default function LabelPage() {
+  const { name: labelName } = useParams<{ name: string }>();
 
-  const { data: categoriesData } = useApi<IApi<{ id: string; name: string }[]>>({
-    url: urls.Categories,
-    queryKey: ["categories"],
+  const { data: labelsData } = useApi<IApi<{ id: string; name: string }[]>>({
+    url: urls.Labels,
+    queryKey: ["labels"],
   });
 
-  const categoryId = useMemo(() => {
-    if (!categoryName) return undefined;
-    const match = (categoriesData?.data ?? []).find((c) => c.name === categoryName);
+  const labelId = useMemo(() => {
+    if (!labelName) return undefined;
+    const match = (labelsData?.data ?? []).find((c) => c.name === labelName);
     return match?.id;
-  }, [categoryName, categoriesData]);
+  }, [labelName, labelsData]);
 
   const { data: notesData } = useApi<IApi<Notes[]>>({
-    url: buildQuery(urls.Notes, { categoryId }),
-    queryKey: ["notes", { categoryId }],
-    enabled: !!categoryId,
+    url: buildQuery(urls.Notes, { labelId }),
+    queryKey: ["notes", { labelId }],
+    enabled: !!labelId,
   });
 
   const docs: DocItem[] = (notesData?.data ?? []).map(toDocItem);
@@ -46,7 +46,7 @@ export default function CategoryPage() {
             No documents
           </div>
           <div className="text-sm max-w-75">
-            Belum ada catatan di kategori "{categoryName}".
+            Belum ada catatan di label "{labelName}".
           </div>
         </div>
       )}

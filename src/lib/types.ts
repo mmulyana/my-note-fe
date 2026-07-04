@@ -3,7 +3,7 @@ export type Notes = {
   title: string;
   preview: string;
   todoSummary: { total: number; done: number };
-  categories: { id: string; name: string }[];
+  labels: { id: string; name: string }[];
   updatedAt: string;
   folder?: { id: string, name: string, color: string } | null
 };
@@ -82,7 +82,7 @@ export interface DocItem {
   content: string;
   preview: string;
   todoSummary: { total: number; done: number };
-  categories: { id: string; name: string }[];
+  labels: { id: string; name: string }[];
   folderId?: string | null;
   folder?: { id: string, name: string, color: string } | null
   updatedAt: number;
@@ -93,7 +93,7 @@ export interface NoteDetail {
   title: string;
   content: string;
   todos: unknown[];
-  categories: { id: string; userId: string; name: string }[];
+  labels: { id: string; userId: string; name: string }[];
   folderId?: string | null;
   createdAt: string;
   updatedAt: string;

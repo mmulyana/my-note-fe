@@ -13,6 +13,7 @@ import type { IApi } from "@/lib/types";
 import { urls } from "@/lib/urls";
 import { cn } from "@/lib/utils";
 import { useApi } from "@/hooks/use-api";
+import { query } from "@/lib/query";
 
 type Props = {
   sidebar: boolean;
@@ -25,7 +26,7 @@ export default function FoldersWrapper({ sidebar }: Props) {
     queryKey: ["folders"],
   });
 
-  const removeCategory = async (id: string) => {
+  const removeFolder = async (id: string) => {
     const response = await request<IApi<any>>(`${urls.Folder}/${id}`, {
       method: "DELETE",
     });
@@ -38,9 +39,10 @@ export default function FoldersWrapper({ sidebar }: Props) {
         };
       });
     }
+    queryClient.invalidateQueries({ queryKey: [query.Notes] });
   };
 
-  const handleEditCategory = async (id: string, name: string) => {
+  const handleEditFolder = async (id: string, name: string) => {
     const response = await request<IApi<any>>(`${urls.Folder}/${id}`, {
       method: "PATCH",
       body: {
@@ -48,17 +50,15 @@ export default function FoldersWrapper({ sidebar }: Props) {
       },
     });
     if (response.message.includes("updated")) {
-      queryClient.setQueryData(
-        ["folders"],
-        (prev: IApi<any[]> | undefined) => {
-          if (!prev) return prev;
-          return {
-            ...prev,
-            data: prev.data.map((c) => (c.id === id ? { ...c, name } : c)),
-          };
-        },
-      );
+      queryClient.setQueryData(["folders"], (prev: IApi<any[]> | undefined) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          data: prev.data.map((c) => (c.id === id ? { ...c, name } : c)),
+        };
+      });
     }
+    queryClient.invalidateQueries({ queryKey: [query.Notes] });
   };
 
   if (!sidebar) return null;
@@ -66,9 +66,7 @@ export default function FoldersWrapper({ sidebar }: Props) {
   return (
     <>
       <div className="flex flex-col gap-0.5 mt-5">
-        <div className="text-xs tracking-[0.08em] text-(--ink-3) px-2 mb-1">
-          Folders
-        </div>
+        <div className="text-xs text-(--ink-3) px-2 font-medium">Folders</div>
         <div className="max-h-24 overflow-y-auto">
           {data?.data?.map((data) => {
             return (
@@ -76,8 +74,8 @@ export default function FoldersWrapper({ sidebar }: Props) {
                 key={data.id}
                 data={data}
                 open={sidebar}
-                onRemove={removeCategory}
-                onEdit={handleEditCategory}
+                onRemove={removeFolder}
+                onEdit={handleEditFolder}
               />
             );
           })}

@@ -5,7 +5,7 @@ import {
   editingDocAtom,
   hasChangedAtom,
   isNewNoteAtom,
-  editingCategoryIdsAtom,
+  editingLabelIdsAtom,
   editingFolderIdAtom,
 } from "@/store/document";
 import type { DocumentPayload } from "@/lib/types";
@@ -36,7 +36,7 @@ export function useDocumentActions() {
   const [, setEditingDoc] = useAtom(editingDocAtom);
   const [hasChanged, setHasChanged] = useAtom(hasChangedAtom);
   const [isNewNote, setIsNewNote] = useAtom(isNewNoteAtom);
-  const [categoryIds, setCategoryIds] = useAtom(editingCategoryIdsAtom);
+  const [labelIds, setLabelIds] = useAtom(editingLabelIdsAtom);
   const [folderId, setFolderId] = useAtom(editingFolderIdAtom);
 
   const openNew = () => {
@@ -49,24 +49,24 @@ export function useDocumentActions() {
       preview: "",
       todoSummary: { total: 0, done: 0 },
       updatedAt: Date.now(),
-      categories: []
+      labels: []
     });
     setEditingId(id);
   };
 
   const autoSave = async (
     payload: DocumentPayload,
-    overrideCategoryIds?: string[],
+    overrideLabelIds?: string[],
     overrideFolderId?: string | null,
   ) => {
     if (!editingId) return;
-    // Don't create a brand-new empty note solely from a category/folder change
+    // Don't create a brand-new empty note solely from a label/folder change
     const isMetadataOnlyChange =
-      overrideCategoryIds !== undefined || overrideFolderId !== undefined;
+      overrideLabelIds !== undefined || overrideFolderId !== undefined;
     if (isNewNote && !hasChanged && isMetadataOnlyChange) return;
     setHasChanged(true);
 
-    const ids = overrideCategoryIds ?? categoryIds;
+    const ids = overrideLabelIds ?? labelIds;
     const fId = overrideFolderId !== undefined ? overrideFolderId : folderId;
     const diff = payload.todoDiff;
     const todoDiff = diff
@@ -101,7 +101,7 @@ export function useDocumentActions() {
             content: payload.content,
             preview: payload.preview,
             todoDiff,
-            categoryIds: ids,
+            labelIds: ids,
             folderId: fId,
           },
         });
@@ -112,7 +112,7 @@ export function useDocumentActions() {
             content: payload.content,
             preview: payload.preview,
             todoDiff,
-            categoryIds: ids,
+            labelIds: ids,
             folderId: fId,
           },
         });
@@ -131,7 +131,7 @@ export function useDocumentActions() {
     setEditingDoc(null);
     setHasChanged(false);
     setIsNewNote(false);
-    setCategoryIds([]);
+    setLabelIds([]);
     setFolderId(null);
 
     if (!id) return;
@@ -156,7 +156,7 @@ export function useDocumentActions() {
           body: {
             content: finalContent,
             preview: deriveListFields(finalContent).preview,
-            categoryIds,
+            labelIds,
             folderId,
           },
         });
@@ -174,7 +174,7 @@ export function useDocumentActions() {
     setEditingDoc(null);
     setHasChanged(false);
     setIsNewNote(false);
-    setCategoryIds([]);
+    setLabelIds([]);
     setFolderId(null);
     if (id && !wasNew) {
       try {
@@ -191,8 +191,8 @@ export function useDocumentActions() {
     autoSave,
     closeEditor,
     deleteDoc,
-    categoryIds,
-    setCategoryIds,
+    labelIds,
+    setLabelIds,
     folderId,
     setFolderId,
   };

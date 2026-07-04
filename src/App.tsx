@@ -6,7 +6,7 @@ import TrashPage from "@/pages/trash-page";
 import TodosPage from "@/pages/todos-page";
 import LoginPage from "@/pages/login-page";
 import HomePage from "@/pages/home-page";
-import CategoryPage from "@/pages/category-page";
+import LabelPage from "@/pages/label-page";
 import FolderPage from "./pages/folder-page";
 
 const router = createBrowserRouter([
@@ -20,7 +20,7 @@ const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
           { index: true, element: <HomePage /> },
-          { path: "category/:name", element: <CategoryPage /> },
+          { path: "label/:name", element: <LabelPage /> },
           { path: "folder/:name", element: <FolderPage /> },
           { path: "todos", element: <TodosPage /> },
           { path: "trash", element: <TrashPage /> },

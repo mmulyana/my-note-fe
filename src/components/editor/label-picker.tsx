@@ -10,23 +10,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface Category {
+interface Label {
   id: string;
   name: string;
 }
 
-interface CategoryPickerProps {
+interface LabelPickerProps {
   selectedIds: string[];
   onChange: (ids: string[]) => void;
 }
 
-export function CategoryPicker({ selectedIds, onChange }: CategoryPickerProps) {
-  const { data } = useApi<IApi<Category[]>>({
-    url: urls.Categories,
-    queryKey: ["categories"],
+export function LabelPicker({ selectedIds, onChange }: LabelPickerProps) {
+  const { data } = useApi<IApi<Label[]>>({
+    url: urls.Labels,
+    queryKey: ["labels"],
   });
 
-  const categories = data?.data ?? [];
+  const labels = data?.data ?? [];
 
   const toggle = (id: string) => {
     onChange(
@@ -43,7 +43,7 @@ export function CategoryPicker({ selectedIds, onChange }: CategoryPickerProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <IconPlus size={16} className="shrink-0" />
-        Add Category
+        Add Label
         {selectedIds.length > 0 && (
           <>
             <div className="h-4 w-px bg-gray-200"></div>
@@ -59,15 +59,15 @@ export function CategoryPicker({ selectedIds, onChange }: CategoryPickerProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.08em] text-(--ink-3) px-2 py-1">
-          Kategori
+          Label
         </DropdownMenuLabel>
 
-        {categories.length === 0 ? (
+        {labels.length === 0 ? (
           <p className="px-2 py-1.5 text-[12px] text-(--ink-3)">
-            Belum ada kategori
+            Belum ada label
           </p>
         ) : (
-          categories.map((cat) => (
+          labels.map((cat) => (
             <DropdownMenuCheckboxItem
               key={cat.id}
               checked={selectedIds.includes(cat.id)}

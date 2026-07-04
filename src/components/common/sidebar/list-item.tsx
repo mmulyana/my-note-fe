@@ -25,7 +25,7 @@ export function ListItem({
   const [editName, setEditName] = useState(data.name);
   const [searchParams] = useSearchParams();
 
-  const isActive = searchParams.get("category") === data.name;
+  const isActive = searchParams.get("label") === data.name;
 
   const handleEdit = () => {
     if (editName.trim()) {
@@ -46,7 +46,7 @@ export function ListItem({
     >
       {!isEditing ? (
         <Link
-          to={`/category/${encodeURIComponent(data.name)}`}
+          to={`/label/${encodeURIComponent(data.name)}`}
           className="flex items-center gap-2 flex-1 min-w-0 h-full"
         >
           <div className="w-5 h-5 flex justify-center items-center">

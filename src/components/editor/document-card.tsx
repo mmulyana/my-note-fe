@@ -4,7 +4,7 @@ import {
   editingIdAtom,
   editingDocAtom,
   hasChangedAtom,
-  editingCategoryIdsAtom,
+  editingLabelIdsAtom,
   editingFolderIdAtom,
 } from "@/store/document";
 import type { DocItem, IApi, NoteDetail } from "@/lib/types";
@@ -20,7 +20,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
   const setEditingId = useSetAtom(editingIdAtom);
   const setEditingDoc = useSetAtom(editingDocAtom);
   const setHasChanged = useSetAtom(hasChangedAtom);
-  const setEditingCategoryIds = useSetAtom(editingCategoryIdsAtom);
+  const setEditingLabelIds = useSetAtom(editingLabelIdsAtom);
   const setEditingFolderId = useSetAtom(editingFolderIdAtom);
 
   const { total, done } = doc.todoSummary;
@@ -29,14 +29,14 @@ export function DocumentCard({ doc }: DocumentCardProps) {
     try {
       const detail = await request<IApi<NoteDetail>>(urls.Note(doc.id));
       setHasChanged(false);
-      setEditingCategoryIds((detail.data.categories ?? []).map((c) => c.id));
+      setEditingLabelIds((detail.data.labels ?? []).map((c) => c.id));
       setEditingFolderId(detail.data.folderId ?? null);
       setEditingDoc({
         id: detail.data.id,
         content: detail.data.content,
         preview: "",
         todoSummary: { total: 0, done: 0 },
-        categories: (detail.data.categories ?? []).map(({ id, name }) => ({
+        labels: (detail.data.labels ?? []).map(({ id, name }) => ({
           id,
           name,
         })),
@@ -69,7 +69,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
       )}
 
       <div className="gap-2 px-4 pb-2.5 pt-1.5 text-xs text-(--ink-3)">
-        <div className="flex gap-1 items-center">
+        <div className="flex gap-1 items-center flex-wrap">
           {total > 0 && (
             <div className="border border-(--line) rounded-full flex items-center h-5 pl-0.5 pr-1.5">
               <span className="inline-flex items-center gap-1">
@@ -103,21 +103,21 @@ export function DocumentCard({ doc }: DocumentCardProps) {
               </span>
             </div>
           )}
-          {doc.categories.length > 0 && (
+          {doc.labels.length > 0 && (
             <div className="flex gap-1 items-center text-sm">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-(--ink-2) border border-(--line)">
                   <IconTagFilled size={12} />
-                  {doc.categories?.[0].name}
+                  {doc.labels?.[0].name}
                 </span>
               </div>
-              {doc.categories.length > 1 && (
+              {doc.labels.length > 1 && (
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-(--ink-2) border border-(--line)">
                     <IconTagFilled size={12} />
                     <span className="flex items-center">
                       <IconPlus size={9} />
-                      {doc.categories?.length - 1}
+                      {doc.labels?.length - 1}
                     </span>
                   </span>
                 </div>
@@ -126,7 +126,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
           )}
           {doc.folder && (
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-(--ink-2) border border-(--line)">
+              <span className="text-nowrap inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-(--ink-2) border border-(--line)">
                 <IconFolderFilled size={12} />
                 {doc.folder.name}
               </span>
