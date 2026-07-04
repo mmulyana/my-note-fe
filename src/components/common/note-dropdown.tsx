@@ -32,7 +32,7 @@ export function NoteDropdown({
         className="w-40 bg-(--surface) border-(--line-2) rounded-md shadow-(--shadow-lg) py-1 px-0"
       >
         <DropdownMenuItem
-          className="flex items-center gap-2.5 text-[13px] rounded-none cursor-pointer"
+          className="flex items-center gap-2.5 text-[13px] rounded-none cursor-pointer dark:text-white/50"
           onClick={(e) => {
             e.stopPropagation();
             onArchive?.();

@@ -33,7 +33,7 @@ export function InsertImageMenu({ editor }: InsertImageMenuProps) {
       }}
     >
       <DropdownMenuTrigger
-        className="grid place-items-center w-7 h-7 rounded-lg border border-(--line) bg-(--surface) text-(--ink-3) transition-[background,color,border-color] duration-150 hover:bg-(--surface-hi) hover:text-(--ink) hover:border-(--line-2) outline-none disabled:opacity-40 disabled:pointer-events-none"
+        className="grid place-items-center w-7 h-7 rounded-lg border border-(--line) bg-(--surface) text-(--ink-3) transition-[background,color,border-color] duration-150 hover:bg-accent hover:text-accent-foreground hover:border-(--line-2) outline-none disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
         title="Insert image from URL"
         aria-label="Insert image from URL"
         disabled={!editor}

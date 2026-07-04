@@ -1,16 +1,14 @@
-import { IconGripVertical, IconTagFilled } from "@tabler/icons-react";
+import { IconGripVertical } from "@tabler/icons-react";
 import { useCallback, useEffect, useRef } from "react";
 import { EditorContent } from "@tiptap/react";
 import { DragHandle } from "@tiptap/extension-drag-handle-react";
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 import { useAutoSave, type SaveStatus } from "@/hooks/use-autosave";
 import { useDocumentEditor } from "@/hooks/use-editor";
-import { useApi } from "@/hooks/use-api";
-import { CategoryPicker } from "@/components/common/category-picker";
+import { CategoryPicker } from "@/components/editor/category-picker";
 import { NoteDropdown } from "@/components/common/note-dropdown";
 import { InsertImageMenu } from "@/components/editor/insert-image-menu";
-import type { DocItem, DocumentPayload, IApi } from "@/lib/types";
-import { urls } from "@/lib/urls";
+import type { DocItem, DocumentPayload } from "@/lib/types";
 
 interface EditorProps {
   doc: DocItem;
@@ -49,17 +47,6 @@ export function Editor({
       onAutoSave(payload, overrideCategoryIds);
     },
   });
-
-  const { data: categoriesData } = useApi<IApi<{ id: string; name: string }[]>>(
-    {
-      url: urls.Categories,
-      queryKey: ["categories"],
-    },
-  );
-  const allCategories = categoriesData?.data ?? [];
-  const selectedCategories = allCategories.filter((c) =>
-    categoryIds.includes(c.id),
-  );
 
   const handleClose = useCallback(() => {
     onClose(editor ? editor.getHTML() : doc.content);
@@ -115,24 +102,9 @@ export function Editor({
             </DragHandle>
           )}
         </div>
+
         <footer className="flex items-center gap-2 pt-2 px-3.5 pb-3">
-          {selectedCategories.length > 0 && (
-            <div className="flex items-center gap-1 flex-wrap flex-1">
-              {selectedCategories.map((cat) => (
-                <span
-                  key={cat.id}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] text-(--ink-2) border border-(--line)"
-                >
-                  <IconTagFilled size={10} />
-                  {cat.name}
-                </span>
-              ))}
-            </div>
-          )}
-          <div className="flex items-center gap-3 ml-auto">
-            <span className="text-[11px] text-(--ink-3)">
-              {STATUS_TEXT[status]}
-            </span>
+          <div className="flex gap-2">
             <InsertImageMenu editor={editor} />
             <CategoryPicker
               selectedIds={categoryIds}
@@ -141,6 +113,12 @@ export function Editor({
                 triggerSave(ids);
               }}
             />
+          </div>
+          <div className="flex items-center gap-3 ml-auto">
+            <span className="text-[11px] text-(--ink-3)">
+              {STATUS_TEXT[status]}
+            </span>
+
             <NoteDropdown onDelete={onDelete} onArchive={onArchive} />
           </div>
         </footer>

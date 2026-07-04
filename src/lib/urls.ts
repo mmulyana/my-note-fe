@@ -8,4 +8,5 @@ export const urls = {
   Login: "/auth/login",
   Register: "/auth/register",
   Me: "/auth/me",
+  Folder: "/folders"
 };

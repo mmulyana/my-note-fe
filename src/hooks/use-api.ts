@@ -2,6 +2,7 @@ import {
   useQuery,
   useMutation,
   useQueryClient,
+  keepPreviousData,
   type UseMutationResult,
   type UseQueryResult,
 } from '@tanstack/react-query';
@@ -14,6 +15,8 @@ type ApiOptionsBase<TResponse> = {
   queryKey?: readonly unknown[];
   enabled?: boolean;
   autoRefetchOnWindowFocus?: boolean;
+  /** Keep showing the previous result while a new query key loads (e.g. search). */
+  keepPreviousData?: boolean;
   staleTime?: number;
   gcTime?: number;
   headers?: Record<string, string>;
@@ -57,6 +60,7 @@ export function useApi<TResponse, TBody>(
     queryKey,
     enabled = true,
     autoRefetchOnWindowFocus = false,
+    keepPreviousData: keepPrev = false,
     staleTime = 1000 * 60 * 10,
     gcTime = 1000 * 60 * 10,
     headers,
@@ -76,6 +80,7 @@ export function useApi<TResponse, TBody>(
       gcTime,
       staleTime,
       refetchOnWindowFocus: autoRefetchOnWindowFocus,
+      placeholderData: keepPrev ? keepPreviousData : undefined,
     });
   }
 

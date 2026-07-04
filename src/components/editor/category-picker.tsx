@@ -1,4 +1,4 @@
-import { IconTagFilled, IconTag } from "@tabler/icons-react";
+import { IconTagFilled, IconPlus } from "@tabler/icons-react";
 import { useApi } from "@/hooks/use-api";
 import { urls } from "@/lib/urls";
 import type { IApi } from "@/lib/types";
@@ -27,7 +27,6 @@ export function CategoryPicker({ selectedIds, onChange }: CategoryPickerProps) {
   });
 
   const categories = data?.data ?? [];
-  const hasSelection = selectedIds.length > 0;
 
   const toggle = (id: string) => {
     onChange(
@@ -40,15 +39,18 @@ export function CategoryPicker({ selectedIds, onChange }: CategoryPickerProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="inline-flex items-center justify-center gap-1 border-none bg-transparent rounded-[10px] cursor-pointer transition-[background,color,transform] duration-150 active:scale-[0.94] outline-none text-xs text-nowrap"
+        className="inline-flex items-center justify-center gap-1 rounded-[10px] border border-(--line) bg-(--surface) hover:bg-(--surface-hi) text-(--ink-3) transition-[background,color,border-color] duration-150 hover:bg-surface-hi hover:text-ink hover:border-(--line-2) outline-none disabled:opacity-40 disabled:pointer-events-none px-2.5 text-xs hover:cursor-pointer"
         onClick={(e) => e.stopPropagation()}
       >
-        {hasSelection ? (
-          <IconTagFilled size={16} className="shrink-0"/>
-        ) : (
-          <IconTag size={16} className="text-(--ink-2) shrink-0" />
+        <IconPlus size={16} className="shrink-0" />
+        Add Category
+        {selectedIds.length > 0 && (
+          <>
+            <div className="h-4 w-px bg-gray-200"></div>
+            <IconTagFilled size={12} className="text-(--ink-2) shrink-0" />
+            <span className="font-semibold">{selectedIds.length}</span>
+          </>
         )}
-        Add Tags
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
@@ -71,7 +73,7 @@ export function CategoryPicker({ selectedIds, onChange }: CategoryPickerProps) {
               checked={selectedIds.includes(cat.id)}
               onCheckedChange={() => toggle(cat.id)}
               onSelect={(e) => e.preventDefault()}
-              className="text-[13px] text-(--ink-2) rounded-lg cursor-pointer focus:bg-(--surface-hi) focus:text-(--ink)"
+              className="text-[13px] text-(--ink-2) rounded-lg cursor-pointer focus:bg-accent focus:text-accent-foreground"
             >
               {cat.name}
             </DropdownMenuCheckboxItem>
