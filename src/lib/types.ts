@@ -52,10 +52,11 @@ export interface TodoPayload {
   checked: boolean;
   text: string;
   deadline: string | null; // ISO "YYYY-MM-DD"
+  today: string | null; // ISO "YYYY-MM-DD"
   priority: TodoPriority;
 }
 
-export type TodoField = "checked" | "text" | "deadline" | "priority";
+export type TodoField = "checked" | "text" | "deadline" | "priority" | "today";
 
 export interface UpdatedTodo {
   id: string;

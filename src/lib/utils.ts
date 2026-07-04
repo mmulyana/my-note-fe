@@ -43,6 +43,7 @@ export function extractTodos(doc: JSONContent): TodoPayload[] {
         checked: Boolean(attrs.checked),
         text: ownText(node),
         deadline: attrs.deadline ?? null,
+        today: attrs.today ?? null,
         priority: normalizePriority(attrs.priority),
       });
     }
@@ -66,7 +67,7 @@ function ownText(node: JSONContent): string {
     .join("");
 }
 
-const FIELDS: TodoField[] = ["checked", "text", "deadline", "priority"];
+const FIELDS: TodoField[] = ["checked", "text", "deadline", "priority", "today"];
 
 function sameValue(field: TodoField, a: TodoPayload, b: TodoPayload): boolean {
   return a[field] === b[field];

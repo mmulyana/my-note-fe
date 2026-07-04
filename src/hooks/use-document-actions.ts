@@ -79,6 +79,7 @@ export function useDocumentActions() {
             checked: t.checked,
             text: t.text,
             deadline: t.deadline,
+            today: t.today,
             priority: t.priority,
           })),
           updated: diff.updated.map((u) => ({
