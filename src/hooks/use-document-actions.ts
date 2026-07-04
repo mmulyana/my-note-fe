@@ -8,7 +8,7 @@ import {
   editingLabelIdsAtom,
   editingFolderIdAtom,
 } from "@/store/document";
-import type { DocumentPayload } from "@/lib/types";
+import type { DocumentPayload, NoteFlags } from "@/lib/types";
 import { newId, deriveListFields } from "@/lib/utils";
 import { request } from "@/lib/api-client";
 import type { IApi } from "@/lib/types";
@@ -54,13 +54,16 @@ export function useDocumentActions() {
     setEditingId(id);
   };
 
-  const autoSave = async (
+  const persist = async (
     payload: DocumentPayload,
-    overrideLabelIds?: string[],
-    overrideFolderId?: string | null,
+    opts: {
+      overrideLabelIds?: string[];
+      overrideFolderId?: string | null;
+      flags?: NoteFlags;
+    } = {},
   ) => {
     if (!editingId) return;
-    // Don't create a brand-new empty note solely from a label/folder change
+    const { overrideLabelIds, overrideFolderId, flags } = opts;
     const isMetadataOnlyChange =
       overrideLabelIds !== undefined || overrideFolderId !== undefined;
     if (isNewNote && !hasChanged && isMetadataOnlyChange) return;
@@ -88,6 +91,15 @@ export function useDocumentActions() {
         }
       : undefined;
 
+    const body = {
+      content: payload.content,
+      preview: payload.preview,
+      todoDiff,
+      labelIds: ids,
+      folderId: fId,
+      ...flags,
+    };
+
     try {
       if (isNewNote) {
         await request<IApi<NoteDetail>>(urls.Notes, {
@@ -95,33 +107,19 @@ export function useDocumentActions() {
           body: { id: editingId, content: payload.content },
         });
         setIsNewNote(false);
-        await request(urls.Note(editingId), {
-          method: "PATCH",
-          body: {
-            content: payload.content,
-            preview: payload.preview,
-            todoDiff,
-            labelIds: ids,
-            folderId: fId,
-          },
-        });
-      } else {
-        await request(urls.Note(editingId), {
-          method: "PATCH",
-          body: {
-            content: payload.content,
-            preview: payload.preview,
-            todoDiff,
-            labelIds: ids,
-            folderId: fId,
-          },
-        });
       }
+      await request(urls.Note(editingId), { method: "PATCH", body });
       queryClient.invalidateQueries({ queryKey: ["notes"] });
     } catch (err) {
-      console.error("Auto-save failed:", err);
+      console.error("Save failed:", err);
     }
   };
+
+  const autoSave = (
+    payload: DocumentPayload,
+    overrideLabelIds?: string[],
+    overrideFolderId?: string | null,
+  ) => persist(payload, { overrideLabelIds, overrideFolderId });
 
   const closeEditor = async (finalContent: string) => {
     const id = editingId;
@@ -167,6 +165,13 @@ export function useDocumentActions() {
     }
   };
 
+  const archiveDoc = (payload: DocumentPayload, archived = true) =>
+    persist(payload, { flags: { archived } });
+  const pinnedDoc = (payload: DocumentPayload, pinned = true) =>
+    persist(payload, { flags: { pinned } });
+  const secretDoc = (payload: DocumentPayload, secret = true) =>
+    persist(payload, { flags: { secret } });
+
   const deleteDoc = async () => {
     const id = editingId;
     const wasNew = isNewNote;
@@ -191,6 +196,9 @@ export function useDocumentActions() {
     autoSave,
     closeEditor,
     deleteDoc,
+    archiveDoc,
+    pinnedDoc,
+    secretDoc,
     labelIds,
     setLabelIds,
     folderId,

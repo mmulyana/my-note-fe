@@ -1,4 +1,5 @@
 import { type ReactNode } from "react";
+import { format } from "date-fns";
 import { type TodoPriority } from "@/lib/types";
 import { cn } from "../../lib/utils";
 import { IconX } from "@tabler/icons-react";
@@ -6,10 +7,12 @@ import { IconX } from "@tabler/icons-react";
 interface MetaChange {
   deadline?: string | null;
   priority?: TodoPriority;
+  today?: string | null;
 }
 
 interface TaskMetaPopupProps {
   deadline: string | null;
+  today: string | null;
   priority: TodoPriority;
   onChange: (attrs: MetaChange) => void;
 }
@@ -18,6 +21,7 @@ const PRIORITIES: TodoPriority[] = ["low", "medium", "high"];
 
 export function TaskMetaPopup({
   deadline,
+  today,
   priority,
   onChange,
 }: TaskMetaPopupProps) {
@@ -62,6 +66,32 @@ export function TaskMetaPopup({
             </button>
           )}
         </div>
+      </Field>
+
+      <Field label="Today">
+        {today ? (
+          <div className="flex items-center gap-1.5">
+            <span className="flex-1 text-[12px] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[7px] px-2 py-1.25">
+              {today}
+            </span>
+            <button
+              type="button"
+              className="grid place-items-center w-5.5 h-5.5 flex-none border border-(--line) bg-(--surface-hi) rounded-md text-(--ink-3) text-[13px] cursor-pointer transition-[background,color] duration-140 hover:text-(--ink) hover:bg-(--surface-2)"
+              title="Remove today"
+              onClick={() => onChange({ today: null })}
+            >
+              <IconX size={15} />
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="h-7 rounded-md text-[11px] font-medium border border-(--line) text-(--ink-3) transition-colors hover:text-(--ink) hover:border-(--line-2)"
+            onClick={() => onChange({ today: format(new Date(), "yyyy-MM-dd") })}
+          >
+            Add today
+          </button>
+        )}
       </Field>
     </div>
   );

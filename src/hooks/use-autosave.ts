@@ -55,6 +55,13 @@ export function useAutoSave({ editor, onSave, delay = 1500 }: UseAutoSaveOptions
     setLastSavedAt(new Date());
   }, [editor, buildPayload]);
 
+  // note: build the current payload and cancel any pending debounced save. Used when another action (archive/pin/secret) persists the note itself, so the editor
+  const flushPayload = useCallback((): DocumentPayload | null => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    dirtyRef.current = false;
+    return buildPayload();
+  }, [buildPayload]);
+
   useEffect(() => {
     if (!editor) return;
 
@@ -97,5 +104,5 @@ export function useAutoSave({ editor, onSave, delay = 1500 }: UseAutoSaveOptions
     };
   }, [editor, delay, buildPayload]);
 
-  return { status, lastSavedAt, triggerSave };
+  return { status, lastSavedAt, triggerSave, flushPayload };
 }

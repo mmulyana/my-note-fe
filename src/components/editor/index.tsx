@@ -1,10 +1,16 @@
-import { IconGripVertical } from "@tabler/icons-react";
-import { useCallback, useEffect, useRef } from "react";
+import {
+  IconGripVertical,
+  IconPin,
+  IconMaximize,
+  IconMinimize,
+} from "@tabler/icons-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { EditorContent } from "@tiptap/react";
 import { DragHandle } from "@tiptap/extension-drag-handle-react";
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 import { useAutoSave, type SaveStatus } from "@/hooks/use-autosave";
 import { useDocumentEditor } from "@/hooks/use-editor";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import { LabelPicker } from "@/components/editor/label-picker";
 import { FolderPicker } from "@/components/editor/folder-picker";
 import { InsertImageMenu } from "@/components/editor/insert-image-menu";
@@ -20,11 +26,13 @@ interface EditorProps {
   ) => void;
   onClose: (finalContent: string) => void;
   onDelete: () => void;
-  onArchive?: () => void;
   labelIds?: string[];
   onLabelChange?: (ids: string[]) => void;
   folderId?: string | null;
   onFolderChange?: (id: string | null) => void;
+  onArchive?: (payload: DocumentPayload, value: boolean) => void;
+  onPinned?: (payload: DocumentPayload, value: boolean) => void;
+  onSecret?: (payload: DocumentPayload, value: boolean) => void;
 }
 
 const STATUS_TEXT: Record<SaveStatus, string> = {
@@ -40,14 +48,20 @@ export function Editor({
   onClose,
   onDelete,
   onArchive,
+  onPinned,
+  onSecret,
   labelIds = [],
   onLabelChange,
   folderId = null,
   onFolderChange,
 }: EditorProps) {
   const editor = useDocumentEditor(doc.content);
+  const isMobile = useIsMobile();
+  const [isFull, setIsFull] = useState(false);
+  // mobile is always full screen; desktop follows the manual toggle
+  const full = isFull || isMobile;
 
-  const { status, triggerSave } = useAutoSave({
+  const { status, triggerSave, flushPayload } = useAutoSave({
     editor,
     onSave: async (payload, overrideLabelIds, overrideFolderId) => {
       onAutoSave(payload, overrideLabelIds, overrideFolderId);
@@ -58,8 +72,22 @@ export function Editor({
     onClose(editor ? editor.getHTML() : doc.content);
   }, [editor, onClose, doc.content]);
 
+  const handleArchive = useCallback(() => {
+    const payload = flushPayload();
+    if (payload) onArchive?.(payload, !doc.archived);
+  }, [flushPayload, onArchive, doc]);
+
+  const handlePinned = useCallback(() => {
+    const payload = flushPayload();
+    if (payload) onPinned?.(payload, !doc.pinned);
+  }, [flushPayload, onPinned, doc]);
+
+  const handleSecret = useCallback(() => {
+    const payload = flushPayload();
+    if (payload) onSecret?.(payload, !doc.secret);
+  }, [flushPayload, onSecret, doc]);
+
   // tag the grip with the hovered node's type so CSS can align it per block
-  // (stable ref: DragHandle re-registers its plugin when this prop changes)
   const gripRef = useRef<HTMLDivElement>(null);
   const handleDragNodeChange = useCallback(
     ({ node }: { node: ProseMirrorNode | null }) => {
@@ -71,24 +99,76 @@ export function Editor({
     [],
   );
 
+  const pushedRef = useRef(false);
+  const handleCloseRef = useRef(handleClose);
+  handleCloseRef.current = handleClose;
+  useEffect(() => {
+    if (!pushedRef.current) {
+      window.history.pushState({ noteEditor: true }, "");
+      pushedRef.current = true;
+    }
+    const onPop = () => handleCloseRef.current();
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
+  const requestClose = useCallback(() => {
+    if (pushedRef.current) window.history.back();
+    else handleClose();
+  }, [handleClose]);
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") handleClose();
+      if (e.key === "Escape") requestClose();
     };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
-  }, [handleClose]);
+  }, [requestClose]);
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/55 backdrop-blur-[3px] overflow-y-auto pt-[max(48px,8vh)] px-4 pb-4"
-      onMouseDown={handleClose}
+      className={`fixed inset-0 z-50 flex justify-center bg-black/55 backdrop-blur-[3px] overflow-y-auto ${
+        full ? "items-stretch p-0" : "items-start pt-[max(48px,8vh)] px-4 pb-4"
+      }`}
+      onMouseDown={requestClose}
     >
       <div
-        className="relative w-full max-w-150 rounded-[18px] border border-(--line-2) shadow-(--shadow-lg) bg-(--surface) animate-[modal-in_0.18s_cubic-bezier(0.3,0.7,0.4,1)]"
+        className={`relative bg-(--surface) animate-[modal-in_0.18s_cubic-bezier(0.3,0.7,0.4,1)] ${
+          full
+            ? "w-full min-h-full flex flex-col rounded-none border-0"
+            : "w-full max-w-150 rounded-[18px] border border-(--line-2) shadow-(--shadow-lg)"
+        }`}
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <div className="flex flex-col gap-2.5 px-5 pt-4.5 pb-2">
+        <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
+          {!isMobile && (
+            <button
+              type="button"
+              onClick={() => setIsFull((v) => !v)}
+              className="grid place-items-center w-7 h-7 rounded-lg border border-(--line) bg-(--surface) text-(--ink-3) transition-[background,color,border-color] duration-150 hover:bg-(--surface-hi) hover:text-(--ink) hover:border-(--line-2) outline-none"
+              aria-label={isFull ? "Exit full screen" : "Full screen"}
+              title={isFull ? "Exit full screen" : "Full screen"}
+            >
+              {isFull ? <IconMinimize size={15} /> : <IconMaximize size={15} />}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={handlePinned}
+            className="grid place-items-center w-7 h-7 rounded-lg border border-(--line) bg-(--surface) text-(--ink-3) transition-[background,color,border-color] duration-150 hover:bg-(--surface-hi) hover:text-(--ink) hover:border-(--line-2) outline-none"
+            aria-label="Pin note"
+            title="Pin note"
+          >
+            <IconPin size={15} />
+          </button>
+        </div>
+        <div
+          className={`flex flex-col gap-2.5 ${
+            full
+              ? "flex-1 w-full max-w-150 mx-auto px-5 pt-12 pb-2"
+              : "px-5 pt-4.5 pb-2"
+          }`}
+        >
           <EditorContent editor={editor} />
           {editor && (
             <DragHandle
@@ -109,7 +189,11 @@ export function Editor({
           )}
         </div>
 
-        <footer className="flex items-center gap-2 pt-2 px-3.5 pb-3">
+        <footer
+          className={`flex items-center gap-2 pt-2 pb-3 ${
+            full ? "w-full max-w-150 mx-auto px-5" : "px-3.5"
+          }`}
+        >
           <div className="flex gap-2">
             <InsertImageMenu editor={editor} />
             <LabelPicker
@@ -132,7 +216,12 @@ export function Editor({
               {STATUS_TEXT[status]}
             </span>
 
-            <NoteDropdown onDelete={onDelete} onArchive={onArchive} />
+            <NoteDropdown
+              onDelete={onDelete}
+              onArchive={handleArchive}
+              onSecret={handleSecret}
+              secret={doc.secret}
+            />
           </div>
         </footer>
       </div>

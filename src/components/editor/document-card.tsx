@@ -1,4 +1,9 @@
-import { IconFolderFilled, IconPlus, IconTagFilled } from "@tabler/icons-react";
+import {
+  IconEyeOff,
+  IconFolderFilled,
+  IconPlus,
+  IconTagFilled,
+} from "@tabler/icons-react";
 import { useSetAtom } from "jotai";
 import {
   editingIdAtom,
@@ -42,7 +47,10 @@ export function DocumentCard({ doc }: DocumentCardProps) {
         })),
         folderId: detail.data.folderId ?? null,
         updatedAt: new Date(detail.data.updatedAt).getTime(),
-        folder: detail.data.folder
+        folder: detail.data.folder,
+        secret: detail.data.secret,
+        archived: detail.data.archived,
+        pinned: detail.data.pinned,
       });
       setEditingId(doc.id);
     } catch (err) {
@@ -57,6 +65,12 @@ export function DocumentCard({ doc }: DocumentCardProps) {
       onClick={handleOpen}
       onKeyDown={(e) => e.key === "Enter" && handleOpen()}
     >
+      {doc.secret && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-xs bg-black/5 pointer-events-none">
+          <IconEyeOff size={22} className="text-(--ink-3)" />
+        </div>
+      )}
+
       {doc.preview ? (
         <div
           className="rich-content rich-readonly px-4 pt-3.5 pb-1 max-h-80 overflow-hidden mask-[linear-gradient(to_bottom,black_78%,transparent)] hover:select-none"

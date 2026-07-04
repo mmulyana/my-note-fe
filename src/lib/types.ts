@@ -6,6 +6,7 @@ export type Notes = {
   labels: { id: string; name: string }[];
   updatedAt: string;
   folder?: { id: string, name: string, color: string } | null
+  secret?: boolean;
 };
 
 export type GridView = "grid-view" | "rows-view";
@@ -70,6 +71,12 @@ export interface TodoDiff {
   unchanged: number;
 }
 
+export interface NoteFlags {
+  archived?: boolean;
+  pinned?: boolean;
+  secret?: boolean;
+}
+
 export interface DocumentPayload {
   content: string;
   preview: string;
@@ -86,6 +93,9 @@ export interface DocItem {
   folderId?: string | null;
   folder?: { id: string, name: string, color: string } | null
   updatedAt: number;
+  secret?: boolean;
+  pinned?: boolean
+  archived?: boolean
 }
 
 export interface NoteDetail {
@@ -98,4 +108,7 @@ export interface NoteDetail {
   createdAt: string;
   updatedAt: string;
   folder?: { id: string, name: string, color: string } | null
+  secret?: boolean
+  pinned?: boolean
+  archived?: boolean
 }

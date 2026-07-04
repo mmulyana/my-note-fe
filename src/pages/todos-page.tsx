@@ -8,7 +8,9 @@ import { urls } from "@/lib/urls";
 import { cn, newId } from "@/lib/utils";
 import { TaskCheckbox } from "@/components/editor/task-checkbox";
 
-type UpdatePayload = { id: string } & Partial<Pick<Todo, "text" | "checked" | "deadline" | "priority">>;
+type UpdatePayload = { id: string } & Partial<
+  Pick<Todo, "text" | "checked" | "deadline" | "priority">
+>;
 
 export default function TodosPage() {
   const queryClient = useQueryClient();
@@ -34,8 +36,12 @@ export default function TodosPage() {
   });
 
   const { mutate: createTodo } = useMutation({
-    mutationFn: (body: { id: string; noteId: string; text: string; lastTodoId?: string }) =>
-      request(urls.Todos, { method: "POST", body }),
+    mutationFn: (body: {
+      id: string;
+      noteId: string;
+      text: string;
+      lastTodoId?: string;
+    }) => request(urls.Todos, { method: "POST", body }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos-grouped"] });
       queryClient.invalidateQueries({ queryKey: ["notes"] });
@@ -63,11 +69,20 @@ export default function TodosPage() {
                 {group.title ?? "Untitled"}
               </p>
               {group.todos.map((todo) => (
-                <TodoItem key={todo.id} todo={todo} onUpdate={updateTodo} onDelete={deleteTodo} />
+                <TodoItem
+                  key={todo.id}
+                  todo={todo}
+                  onUpdate={updateTodo}
+                  onDelete={deleteTodo}
+                />
               ))}
               <AddTodoRow
                 noteId={group.noteId}
-                lastTodoId={group.todos.length > 0 ? group.todos[group.todos.length - 1].id : undefined}
+                lastTodoId={
+                  group.todos.length > 0
+                    ? group.todos[group.todos.length - 1].id
+                    : undefined
+                }
                 onCreate={createTodo}
               />
             </div>
@@ -158,7 +173,12 @@ function AddTodoRow({
 }: {
   noteId: string;
   lastTodoId?: string;
-  onCreate: (payload: { id: string; noteId: string; text: string; lastTodoId?: string }) => void;
+  onCreate: (payload: {
+    id: string;
+    noteId: string;
+    text: string;
+    lastTodoId?: string;
+  }) => void;
 }) {
   const [active, setActive] = useState(false);
   const [text, setText] = useState("");

@@ -13,7 +13,7 @@ export default function DocumentEditorPage() {
   const debouncedSearch = useDebouncedValue(search.trim(), 300);
 
   const { data: notesData } = useApi<IApi<Notes[]>>({
-    url: buildQuery(urls.Notes, { q: debouncedSearch }),
+    url: buildQuery(urls.Notes, { q: debouncedSearch, pinned: false }),
     queryKey: debouncedSearch ? ["notes", { search: debouncedSearch }] : ["notes"],
     keepPreviousData: true,
   });

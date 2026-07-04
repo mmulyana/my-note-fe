@@ -1,4 +1,10 @@
-import { IconDots, IconArchive, IconTrash } from "@tabler/icons-react";
+import {
+  IconDots,
+  IconArchive,
+  IconLock,
+  IconTrash,
+  IconLockOpen2,
+} from "@tabler/icons-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,13 +15,17 @@ import {
 interface NoteDropdownProps {
   onDelete?: () => void;
   onArchive?: () => void;
+  onSecret?: () => void;
   className?: string;
+  secret?: boolean;
 }
 
 export function NoteDropdown({
   onDelete,
   onArchive,
+  onSecret,
   className,
+  secret,
 }: NoteDropdownProps) {
   return (
     <DropdownMenu>
@@ -40,6 +50,17 @@ export function NoteDropdown({
         >
           <IconArchive size={14} />
           Archive
+        </DropdownMenuItem>
+
+        <DropdownMenuItem
+          className="flex items-center gap-2.5 text-[13px] rounded-none cursor-pointer dark:text-white/50"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSecret?.();
+          }}
+        >
+          {secret ? <IconLockOpen2 size={14} /> : <IconLock size={14} />}
+          {secret ? "Open" : "Hide"}
         </DropdownMenuItem>
 
         <DropdownMenuItem

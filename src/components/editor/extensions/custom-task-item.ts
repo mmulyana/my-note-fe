@@ -23,11 +23,18 @@ export const CustomTaskItem = TaskItem.extend({
           attrs.deadline ? { "data-deadline": attrs.deadline } : {},
       },
 
-      priority: {
-        default: "medium",
-        parseHTML: (el) => el.getAttribute("data-priority") || "medium",
+      today: {
+        default: null,
+        parseHTML: (el) => el.getAttribute("data-today") || null,
         renderHTML: (attrs) =>
-          attrs.priority && attrs.priority !== "medium"
+          attrs.today ? { "data-today": attrs.today } : {},
+      },
+
+      priority: {
+        default: "low",
+        parseHTML: (el) => el.getAttribute("data-priority") || "low",
+        renderHTML: (attrs) =>
+          attrs.priority && attrs.priority !== "low"
             ? { "data-priority": attrs.priority }
             : {},
       },
