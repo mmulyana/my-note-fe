@@ -3,6 +3,7 @@ import {
   IconPin,
   IconMaximize,
   IconMinimize,
+  IconPinFilled,
 } from "@tabler/icons-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { EditorContent } from "@tiptap/react";
@@ -16,6 +17,14 @@ import { FolderPicker } from "@/components/editor/folder-picker";
 import { InsertImageMenu } from "@/components/editor/insert-image-menu";
 import type { DocItem, DocumentPayload } from "@/lib/types";
 import { NoteDropdown } from "./note-dropdown";
+import { cn } from "@/lib/utils";
+
+const STATUS_TEXT: Record<SaveStatus, string> = {
+  idle: "",
+  dirty: "Editing…",
+  saving: "Saving…",
+  saved: "Saved",
+};
 
 interface EditorProps {
   doc: DocItem;
@@ -34,13 +43,6 @@ interface EditorProps {
   onPinned?: (payload: DocumentPayload, value: boolean) => void;
   onSecret?: (payload: DocumentPayload, value: boolean) => void;
 }
-
-const STATUS_TEXT: Record<SaveStatus, string> = {
-  idle: "",
-  dirty: "Editing…",
-  saving: "Saving…",
-  saved: "Saved",
-};
 
 export function Editor({
   doc,
@@ -87,7 +89,22 @@ export function Editor({
     if (payload) onSecret?.(payload, !doc.secret);
   }, [flushPayload, onSecret, doc]);
 
-  // tag the grip with the hovered node's type so CSS can align it per block
+  const handleLabelChange = useCallback(
+    (ids: string[]) => {
+      onLabelChange?.(ids);
+      triggerSave(ids);
+    },
+    [onLabelChange, triggerSave],
+  );
+
+  const handleFolderChange = useCallback(
+    (id: string | null) => {
+      onFolderChange?.(id);
+      triggerSave(undefined, id);
+    },
+    [onFolderChange, triggerSave],
+  );
+
   const gripRef = useRef<HTMLDivElement>(null);
   const handleDragNodeChange = useCallback(
     ({ node }: { node: ProseMirrorNode | null }) => {
@@ -127,17 +144,19 @@ export function Editor({
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-center bg-black/55 backdrop-blur-[3px] overflow-y-auto ${
-        full ? "items-stretch p-0" : "items-start pt-[max(48px,8vh)] px-4 pb-4"
-      }`}
+      className={cn(
+        "fixed inset-0 z-50 flex justify-center bg-black/55 backdrop-blur-[3px] overflow-y-auto",
+        full ? "items-stretch p-0" : "items-start pt-[max(48px,8vh)] px-4 pb-4",
+      )}
       onMouseDown={requestClose}
     >
       <div
-        className={`relative bg-(--surface) animate-[modal-in_0.18s_cubic-bezier(0.3,0.7,0.4,1)] ${
+        className={cn(
+          "relative bg-(--surface) animate-[modal-in_0.18s_cubic-bezier(0.3,0.7,0.4,1)]",
           full
-            ? "w-full min-h-full flex flex-col rounded-none border-0"
-            : "w-full max-w-150 rounded-[18px] border border-(--line-2) shadow-(--shadow-lg)"
-        }`}
+            ? "w-full h-full flex flex-col overflow-hidden rounded-none border-0"
+            : "w-full max-w-150 rounded-[18px] border border-(--line-2) shadow-(--shadow-lg)",
+        )}
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
@@ -159,69 +178,71 @@ export function Editor({
             aria-label="Pin note"
             title="Pin note"
           >
-            <IconPin size={15} />
+            {doc.pinned ? <IconPinFilled size={15} /> : <IconPin size={15} />}
           </button>
-        </div>
-        <div
-          className={`flex flex-col gap-2.5 ${
-            full
-              ? "flex-1 w-full max-w-150 mx-auto px-5 pt-12 pb-2"
-              : "px-5 pt-4.5 pb-2"
-          }`}
-        >
-          <EditorContent editor={editor} />
-          {editor && (
-            <DragHandle
-              editor={editor}
-              // edge detection deducts 500×depth near a node's top/left edge,
-              // which excludes one-line task items (depth 2) entirely
-              nested={{ edgeDetection: "none" }}
-              onNodeChange={handleDragNodeChange}
-            >
-              <div
-                ref={gripRef}
-                className="drag-handle-btn"
-                title="Drag to move"
-              >
-                <IconGripVertical size={13} />
-              </div>
-            </DragHandle>
-          )}
-        </div>
-
-        <footer
-          className={`flex items-center gap-2 pt-2 pb-3 ${
-            full ? "w-full max-w-150 mx-auto px-5" : "px-3.5"
-          }`}
-        >
-          <div className="flex gap-2">
-            <InsertImageMenu editor={editor} />
-            <LabelPicker
-              selectedIds={labelIds}
-              onChange={(ids) => {
-                onLabelChange?.(ids);
-                triggerSave(ids);
-              }}
-            />
-            <FolderPicker
-              selectedId={folderId}
-              onChange={(id) => {
-                onFolderChange?.(id);
-                triggerSave(undefined, id);
-              }}
-            />
-          </div>
-          <div className="flex items-center gap-3 ml-auto">
-            <span className="text-[11px] text-(--ink-3)">
-              {STATUS_TEXT[status]}
-            </span>
-
+          {isMobile && (
             <NoteDropdown
               onDelete={onDelete}
               onArchive={handleArchive}
               onSecret={handleSecret}
               secret={doc.secret}
             />
+          )}
+        </div>
+        <div className={full ? "flex-1 min-h-0 overflow-y-auto" : ""}>
+          <div
+            className={cn(
+              "flex flex-col gap-2.5",
+              full
+                ? "w-full max-w-150 mx-auto px-5 pt-12 pb-2"
+                : "px-5 pt-4.5 pb-2",
+            )}
+          >
+            <EditorContent editor={editor} />
+            {editor && (
+              <DragHandle
+                editor={editor}
+                // edge detection deducts 500×depth near a node's top/left edge,
+                // which excludes one-line task items (depth 2) entirely
+                nested={{ edgeDetection: "none" }}
+                onNodeChange={handleDragNodeChange}
+              >
+                <div
+                  ref={gripRef}
+                  className="drag-handle-btn"
+                  title="Drag to move"
+                >
+                  <IconGripVertical size={13} />
+                </div>
+              </DragHandle>
+            )}
+          </div>
+        </div>
+
+        <footer
+          className={cn(
+            "flex items-center gap-2 pt-2 pb-3",
+            full
+              ? "shrink-0 w-full max-w-150 mx-auto px-5 border-t border-(--line-2)"
+              : "px-3.5",
+          )}
+        >
+          <InsertImageMenu editor={editor} />
+          <LabelPicker selectedIds={labelIds} onChange={handleLabelChange} />
+          <FolderPicker selectedId={folderId} onChange={handleFolderChange} />
+          <div className="flex items-center gap-3 ml-auto">
+            <span className="text-[11px] text-(--ink-3)">
+              {STATUS_TEXT[status]}
+            </span>
+
+            {!isMobile && (
+              <NoteDropdown
+                onDelete={onDelete}
+                onArchive={handleArchive}
+                onSecret={handleSecret}
+                secret={doc.secret}
+              />
+            )}
           </div>
         </footer>
       </div>

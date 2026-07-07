@@ -1,8 +1,8 @@
 import {
-  IconEyeOff,
   IconFolderFilled,
-  IconPlus,
   IconTagFilled,
+  IconLock,
+  IconPlus,
 } from "@tabler/icons-react";
 import { useSetAtom } from "jotai";
 import {
@@ -14,8 +14,8 @@ import {
 } from "@/store/document";
 import type { DocItem, IApi, NoteDetail } from "@/lib/types";
 import { request } from "@/lib/api-client";
-import { urls } from "@/lib/urls";
 import { relative } from "@/lib/utils";
+import { urls } from "@/lib/urls";
 
 interface DocumentCardProps {
   doc: DocItem;
@@ -67,7 +67,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
     >
       {doc.secret && (
         <div className="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-xs bg-black/5 pointer-events-none">
-          <IconEyeOff size={22} className="text-(--ink-3)" />
+          <IconLock size={22} className="text-(--ink-3)" />
         </div>
       )}
 

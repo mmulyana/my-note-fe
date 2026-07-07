@@ -24,9 +24,7 @@ export default function EditorWrapper() {
   const editingDoc = useAtomValue(editingDocAtom);
   const isNewNote = useAtomValue(isNewNoteAtom);
 
-  // Read label name from route param /label/:name
   const { name: labelName } = useParams<{ name: string }>();
-
   const { data: labelsData } = useApi<IApi<{ id: string; name: string }[]>>({
     url: urls.Labels,
     queryKey: ["labels"],
@@ -38,7 +36,6 @@ export default function EditorWrapper() {
     return match?.id;
   }, [labelName, labelsData]);
 
-  // Pre-fill labelIds when opening a new note on a label page
   useEffect(() => {
     if (isNewNote && labelIdFromParam && labelIds.length === 0) {
       setLabelIds([labelIdFromParam]);
