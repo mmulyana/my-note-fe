@@ -288,10 +288,18 @@ textarea {
 /* ── rich text (TipTap) — restore typography stripped by Tailwind preflight ── */
 .rich-content {
   outline: none;
-  font-size: 14px;
+  font-size: 14px; /* editor text size — desktop/default */
   line-height: 1.55;
   color: var(--ink);
   word-break: break-word;
+}
+/* editor text size — mobile only. Adjust this px value to resize editor text
+   on mobile without touching desktop. Breakpoint matches useIsMobile()
+   in use-is-mobile.ts (max-width: 767px) — keep both in sync. */
+@media (max-width: 767px) {
+  .rich-content {
+    font-size: 16px;
+  }
 }
 .rich-content:focus {
   outline: none;
