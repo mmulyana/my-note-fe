@@ -6,10 +6,10 @@ import { request } from "@/lib/api-client";
 import type { IApi, Todo, TodoGroup } from "@/lib/types";
 import { urls } from "@/lib/urls";
 import { cn, newId } from "@/lib/utils";
-import { TaskCheckbox } from "@/components/editor/task-checkbox";
+import { TaskCheckbox, TaskMeta } from "@/components/editor/task-checkbox";
 
 type UpdatePayload = { id: string } & Partial<
-  Pick<Todo, "text" | "checked" | "deadline" | "priority">
+  Pick<Todo, "text" | "checked" | "deadline" | "priority" | "today">
 >;
 
 export default function TodosPage() {
@@ -156,6 +156,13 @@ function TodoItem({
           {todo.text}
         </span>
       )}
+      <TaskMeta
+        checked={todo.checked}
+        priority={todo.priority}
+        deadline={todo.deadline}
+        today={todo.today}
+        onChange={(attrs) => onUpdate({ id: todo.id, ...attrs })}
+      />
       <button
         onClick={() => onDelete(todo.id)}
         className="opacity-0 group-hover:opacity-100 flex-none grid place-items-center w-6 h-6 rounded-md text-ink-3 hover:text-red-400 hover:bg-(--surface-3) transition-[opacity,color,background] duration-120"

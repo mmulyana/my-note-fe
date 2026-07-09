@@ -45,7 +45,7 @@ export function TaskItemView({ node, updateAttributes }: ReactNodeViewProps) {
       data-today={today ?? undefined}
     >
       <div className="flex justify-between items-center">
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center flex-1 min-w-0">
           <label
             contentEditable={false}
             className="flex-none cursor-pointer select-none"
@@ -92,7 +92,7 @@ export function TaskItemView({ node, updateAttributes }: ReactNodeViewProps) {
             </span>
           </label>
 
-          <NodeViewContent as="div" />
+          <NodeViewContent as="div" className="flex-1 min-w-0" />
         </div>
 
         <span

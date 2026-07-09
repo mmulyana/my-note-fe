@@ -28,7 +28,8 @@ export interface Todo {
   noteId: string
   text: string
   checked: boolean
-  deadline: string // "2026-06-26";
+  deadline: string | null // "2026-06-26";
+  today: string | null
   priority: TodoPriority
   createdAt: string
   updatedAt: string
