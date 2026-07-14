@@ -41,6 +41,14 @@ export interface TodoGroup {
   todos: Todo[];
 }
 
+export interface TodoTodayGroups {
+  today: Todo[];
+  overdue: Todo[];
+  completed: Todo[];
+}
+
+export type TodoView = "all" | "today";
+
 export type NoteListFields = {
   preview: string;
   todoSummary: { total: number; done: number };

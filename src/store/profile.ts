@@ -2,6 +2,8 @@ import { atom } from "jotai";
 
 export interface Profile {
   email: string;
+  username?: string | null;
+  photo?: string | null;
 }
 
 const STORAGE_KEY = "mynote-profile";
@@ -17,7 +19,6 @@ function loadProfile(): Profile | null {
 
 const baseAtom = atom<Profile | null>(loadProfile());
 
-/** Profile atom: persisted to localStorage, cleared on logout */
 export const profileAtom = atom(
   (get) => get(baseAtom),
   (_get, set, value: Profile | null) => {

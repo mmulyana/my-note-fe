@@ -339,6 +339,11 @@ textarea {
   list-style: none;
   padding-left: 0;
 }
+/* consecutive single-item task lists should read as one group — same gap
+   as li-to-li inside a shared ul, not the wider block-to-block spacing */
+.rich-content ul[data-type="taskList"] + ul[data-type="taskList"] {
+  margin-top: -0.15em;
+}
 .rich-content ul[data-type="taskList"] li {
   display: flex;
   align-items: flex-start;

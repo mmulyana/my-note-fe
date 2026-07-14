@@ -36,6 +36,11 @@ export function TaskItemView({ node, updateAttributes }: ReactNodeViewProps) {
   const valid = parsed != null && isValid(parsed);
   const overdue = valid && !checked && isBefore(parsed, startOfDay(new Date()));
 
+  const todayParsed = today ? parseISO(today) : null;
+  const todayValid = todayParsed != null && isValid(todayParsed);
+  const todayOverdue =
+    todayValid && !checked && isBefore(todayParsed, startOfDay(new Date()));
+
   return (
     <NodeViewWrapper
       as="li"
@@ -129,7 +134,11 @@ export function TaskItemView({ node, updateAttributes }: ReactNodeViewProps) {
               {deadline}
             </span>
           )}
-          {today && <span className={cn(chipBase, chipToday)}>Today</span>}
+          {today && (
+            <span className={cn(chipBase, todayOverdue ? chipHigh : chipToday)}>
+              {todayOverdue ? "Overdue" : "Today"}
+            </span>
+          )}
 
           <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger asChild>

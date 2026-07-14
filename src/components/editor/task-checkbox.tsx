@@ -26,7 +26,7 @@ export function TaskCheckbox({ checked, onChange }: TaskCheckboxProps) {
       />
       <span
         className={cn(
-          "flex items-center justify-center w-3.75 h-3.75 rounded border-[1.5px] transition-[background-color,border-color] duration-200",
+          "flex items-center justify-center w-5 h-5 rounded border-[1.5px] transition-[background-color,border-color] duration-200",
           checked ? "bg-blue-500 border-blue-500" : "bg-gray-200 border-gray-200",
         )}
       >
@@ -36,7 +36,7 @@ export function TaskCheckbox({ checked, onChange }: TaskCheckboxProps) {
           strokeWidth="1.9"
           strokeLinecap="round"
           strokeLinejoin="round"
-          style={{ width: 9, height: 7 }}
+          style={{ width: 12, height: 10 }}
         >
           <path
             d="M 1 3.5 L 3.8 6.3 L 9 1"
@@ -72,6 +72,7 @@ interface TaskMetaProps {
   deadline: string | null;
   today: string | null;
   onChange: (attrs: TaskMetaChange) => void;
+  onDelete?: () => void;
 }
 
 export function TaskMeta({
@@ -80,12 +81,18 @@ export function TaskMeta({
   deadline,
   today,
   onChange,
+  onDelete,
 }: TaskMetaProps) {
   const [open, setOpen] = useState(false);
 
   const parsed = deadline ? parseISO(deadline) : null;
   const valid = parsed != null && isValid(parsed);
   const overdue = valid && !checked && isBefore(parsed, startOfDay(new Date()));
+
+  const todayParsed = today ? parseISO(today) : null;
+  const todayValid = todayParsed != null && isValid(todayParsed);
+  const todayOverdue =
+    todayValid && !checked && isBefore(todayParsed, startOfDay(new Date()));
 
   return (
     <span className="flex-none inline-flex items-center gap-1">
@@ -117,7 +124,11 @@ export function TaskMeta({
       {deadline && (
         <span className={cn(chipBase, overdue && chipHigh)}>{deadline}</span>
       )}
-      {today && <span className={cn(chipBase, chipToday)}>Today</span>}
+      {today && (
+        <span className={cn(chipBase, todayOverdue ? chipHigh : chipToday)}>
+          {todayOverdue ? "Overdue" : "Today"}
+        </span>
+      )}
 
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
@@ -144,6 +155,14 @@ export function TaskMeta({
                 deadline: attrs.deadline,
                 today: attrs.today,
               })
+            }
+            onDelete={
+              onDelete
+                ? () => {
+                    setOpen(false);
+                    onDelete();
+                  }
+                : undefined
             }
           />
         </DropdownMenuContent>

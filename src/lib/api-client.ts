@@ -39,8 +39,9 @@ export async function request<T>(url: string, opts: RequestOptions = {}): Promis
   const { method = 'GET', body, params, headers, signal } = opts;
 
   const token = getToken();
+  const isFormData = body instanceof FormData;
   const finalHeaders: Record<string, string> = {
-    ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
+    ...(body !== undefined && !isFormData ? { 'Content-Type': 'application/json' } : {}),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...headers,
   };
@@ -49,7 +50,7 @@ export async function request<T>(url: string, opts: RequestOptions = {}): Promis
     method,
     signal,
     headers: finalHeaders,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    body: body === undefined ? undefined : isFormData ? (body as FormData) : JSON.stringify(body),
   });
 
   const isJson = res.headers.get('content-type')?.includes('application/json');
