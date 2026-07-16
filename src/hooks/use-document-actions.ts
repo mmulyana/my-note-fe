@@ -69,6 +69,10 @@ export function useDocumentActions() {
     if (isNewNote && !hasChanged && isMetadataOnlyChange) return;
     setHasChanged(true);
 
+    if (flags) {
+      setEditingDoc((prev) => (prev ? { ...prev, ...flags } : prev));
+    }
+
     const ids = overrideLabelIds ?? labelIds;
     const fId = overrideFolderId !== undefined ? overrideFolderId : folderId;
     const diff = payload.todoDiff;

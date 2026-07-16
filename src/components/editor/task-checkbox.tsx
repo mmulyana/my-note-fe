@@ -26,7 +26,7 @@ export function TaskCheckbox({ checked, onChange }: TaskCheckboxProps) {
       />
       <span
         className={cn(
-          "flex items-center justify-center w-5 h-5 rounded border-[1.5px] transition-[background-color,border-color] duration-200",
+          "flex items-center justify-center w-touch-checkbox h-touch-checkbox rounded border-[1.5px] transition-[background-color,border-color] duration-200",
           checked ? "bg-blue-500 border-blue-500" : "bg-gray-200 border-gray-200",
         )}
       >
@@ -36,7 +36,10 @@ export function TaskCheckbox({ checked, onChange }: TaskCheckboxProps) {
           strokeWidth="1.9"
           strokeLinecap="round"
           strokeLinejoin="round"
-          style={{ width: 12, height: 10 }}
+          style={{
+            width: "calc(12px * var(--touch-scale))",
+            height: "calc(10px * var(--touch-scale))",
+          }}
         >
           <path
             d="M 1 3.5 L 3.8 6.3 L 9 1"

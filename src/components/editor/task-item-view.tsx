@@ -69,7 +69,7 @@ export function TaskItemView({ node, updateAttributes }: ReactNodeViewProps) {
             />
             <span
               className={cn(
-                "flex items-center justify-center w-3.75 h-3.75 rounded border-[1.5px] transition-[background-color,border-color] duration-200",
+                "flex items-center justify-center w-touch-checkbox-editor h-touch-checkbox-editor rounded border-[1.5px] transition-[background-color,border-color] duration-200",
                 checked
                   ? "bg-blue-500 border-blue-500"
                   : "bg-gray-200 border-gray-200",
@@ -81,7 +81,10 @@ export function TaskItemView({ node, updateAttributes }: ReactNodeViewProps) {
                 strokeWidth="1.9"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                style={{ width: 9, height: 7 }}
+                style={{
+                  width: "calc(9px * var(--touch-scale))",
+                  height: "calc(7px * var(--touch-scale))",
+                }}
               >
                 <path
                   d="M 1 3.5 L 3.8 6.3 L 9 1"

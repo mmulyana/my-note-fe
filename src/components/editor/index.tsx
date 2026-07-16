@@ -152,10 +152,10 @@ export function Editor({
     >
       <div
         className={cn(
-          "relative bg-(--surface) animate-[modal-in_0.18s_cubic-bezier(0.3,0.7,0.4,1)]",
+          "relative bg-surface animate-[modal-in_0.18s_cubic-bezier(0.3,0.7,0.4,1)]",
           full
             ? "w-full h-full flex flex-col overflow-hidden rounded-none border-0"
-            : "w-full max-w-150 rounded-[18px] border border-(--line-2) shadow-(--shadow-lg)",
+            : "w-full max-w-180 rounded-[18px] border border-line-2 shadow-(--shadow-lg)",
         )}
         onMouseDown={(e) => e.stopPropagation()}
       >
@@ -164,7 +164,7 @@ export function Editor({
             <button
               type="button"
               onClick={() => setIsFull((v) => !v)}
-              className="grid place-items-center w-7 h-7 rounded-lg border border-(--line) bg-(--surface) text-(--ink-3) transition-[background,color,border-color] duration-150 hover:bg-(--surface-hi) hover:text-(--ink) hover:border-(--line-2) outline-none"
+              className="grid place-items-center w-7 h-7 rounded-lg border border-line bg-surface text-ink-3 transition-[background,color,border-color] duration-150 hover:bg-surface-hi hover:text-ink hover:border-line-2 outline-none"
               aria-label={isFull ? "Exit full screen" : "Full screen"}
               title={isFull ? "Exit full screen" : "Full screen"}
             >
@@ -174,7 +174,7 @@ export function Editor({
           <button
             type="button"
             onClick={handlePinned}
-            className="grid place-items-center w-7 h-7 rounded-lg border border-(--line) bg-(--surface) text-(--ink-3) transition-[background,color,border-color] duration-150 hover:bg-(--surface-hi) hover:text-(--ink) hover:border-(--line-2) outline-none"
+            className="grid place-items-center w-7 h-7 rounded-lg border border-line bg-surface text-ink-3 transition-[background,color,border-color] duration-150 hover:bg-surface-hi hover:text-ink hover:border-line-2 outline-none"
             aria-label="Pin note"
             title="Pin note"
           >
@@ -194,12 +194,13 @@ export function Editor({
             className={cn(
               "flex flex-col gap-2.5",
               full
-                ? "w-full max-w-150 mx-auto px-5 pt-12 pb-2"
+                ? "w-full max-w-180 mx-auto px-5 pt-12 pb-2"
                 : "px-5 pt-4.5 pb-2",
             )}
           >
             <EditorContent editor={editor} />
-            {editor && (
+            {/* note: disabled on mobile*/}
+            {editor && !isMobile && (
               <DragHandle
                 editor={editor}
                 // edge detection deducts 500×depth near a node's top/left edge,
@@ -223,7 +224,7 @@ export function Editor({
           className={cn(
             "flex items-center gap-2 pt-2 pb-3",
             full
-              ? "shrink-0 w-full max-w-150 mx-auto px-5 border-t border-(--line-2)"
+              ? "shrink-0 w-full max-w-180 mx-auto px-5"
               : "px-3.5",
           )}
         >
@@ -231,7 +232,7 @@ export function Editor({
           <LabelPicker selectedIds={labelIds} onChange={handleLabelChange} />
           <FolderPicker selectedId={folderId} onChange={handleFolderChange} />
           <div className="flex items-center gap-3 ml-auto">
-            <span className="text-[11px] text-(--ink-3)">
+            <span className="text-[11px] text-ink-3">
               {STATUS_TEXT[status]}
             </span>
 

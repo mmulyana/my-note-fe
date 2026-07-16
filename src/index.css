@@ -34,6 +34,7 @@
   --gap: 14px;
   --pad-card: 16px;
   --col: 248px;
+  --touch-scale: 1;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -46,7 +47,6 @@
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
@@ -148,14 +148,9 @@ textarea {
   height: 100%;
 }
 
-/* Masonry (Kevin Powell's progressive-enhancement pattern).
-   Base: CSS multi-column — real masonry packing that fills the full width in
-   every browser today, including Chrome. Column COUNT is stepped by width so
-   each column stays near --col (248px). Enhancement: native grid masonry via
-   @supports for true horizontal-first ordering in Firefox/Safari. */
 .masonry.grid-view {
   --masonry-gap: 16px;
-  --columns: 1;
+  --columns: 2;
   columns: var(--columns);
   gap: var(--masonry-gap);
 }
@@ -297,8 +292,16 @@ textarea {
    on mobile without touching desktop. Breakpoint matches useIsMobile()
    in use-is-mobile.ts (max-width: 767px) — keep both in sync. */
 @media (max-width: 767px) {
-  .rich-content {
+  .rich-content:not(.rich-readonly) {
     font-size: 16px;
+  }
+}
+/* touch-target multiplier — mobile only. Bump this one number to resize task
+   checkboxes and picker trigger buttons together. Breakpoint matches
+   useIsMobile() in use-is-mobile.ts (max-width: 767px) — keep both in sync. */
+@media (max-width: 767px) {
+  :root {
+    --touch-scale: 1.15;
   }
 }
 .rich-content:focus {
@@ -658,6 +661,14 @@ textarea {
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--ink);
   --color-accent: var(--surface-hi);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-hi: var(--surface-hi);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
   --color-muted-foreground: var(--muted-foreground);
   --color-muted: var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -677,6 +688,13 @@ textarea {
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* touch-target sizes — scale with --touch-scale (1 on desktop, 1.15 on
+     mobile, see @media above). Generates w-/h-/px-/etc. utilities. */
+  --spacing-touch-checkbox-editor: calc(0.9375rem * var(--touch-scale));
+  --spacing-touch-checkbox: calc(1.25rem * var(--touch-scale));
+  --spacing-touch-picker-h: calc(1.75rem * var(--touch-scale));
+  --spacing-touch-picker-px: calc(0.625rem * var(--touch-scale));
 }
 
 .dark {

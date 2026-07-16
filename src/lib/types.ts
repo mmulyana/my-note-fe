@@ -23,6 +23,13 @@ export interface AuthData {
   email: string;
 }
 
+export interface ProfileResponse {
+  id: string;
+  email: string;
+  username: string | null;
+  photo: string | null;
+}
+
 export interface Todo {
   id: string
   noteId: string

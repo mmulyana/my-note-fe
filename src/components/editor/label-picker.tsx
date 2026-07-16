@@ -83,7 +83,7 @@ export function LabelPicker({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="inline-flex h-7 items-center justify-center gap-1 rounded-[10px] border border-(--line) bg-(--surface) hover:bg-accent text-(--ink-3) transition-[background,color,border-color] duration-150 hover:bg-surface-hi hover:text-ink hover:border-(--line-2) outline-none disabled:opacity-40 disabled:pointer-events-none px-2.5 text-xs hover:cursor-pointer"
+        className="inline-flex h-touch-picker-h items-center justify-center gap-1 rounded-[10px] border border-(--line) bg-(--surface) hover:bg-accent text-(--ink-3) transition-[background,color,border-color] duration-150 hover:bg-surface-hi hover:text-ink hover:border-(--line-2) outline-none disabled:opacity-40 disabled:pointer-events-none px-touch-picker-px text-xs hover:cursor-pointer"
         onClick={(e) => e.stopPropagation()}
       >
         <IconPlus size={16} className="shrink-0" />

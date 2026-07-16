@@ -3,14 +3,14 @@ import { useApi } from "@/hooks/use-api";
 import { urls } from "@/lib/urls";
 import type { IApi } from "@/lib/types";
 import {
-  DropdownMenu,
   DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
+  DropdownMenuContent,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSub,
+  DropdownMenu,
 } from "@/components/ui/dropdown-menu";
 
 interface Folder {
@@ -75,7 +75,7 @@ export function FolderPicker({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="inline-flex items-center h-7 justify-center gap-1 rounded-[10px] border border-(--line) bg-(--surface) hover:bg-accent text-(--ink-3) transition-[background,color,border-color] duration-150 hover:bg-surface-hi hover:text-ink hover:border-(--line-2) outline-none disabled:opacity-40 disabled:pointer-events-none px-2.5 text-xs hover:cursor-pointer"
+        className="inline-flex items-center h-touch-picker-h justify-center gap-1 rounded-[10px] border border-line bg-surface hover:bg-accent text-ink-3 transition-[background,color,border-color] duration-150 hover:bg-surface-hi hover:text-ink hover:border-line-2 outline-none disabled:opacity-40 disabled:pointer-events-none px-touch-picker-px text-xs hover:cursor-pointer"
         onClick={(e) => e.stopPropagation()}
       >
         <IconFolderFilled size={16} className="shrink-0" />
