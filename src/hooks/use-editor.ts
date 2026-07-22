@@ -28,7 +28,15 @@ export function useDocumentEditor(initialContent: string) {
     immediatelyRender: false,
     editorProps: {
       // horizontal padding comes from the modal (.modal-pad); keep a min height
-      attributes: { class: "rich-content min-h-[240px]" },
+      attributes: {
+        class: "rich-content min-h-[240px]",
+        // no red squiggles from the browser's spell/grammar checker,
+        // nor from Grammarly-style extensions that ignore spellcheck
+        spellcheck: "false",
+        "data-gramm": "false",
+        "data-gramm_editor": "false",
+        "data-enable-grammarly": "false",
+      },
     },
   });
 }
