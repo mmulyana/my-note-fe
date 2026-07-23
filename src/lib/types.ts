@@ -5,7 +5,7 @@ export type Notes = {
   todoSummary: { total: number; done: number };
   labels: { id: string; name: string }[];
   updatedAt: string;
-  folder?: { id: string, name: string, color: string } | null
+  folder?: { id: string, name: string, color: string, secret: boolean } | null
   secret?: boolean;
 };
 
