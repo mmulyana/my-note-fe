@@ -9,6 +9,7 @@ import {
   // IconPencil,
   IconCheck,
   IconX,
+  IconPencil,
 } from "@tabler/icons-react";
 import {
   DropdownMenu,
@@ -98,11 +99,11 @@ export default function FolderPage() {
                 if (e.key === "Enter") commitRename();
                 if (e.key === "Escape") setIsEditing(false);
               }}
-              className="flex-1 min-w-0 text-lg font-semibold text-(--ink) border-0 bg-transparent outline-none p-0 font-[inherit]"
+              className="flex-1 min-w-0 text-lg font-semibold text-ink border-0 bg-transparent outline-none p-0 font-[inherit]"
             />
             <button
               type="button"
-              className="w-7 h-7 grid place-items-center rounded-lg border border-(--line) bg-(--surface) text-(--ink-3) hover:bg-(--surface-hi) hover:text-(--ink) cursor-pointer"
+              className="w-7 h-7 grid place-items-center rounded-lg border border-line bg-surface text-ink-3 hover:bg-surface-hi hover:text-ink cursor-pointer"
               title="Save"
               onClick={commitRename}
             >
@@ -110,7 +111,7 @@ export default function FolderPage() {
             </button>
             <button
               type="button"
-              className="w-7 h-7 grid place-items-center rounded-lg border border-(--line) bg-(--surface) text-(--ink-3) hover:bg-(--surface-hi) hover:text-(--ink) cursor-pointer"
+              className="w-7 h-7 grid place-items-center rounded-lg border border-line bg-surface text-ink-3 hover:bg-surface-hi hover:text-ink cursor-pointer"
               title="Cancel"
               onClick={() => setIsEditing(false)}
             >
@@ -119,12 +120,12 @@ export default function FolderPage() {
           </>
         ) : (
           <>
-            <h1 className="text-lg font-semibold text-(--ink) flex-1 min-w-0 truncate">
+            <h1 className="text-lg font-semibold text-ink flex-1 min-w-0 truncate">
               {folder?.name}
             </h1>
             <button
               type="button"
-              className="w-7 h-7 grid place-items-center rounded-lg border border-(--line) bg-(--surface) text-(--ink-3) hover:bg-(--surface-hi) hover:text-(--ink) cursor-pointer"
+              className="w-7 h-7 grid place-items-center rounded-lg border border-line bg-surface text-ink-3 hover:bg-surface-hi hover:text-ink cursor-pointer"
               title="Rename"
               onClick={startRename}
             >
@@ -134,14 +135,14 @@ export default function FolderPage() {
         )}
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="grid place-items-center w-7 h-7 rounded-lg border border-(--line) bg-(--surface) text-(--ink-3) transition-[background,color,border-color] duration-150 hover:bg-(--surface-hi) hover:text-(--ink) hover:border-(--line-2) outline-none"
+            className="grid place-items-center w-7 h-7 rounded-lg border border-line bg-surface text-ink-3 transition-[background,color,border-color] duration-150 hover:bg-surface-hi hover:text-ink hover:border-line-2 outline-none"
             aria-label="Opsi folder"
           >
             <IconDots size={15} />
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-40 bg-(--surface) border-(--line-2) rounded-md shadow-(--shadow-lg) py-1 px-0"
+            className="w-40 bg-surface border-line-2 rounded-md shadow-(--shadow-lg) py-1 px-0"
           >
             <DropdownMenuItem
               className="flex items-center gap-2.5 text-[13px] rounded-none cursor-pointer dark:text-white/50"
@@ -161,11 +162,11 @@ export default function FolderPage() {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-2 py-22.5 text-center text-(--ink-3)">
-          <div className="grid place-items-center w-19.5 h-19.5 rounded-full bg-(--surface-2) border border-(--line) mb-1.5">
+        <div className="flex flex-col items-center gap-2 py-22.5 text-center text-ink-3">
+          <div className="grid place-items-center w-19.5 h-19.5 rounded-full bg-surface-2 border border-line mb-1.5">
             <IconFileText size={30} />
           </div>
-          <div className="text-[17px] font-semibold text-(--ink-2)">
+          <div className="text-[17px] font-semibold text-ink-2">
             No documents
           </div>
           <div className="text-sm max-w-75">

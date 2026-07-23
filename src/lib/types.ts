@@ -115,7 +115,7 @@ export interface DocItem {
   todoSummary: { total: number; done: number };
   labels: { id: string; name: string }[];
   folderId?: string | null;
-  folder?: { id: string, name: string, color: string } | null
+  folder?: { id: string, name: string, color: string, secret: boolean } | null
   updatedAt: number;
   secret?: boolean;
   pinned?: boolean
@@ -131,7 +131,7 @@ export interface NoteDetail {
   folderId?: string | null;
   createdAt: string;
   updatedAt: string;
-  folder?: { id: string, name: string, color: string } | null
+  folder?: { id: string, name: string, color: string, secret: boolean } | null
   secret?: boolean
   pinned?: boolean
   archived?: boolean

@@ -61,14 +61,14 @@ export function DocumentCard({ doc }: DocumentCardProps) {
 
   return (
     <article
-      className="group relative cursor-pointer rounded-[14px] border border-(--line) bg-(--surface) text-(--ink) overflow-hidden outline-none transition-[box-shadow,border-color,transform] duration-150 hover:shadow-(--shadow) hover:border-(--line-2) focus-visible:shadow-[0_0_0_2px_var(--accent)] "
+      className="group relative cursor-pointer rounded-[14px] border border-line bg-surface text-ink overflow-hidden outline-none transition-[box-shadow,border-color,transform] duration-150 hover:shadow-(--shadow) hover:border-line-2 focus-visible:shadow-[0_0_0_2px_var(--accent)] "
       tabIndex={0}
       onClick={handleOpen}
       onKeyDown={(e) => e.key === "Enter" && handleOpen()}
     >
       {isSecret && (
         <div className="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-xs bg-black/5 pointer-events-none">
-          <IconLock size={22} className="text-(--ink-3)" />
+          <IconLock size={22} className="text-ink-3" />
         </div>
       )}
 
@@ -78,15 +78,15 @@ export function DocumentCard({ doc }: DocumentCardProps) {
           dangerouslySetInnerHTML={{ __html: doc.preview }}
         />
       ) : (
-        <div className="px-4 pt-3.5 pb-2 text-[13px] italic text-(--ink-3)">
+        <div className="px-4 pt-3.5 pb-2 text-[13px] italic text-ink-4">
           Catatan kosong
         </div>
       )}
 
-      <div className="gap-2 px-4 pb-2.5 pt-1.5 text-xs text-(--ink-3)">
+      <div className="gap-2 px-4 pb-2.5 pt-1.5 text-xs text-ink-4">
         <div className="flex gap-1 items-center flex-wrap">
           {total > 0 && (
-            <div className="border border-(--line) rounded-full flex items-center h-5 pl-0.5 pr-1.5">
+            <div className="border border-line rounded-full flex items-center h-5 pl-0.5 pr-1.5">
               <span className="inline-flex items-center gap-1">
                 <svg width="14" height="14" viewBox="0 0 14 14">
                   <circle
@@ -121,14 +121,14 @@ export function DocumentCard({ doc }: DocumentCardProps) {
           {doc.labels.length > 0 && (
             <div className="flex gap-1 items-center text-sm">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-(--ink-2) border border-(--line)">
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-ink-2 border border-line">
                   <IconTagFilled size={12} />
                   {doc.labels?.[0].name}
                 </span>
               </div>
               {doc.labels.length > 1 && (
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-(--ink-2) border border-(--line)">
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-ink-2 border border-line">
                     <IconTagFilled size={12} />
                     <span className="flex items-center">
                       <IconPlus size={9} />
@@ -141,7 +141,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
           )}
           {doc.folder && (
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-nowrap inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-(--ink-2) border border-(--line)">
+              <span className="text-nowrap inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-ink-2 border border-line">
                 <IconFolderFilled size={12} />
                 {doc.folder.name}
               </span>
