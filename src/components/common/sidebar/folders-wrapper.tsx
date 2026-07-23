@@ -116,7 +116,7 @@ function ListItem({ data, open, onRemove, onEdit }: ListProps) {
     >
       {!isEditing ? (
         <Link
-          to={`/folder/${encodeURIComponent(data.name)}`}
+          to={`/folder/${data.id}`}
           className="flex items-center gap-2 flex-1 min-w-0 h-full"
         >
           <div className="w-5 h-5 flex justify-center items-center">

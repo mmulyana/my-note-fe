@@ -21,7 +21,7 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <HomePage /> },
           { path: "label/:name", element: <LabelPage /> },
-          { path: "folder/:name", element: <FolderPage /> },
+          { path: "folder/:id", element: <FolderPage /> },
           { path: "todos", element: <TodosPage /> },
           { path: "trash", element: <TrashPage /> },
         ],

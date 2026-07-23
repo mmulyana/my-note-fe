@@ -9,6 +9,13 @@ export type Notes = {
   secret?: boolean;
 };
 
+export type Folder = {
+  id: string;
+  name: string;
+  color?: string;
+  secret?: boolean;
+};
+
 export type GridView = "grid-view" | "rows-view";
 export type Theme = "dark" | "light";
 
