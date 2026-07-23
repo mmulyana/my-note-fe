@@ -29,6 +29,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
   const setEditingFolderId = useSetAtom(editingFolderIdAtom);
 
   const { total, done } = doc.todoSummary;
+  const isSecret = doc.folder?.secret || doc.secret;
 
   const handleOpen = async () => {
     try {
@@ -65,7 +66,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
       onClick={handleOpen}
       onKeyDown={(e) => e.key === "Enter" && handleOpen()}
     >
-      {doc.secret && (
+      {isSecret && (
         <div className="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-xs bg-black/5 pointer-events-none">
           <IconLock size={22} className="text-(--ink-3)" />
         </div>
