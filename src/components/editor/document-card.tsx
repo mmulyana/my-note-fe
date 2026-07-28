@@ -80,7 +80,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
         <div>
           {doc.folder && (
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-nowrap inline-flex items-center gap-1 p-0.5 rounded-[10px] text-xs text-ink-2">
+              <span className="text-nowrap inline-flex items-center gap-1 rounded-[10px] text-xs text-ink-2">
                 <IconFolderFilled size={12} />
                 {doc.folder.name}
               </span>
