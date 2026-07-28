@@ -3,6 +3,7 @@ import {
   IconTagFilled,
   IconLock,
   IconPlus,
+  IconCheck,
 } from "@tabler/icons-react";
 import { useSetAtom } from "jotai";
 import {
@@ -75,7 +76,17 @@ export function DocumentCard({ doc }: DocumentCardProps) {
         </div>
       )}
 
-      <div className="pt-3 px-3 text-xs text-ink-2/50">
+      <div className="pt-3 px-3 text-xs text-ink-2/50 flex justify-between items-center">
+        <div>
+          {doc.folder && (
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-nowrap inline-flex items-center gap-1 p-0.5 rounded-[10px] text-xs text-ink-2">
+                <IconFolderFilled size={12} />
+                {doc.folder.name}
+              </span>
+            </div>
+          )}
+        </div>
         <p>{relative(doc.updatedAt)}</p>
       </div>
 
@@ -83,46 +94,56 @@ export function DocumentCard({ doc }: DocumentCardProps) {
         <div
           inert={Boolean(isSecret)}
           className={cn(
-            "rich-content rich-readonly px-3 pt-1.5 pb-1 max-h-80 overflow-hidden mask-[linear-gradient(to_bottom,black_78%,transparent)] hover:select-none",
+            "rich-content rich-readonly px-3 pt-1.5 pb-1 max-h-40 overflow-hidden mask-[linear-gradient(to_bottom,black_78%,transparent)] hover:select-none",
             isSecret && "pointer-events-none",
           )}
           dangerouslySetInnerHTML={{ __html: doc.preview }}
         />
       ) : (
-        <div className="px-4 pb-2 text-[13px] italic text-ink-4">
+        <div className="px-3 pt-1.5 pb-2 text-[13px] italic text-ink-4">
           Catatan kosong
         </div>
       )}
 
-      <div className="gap-2 px-3 pb-2.5 pt-1.5 text-xs text-ink-3">
+      <div className="gap-2 px-3 pb-2.5 pt-1.5 text-xs text-ink-3 absolute w-full bottom-0 bg-surface">
         <div className="flex gap-1 items-center flex-wrap">
           {total > 0 && (
-            <div className="border border-line rounded-full flex items-center h-5 pl-0.5 pr-1.5">
+            <div
+              className={cn(
+                "border rounded-full flex items-center h-5 border-line pl-0.5 pr-1.5",
+              )}
+            >
               <span className="inline-flex items-center gap-1">
-                <svg width="14" height="14" viewBox="0 0 14 14">
-                  <circle
-                    cx="7"
-                    cy="7"
-                    r="5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeOpacity={0.25}
-                    strokeWidth="2.5"
-                  />
-                  <circle
-                    cx="7"
-                    cy="7"
-                    r="5"
-                    fill="none"
-                    stroke="#1AAE75"
-                    strokeWidth="2.5"
-                    strokeDasharray={31.4}
-                    strokeDashoffset={31.4 * (1 - done / total)}
-                    strokeLinecap="round"
-                    transform="rotate(-90 7 7)"
-                  />
-                </svg>
-                <p className="font-semibold text-xs">
+                {done === total ? (
+                  <div className="bg-[#1AAE75] rounded-full flex justify-center items-center h-3.5 w-3.5">
+                    <IconCheck size={10} className="shrink-0 stroke-3 text-white" />
+                  </div>
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 14 14">
+                    <circle
+                      cx="7"
+                      cy="7"
+                      r="5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeOpacity={0.20}
+                      strokeWidth="2.5"
+                    />
+                    <circle
+                      cx="7"
+                      cy="7"
+                      r="5"
+                      fill="none"
+                      stroke="#1AAE75"
+                      strokeWidth="2.5"
+                      strokeDasharray={31}
+                      strokeDashoffset={31 * (1 - done / total)}
+                      strokeLinecap="round"
+                      transform="rotate(-90 7 7)"
+                    />
+                  </svg>
+                )}
+                <p className="font-semibold text-xs text-ink-2">
                   {done}
                   <span className="opacity-60">/{total}</span>
                 </p>
@@ -148,14 +169,6 @@ export function DocumentCard({ doc }: DocumentCardProps) {
                   </span>
                 </div>
               )}
-            </div>
-          )}
-          {doc.folder && (
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-nowrap inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-ink-2 border border-line">
-                <IconFolderFilled size={12} />
-                {doc.folder.name}
-              </span>
             </div>
           )}
         </div>
