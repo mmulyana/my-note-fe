@@ -32,7 +32,7 @@ export function Tabbar() {
       <button
         onClick={openNew}
         aria-label="New note"
-        className="fixed right-1/2 translate-x-1/2 bottom-18 z-40 flex h-fit w-fit items-center justify-center rounded-full bg-surface text-ink border border-line shadow-lg transition-transform duration-150 active:scale-95 cursor-pointer pl-2 pr-2.5 gap-0.5 py-1.5 text-xs"
+        className="fixed right-1/2 translate-x-1/2 bottom-18 z-40 flex h-fit w-fit items-center justify-center rounded-full bg-surface text-ink shadow-(--shadow) transition-transform duration-150 active:scale-95 cursor-pointer pl-2 pr-2.5 gap-0.5 py-1.5 text-xs"
       >
         <IconPlus size={16} className="shrink-0" />
         <p>New Note</p>

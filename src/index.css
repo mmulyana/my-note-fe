@@ -682,6 +682,10 @@ textarea {
   pointer-events: none;
 }
 
+.main-layout {
+  scrollbar-gutter: stable both-edges;
+}
+
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: 'Inter Variable', sans-serif;

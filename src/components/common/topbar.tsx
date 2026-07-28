@@ -5,7 +5,7 @@ import ToggleTheme from "./toggle-theme";
 
 export function Topbar() {
   return (
-    <header className="sticky top-0 z-30 flex h-15 flex-none items-center gap-3.5 pl-4 md:pl-0 pr-4 bg-transparent justify-between">
+    <header className="sticky top-0 z-30 flex h-15 flex-none items-center gap-3.5 pl-2 md:pl-0 pr-2 bg-transparent justify-between">
       <div
         className="flex gap-1 items-center flex-nowrap transition-all md:hidden"
       >
