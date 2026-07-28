@@ -16,7 +16,7 @@
   --line: oklch(1 0 0 / 0.09);
   --line-2: oklch(1 0 0 / 0.14);
   /* note: task row divider, dark theme; light value lives in [data-theme='light'] */
-  --task-line: oklch(85% 0.0001 271 / 0.14);
+  --task-line: oklch(1 0 0 / 0.12);
   --ink: oklch(0.965 0.003 264);
   --ink-2: oklch(0.74 0.006 264);
   --ink-3: oklch(0.56 0.006 264);
@@ -44,7 +44,8 @@
   --check-mark-h: calc(7px * var(--touch-scale));
   --check-radius: 0.25rem;
   --check-off-bg: oklch(0.872 0.01 258.338); /* note: tailwind gray-300 */
-  --check-off-border: oklch(0.872 0.01 258.338); /* note: tailwind gray-300 */
+  /* note: unchecked border, dark theme; light value lives in [data-theme='light'] */
+  --check-off-border: oklch(1 0 0 / 0.09);
   --check-on-bg: oklch(0.546 0.245 262.881); /* note: tailwind blue-600 */
   --check-on-border: oklch(0.488 0.243 264.376); /* note: tailwind blue-700 */
   --background: oklch(1 0 0);
@@ -91,7 +92,9 @@
   --line: oklch(0 0 0 / 0.1);
   --line-2: oklch(0 0 0 / 0.16);
   /* note: task row divider, light theme */
-  --task-line: oklch(1 0 0 / 0.14);
+  --task-line: oklch(0 0 0 / 0.16);
+  /* note: unchecked checkbox border, light theme */
+  --check-off-border: oklch(0 0 0 / 0.1);
   --ink: oklch(0.22 0.01 95);
   --ink-2: oklch(0.42 0.01 95);
   --ink-3: oklch(0.58 0.01 95);
@@ -354,24 +357,28 @@ textarea {
   list-style: none;
   padding-left: 0;
 }
-/* note: pull consecutive single-item task lists into one visual group */
+/* note: consecutive single-item task lists sit flush, same as li-to-li */
 .rich-content ul[data-type="taskList"] + ul[data-type="taskList"] {
-  margin-top: -0.15em;
+  margin-top: 0;
 }
+/* note: margin 0 drops the .rich-content li gap so rows stack against their dividers */
 .rich-content ul[data-type="taskList"] li {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.5em;
+  margin: 0;
   border-bottom: 1px dashed var(--task-line);
 }
+/* note: height fit-content so each wrapper hugs its content and centering can do the aligning */
 .rich-content ul[data-type="taskList"] li > label {
   flex: 0 0 auto;
-  margin-top: 0.16em;
+  height: fit-content;
   user-select: none;
 }
 .rich-content ul[data-type="taskList"] li > div {
   flex: 1 1 auto;
   min-width: 0;
+  height: fit-content;
 }
 .rich-content ul[data-type="taskList"] input[type="checkbox"] {
   width: var(--check-size);
@@ -475,7 +482,6 @@ textarea {
   font-size: 11px;
   white-space: nowrap;
   color: var(--ink-3);
-  margin-top: 2px;
 }
 .rich-content a {
   color: var(--accent);

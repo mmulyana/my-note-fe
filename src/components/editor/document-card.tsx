@@ -61,16 +61,23 @@ export function DocumentCard({ doc }: DocumentCardProps) {
 
   return (
     <article
-      className="group relative cursor-pointer rounded-[14px] border border-line bg-surface text-ink overflow-hidden outline-none transition-[box-shadow,border-color,transform] duration-150 hover:shadow-(--shadow) hover:border-line-2 focus-visible:shadow-[0_0_0_2px_var(--accent)] "
+      className={cn(
+        "group relative cursor-pointer rounded-[14px] border border-line bg-surface text-ink overflow-hidden outline-none transition-[box-shadow,border-color,transform] duration-150 hover:border-line-2 focus-visible:shadow-[0_0_0_2px_var(--accent)]",
+        !isSecret && "hover:shadow-(--shadow)"
+      )}
       tabIndex={0}
       onClick={handleOpen}
       onKeyDown={(e) => e.key === "Enter" && handleOpen()}
     >
       {isSecret && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-xs bg-black/5 pointer-events-none">
-          <IconLock size={22} className="text-ink-3" />
+        <div className="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-md bg-black/5 pointer-events-none">
+          <IconLock size={22} className="text-gray-500" />
         </div>
       )}
+
+      <div className="pt-3 px-4 text-xs text-ink-2/50">
+        <p>{relative(doc.updatedAt)}</p>
+      </div>
 
       {doc.preview ? (
         <div
@@ -79,18 +86,18 @@ export function DocumentCard({ doc }: DocumentCardProps) {
           // the tab order so they can't be reached by keyboard either
           inert={Boolean(isSecret)}
           className={cn(
-            "rich-content rich-readonly px-4 pt-3.5 pb-1 max-h-80 overflow-hidden mask-[linear-gradient(to_bottom,black_78%,transparent)] hover:select-none",
+            "rich-content rich-readonly px-4 pt-1.5 pb-1 max-h-80 overflow-hidden mask-[linear-gradient(to_bottom,black_78%,transparent)] hover:select-none",
             isSecret && "pointer-events-none",
           )}
           dangerouslySetInnerHTML={{ __html: doc.preview }}
         />
       ) : (
-        <div className="px-4 pt-3.5 pb-2 text-[13px] italic text-ink-4">
+        <div className="px-4 pb-2 text-[13px] italic text-ink-4">
           Catatan kosong
         </div>
       )}
 
-      <div className="gap-2 px-4 pb-2.5 pt-1.5 text-xs text-ink-4">
+      <div className="gap-2 px-4 pb-2.5 pt-1.5 text-xs text-ink-3">
         <div className="flex gap-1 items-center flex-wrap">
           {total > 0 && (
             <div className="border border-line rounded-full flex items-center h-5 pl-0.5 pr-1.5">
@@ -155,7 +162,6 @@ export function DocumentCard({ doc }: DocumentCardProps) {
             </div>
           )}
         </div>
-        <span className="mt-1 block">{relative(doc.updatedAt)}</span>
       </div>
     </article>
   );
