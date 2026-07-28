@@ -5,6 +5,7 @@ import {
   IconSquareCheck,
   IconFileFilled,
   IconSmartHome,
+  IconArchive,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { useLocalStorage } from "@/hooks/use-local-storage";
@@ -16,6 +17,7 @@ import FoldersWrapper from "./folders-wrapper";
 const navItems = [
   { to: "/", label: "All Notes", icon: IconSmartHome },
   { to: "/todos", label: "Todo", icon: IconSquareCheck },
+  { to: "/archive", label: "Archive", icon: IconArchive },
 ] as const;
 
 export const Sidebar = memo(function Sidebar() {

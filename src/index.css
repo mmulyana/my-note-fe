@@ -316,7 +316,7 @@ textarea {
 /* note: one knob for all mobile touch targets; breakpoint must match useIsMobile() */
 @media (max-width: 767px) {
   :root {
-    --touch-scale: 1.15;
+    --touch-scale: 1.12;
   }
 }
 .rich-content:focus {

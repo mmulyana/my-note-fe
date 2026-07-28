@@ -63,7 +63,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
     <article
       className={cn(
         "group relative cursor-pointer rounded-[14px] border border-line bg-surface text-ink overflow-hidden outline-none transition-[box-shadow,border-color,transform] duration-150 hover:border-line-2 focus-visible:shadow-[0_0_0_2px_var(--accent)]",
-        !isSecret && "hover:shadow-(--shadow)"
+        !isSecret && "hover:shadow-(--shadow)",
       )}
       tabIndex={0}
       onClick={handleOpen}
@@ -75,18 +75,15 @@ export function DocumentCard({ doc }: DocumentCardProps) {
         </div>
       )}
 
-      <div className="pt-3 px-4 text-xs text-ink-2/50">
+      <div className="pt-3 px-3 text-xs text-ink-2/50">
         <p>{relative(doc.updatedAt)}</p>
       </div>
 
       {doc.preview ? (
         <div
-          // the lock overlay is pointer-events-none, so links stay clickable
-          // through it — block them here instead; inert also drops them from
-          // the tab order so they can't be reached by keyboard either
           inert={Boolean(isSecret)}
           className={cn(
-            "rich-content rich-readonly px-4 pt-1.5 pb-1 max-h-80 overflow-hidden mask-[linear-gradient(to_bottom,black_78%,transparent)] hover:select-none",
+            "rich-content rich-readonly px-3 pt-1.5 pb-1 max-h-80 overflow-hidden mask-[linear-gradient(to_bottom,black_78%,transparent)] hover:select-none",
             isSecret && "pointer-events-none",
           )}
           dangerouslySetInnerHTML={{ __html: doc.preview }}
@@ -97,7 +94,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
         </div>
       )}
 
-      <div className="gap-2 px-4 pb-2.5 pt-1.5 text-xs text-ink-3">
+      <div className="gap-2 px-3 pb-2.5 pt-1.5 text-xs text-ink-3">
         <div className="flex gap-1 items-center flex-wrap">
           {total > 0 && (
             <div className="border border-line rounded-full flex items-center h-5 pl-0.5 pr-1.5">

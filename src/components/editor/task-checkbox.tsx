@@ -35,7 +35,7 @@ export function TaskCheckbox({ checked, onChange }: TaskCheckboxProps) {
           "flex items-center justify-center w-touch-checkbox h-touch-checkbox rounded-(--check-radius) border-[1.5px] transition-[background-color,border-color] duration-200",
           checked
             ? "bg-(--check-on-bg) border-(--check-on-border)"
-            : "bg-(--check-off-bg) border-(--check-off-border)",
+            : "border-(--check-off-border)",
         )}
       >
         <svg

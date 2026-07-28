@@ -8,6 +8,7 @@ import LoginPage from "@/pages/login-page";
 import HomePage from "@/pages/home-page";
 import LabelPage from "@/pages/label-page";
 import FolderPage from "./pages/folder-page";
+import ArchivePage from "./pages/archive-page";
 
 const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
           { path: "folder/:id", element: <FolderPage /> },
           { path: "todos", element: <TodosPage /> },
           { path: "trash", element: <TrashPage /> },
+          { path: "archive", element: <ArchivePage /> },
         ],
       },
     ],
