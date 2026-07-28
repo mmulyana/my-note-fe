@@ -21,7 +21,7 @@
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -8px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 12px 48px -12px rgba(0, 0, 0, 0.7);
 
-  /* note tints (desaturated, dark) */
+  /* note: card tint options */
   --t-default: var(--surface);
   --t-slate: oklch(0.255 0.024 248);
   --t-teal: oklch(0.262 0.026 192);
@@ -35,6 +35,16 @@
   --pad-card: 16px;
   --col: 248px;
   --touch-scale: 1;
+
+  /* note: checkbox tokens shared by the editor node view and the card preview */
+  --check-size: calc(0.9375rem * var(--touch-scale));
+  --check-mark-w: calc(9px * var(--touch-scale));
+  --check-mark-h: calc(7px * var(--touch-scale));
+  --check-radius: 0.25rem;
+  --check-off-bg: oklch(0.872 0.01 258.338); /* note: tailwind gray-300 */
+  --check-off-border: oklch(0.872 0.01 258.338); /* note: tailwind gray-300 */
+  --check-on-bg: oklch(0.546 0.245 262.881); /* note: tailwind blue-600 */
+  --check-on-border: oklch(0.488 0.243 264.376); /* note: tailwind blue-700 */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -115,7 +125,7 @@ body {
   background: color-mix(in oklch, var(--accent) 40%, transparent);
 }
 
-/* scrollbars */
+/* note: thin scrollbars on every scrollable element */
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--line-2) transparent;
@@ -203,7 +213,7 @@ textarea {
   max-width: 660px;
 }
 
-/* ── code block syntax highlighting (Prism, theme-aware) ── */
+/* note: Prism syntax colors, one set per theme */
 .code-hl {
   --code-comment: #8b95b3;
   --code-punctuation: var(--ink-2);
@@ -281,25 +291,21 @@ textarea {
   font-style: italic;
 }
 
-/* ── rich text (TipTap) — restore typography stripped by Tailwind preflight ── */
+/* note: TipTap content styles, restoring typography Tailwind preflight strips */
 .rich-content {
   outline: none;
-  font-size: 14px; /* editor text size — desktop/default */
+  font-size: 14px; /* note: desktop editor text size */
   line-height: 1.55;
   color: var(--ink);
   word-break: break-word;
 }
-/* editor text size — mobile only. Adjust this px value to resize editor text
-   on mobile without touching desktop. Breakpoint matches useIsMobile()
-   in use-is-mobile.ts (max-width: 767px) — keep both in sync. */
+/* note: mobile editor text size; breakpoint must match useIsMobile() in use-is-mobile.ts */
 @media (max-width: 767px) {
   .rich-content:not(.rich-readonly) {
     font-size: 16px;
   }
 }
-/* touch-target multiplier — mobile only. Bump this one number to resize task
-   checkboxes and picker trigger buttons together. Breakpoint matches
-   useIsMobile() in use-is-mobile.ts (max-width: 767px) — keep both in sync. */
+/* note: one knob for all mobile touch targets; breakpoint must match useIsMobile() */
 @media (max-width: 767px) {
   :root {
     --touch-scale: 1.15;
@@ -338,13 +344,12 @@ textarea {
 .rich-content li {
   margin: 0.15em 0;
 }
-/* task list (checkboxes) */
+/* note: task list layout */
 .rich-content ul[data-type="taskList"] {
   list-style: none;
   padding-left: 0;
 }
-/* consecutive single-item task lists should read as one group — same gap
-   as li-to-li inside a shared ul, not the wider block-to-block spacing */
+/* note: pull consecutive single-item task lists into one visual group */
 .rich-content ul[data-type="taskList"] + ul[data-type="taskList"] {
   margin-top: -0.18em;
 }
@@ -364,24 +369,48 @@ textarea {
   min-width: 0;
 }
 .rich-content ul[data-type="taskList"] input[type="checkbox"] {
-  width: 15px;
-  height: 15px;
+  width: var(--check-size);
+  height: var(--check-size);
   cursor: pointer;
 }
 .rich-content ul[data-type="taskList"] li[data-checked="true"] > div {
   color: var(--ink-3);
   text-decoration: line-through;
 }
-/* read-only: checkboxes reflect state but aren't clickable */
+/* note: previews show checkbox state but must not be clickable */
 .rich-readonly input[type="checkbox"] {
   pointer-events: none;
 }
-/* hide old-format deadline picker elements stored in preview HTML */
+/* note: previews get TipTap's stored markup, so repaint the native input to match task-item-view.tsx */
+.rich-readonly ul[data-type="taskList"] li > label {
+  display: inline-flex;
+}
+/* note: TipTap's own styling hook, unused because we style the input directly */
+.rich-readonly ul[data-type="taskList"] li > label > span {
+  display: none;
+}
+.rich-readonly ul[data-type="taskList"] input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1.6px solid var(--check-off-border);
+  border-radius: var(--check-radius);
+  /* background-color: var(--check-off-bg); */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: var(--check-mark-w) var(--check-mark-h);
+}
+.rich-readonly ul[data-type="taskList"] input[type="checkbox"]:checked {
+  border-color: var(--check-on-border);
+  background-color: var(--check-on-bg);
+  background-image: url("/icons/task-check.svg");
+}
+/* note: hide legacy deadline picker markup left in old stored previews */
 .rich-readonly .task-deadline {
   display: none;
 }
-/* read-only cards: keep each task on one line — equivalent of line-clamp-1.
-   Editor is excluded on purpose; clamping there would hide text while typing. */
+/* note: one line per task in cards; editor excluded so typing stays visible */
 .rich-readonly ul[data-type="taskList"] li > div > p {
   overflow: hidden;
   display: -webkit-box;
@@ -390,12 +419,12 @@ textarea {
   line-clamp: 1;
   overflow-wrap: anywhere;
 }
-/* dim deadline chip on completed tasks */
+/* note: dim the deadline chip once a task is done */
 .rich-readonly ul[data-type="taskList"] li[data-checked="true"][data-deadline]::after {
   opacity: 0.4;
 }
 
-/* task item deadline picker (editor node view) */
+/* note: deadline picker inside the editor node view */
 .rich-content ul[data-type="taskList"] li > .task-deadline {
   flex: 0 0 auto;
   display: inline-flex;
@@ -434,7 +463,7 @@ textarea {
   background: var(--surface-hi);
   color: var(--ink);
 }
-/* read-only cards: surface the stored deadline (raw ISO) as a chip */
+/* note: render the stored deadline (raw ISO) as a chip in cards */
 .rich-readonly ul[data-type="taskList"] li[data-deadline]::after {
   content: attr(data-deadline);
   flex: 0 0 auto;
@@ -455,7 +484,7 @@ textarea {
   border-radius: 8px;
   border: 1px solid var(--line);
 }
-/* saved/read-only HTML: plain <img data-align="…">, aligned via margin */
+/* note: saved HTML aligns a plain <img> via margin */
 .rich-content img[data-align="left"] {
   margin-right: auto;
 }
@@ -467,8 +496,7 @@ textarea {
   margin-left: auto;
 }
 
-/* editor node view: a box that hugs the image (see image-view.tsx) so the
-   settings button anchors to the image's own corner, not the editor's */
+/* note: box hugs the image so the settings button anchors to the image corner */
 .rich-image-wrapper {
   position: relative;
   display: block;
@@ -486,9 +514,7 @@ textarea {
   margin-left: auto;
 }
 .rich-image-wrapper .rich-image {
-  /* width is set inline per-node only when a width/maxWidth attr exists
-     (see image-view.tsx) — a blanket width: 100% here would recreate the
-     circular fit-content sizing bug for the "natural size" case */
+  /* note: width comes from the node's inline style; a blanket 100% breaks natural sizing */
   height: 100%;
   margin: 0;
 }
@@ -537,7 +563,7 @@ textarea {
   font-size: inherit;
 }
 
-/* code block node view: a header bar (language picker + copy) above the code */
+/* note: code block frame with a language picker + copy bar on top */
 .rich-content .code-block {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -556,7 +582,7 @@ textarea {
 .rich-content .code-block > pre {
   margin: 0;
   border-radius: 0;
-  background: transparent; /* the wrapper provides the frame now */
+  background: transparent; /* note: the wrapper draws the frame */
 }
 .code-block-lang,
 .code-block-copy {
@@ -597,8 +623,7 @@ textarea {
   border-top: 1px solid var(--line-2);
   margin: 0.75em 0;
 }
-/* Notion-style block drag handle (floating element positioned by the
-   drag-handle plugin at the left edge of the hovered block) */
+/* note: floating block drag handle, positioned by the drag-handle plugin */
 .drag-handle {
   z-index: 10;
 }
@@ -613,18 +638,17 @@ textarea {
   cursor: grab;
   transition: background 0.14s, color 0.14s;
 }
-/* per-block alignment (data-node-type is set from DragHandle's onNodeChange) */
+/* note: per-block nudges; data-node-type comes from DragHandle onNodeChange */
 .drag-handle-btn[data-node-type="listItem"] {
-  /* bullet/number markers render inside the list's 1.3em left padding, so a
-     handle flush against the <li> covers the marker — shift it past it */
+  /* note: shift past the list marker sitting in the 1.3em left padding */
   transform: translateX(-18px);
 }
 .drag-handle-btn[data-node-type="heading"] {
-  /* headings have taller first lines; keep the grip on its center */
+  /* note: center the grip on a heading's taller first line */
   margin-top: 3px;
 }
 .drag-handle-btn[data-node-type="codeBlock"] {
-  /* line the grip up with the code block's toolbar row */
+  /* note: line the grip up with the code block toolbar row */
   margin-top: 5px;
 }
 .drag-handle-btn:hover {
@@ -635,14 +659,14 @@ textarea {
 .drag-handle-btn:active {
   cursor: grabbing;
 }
-/* blocks picked up by the drag handle */
+/* note: highlight blocks picked up by the drag handle */
 .rich-content .ProseMirror-selectednoderange,
 .rich-content .ProseMirror-selectednode {
   background: color-mix(in oklch, var(--accent) 12%, transparent);
   border-radius: 6px;
 }
 
-/* Placeholder extension: shows data-placeholder on the empty first line */
+/* note: Placeholder extension renders data-placeholder on the empty first line */
 .rich-content p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   color: var(--ink-3);
@@ -701,9 +725,8 @@ textarea {
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* touch-target sizes — scale with --touch-scale (1 on desktop, 1.15 on
-     mobile, see @media above). Generates w-/h-/px-/etc. utilities. */
-  --spacing-touch-checkbox-editor: calc(0.9375rem * var(--touch-scale));
+  /* note: touch-target sizes scaled by --touch-scale; generates w-/h-/px- utilities */
+  --spacing-touch-checkbox-editor: var(--check-size);
   --spacing-touch-checkbox: calc(1.25rem * var(--touch-scale));
   --spacing-touch-picker-h: calc(1.75rem * var(--touch-scale));
   --spacing-touch-picker-px: calc(0.625rem * var(--touch-scale));

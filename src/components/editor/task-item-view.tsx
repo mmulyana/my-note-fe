@@ -69,10 +69,10 @@ export function TaskItemView({ node, updateAttributes }: ReactNodeViewProps) {
             />
             <span
               className={cn(
-                "flex items-center justify-center w-touch-checkbox-editor h-touch-checkbox-editor rounded border-[1.5px] transition-[background-color,border-color] duration-200",
+                "flex items-center justify-center w-touch-checkbox-editor h-touch-checkbox-editor rounded-(--check-radius) border-[1.5px] transition-[background-color,border-color] duration-200",
                 checked
-                  ? "bg-blue-500 border-blue-500"
-                  : "bg-gray-200 border-gray-200",
+                  ? "bg-(--check-on-bg) border-(--check-on-border)"
+                  : "border-(--check-off-border)",
               )}
             >
               <svg
@@ -82,8 +82,8 @@ export function TaskItemView({ node, updateAttributes }: ReactNodeViewProps) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 style={{
-                  width: "calc(9px * var(--touch-scale))",
-                  height: "calc(7px * var(--touch-scale))",
+                  width: "var(--check-mark-w)",
+                  height: "var(--check-mark-h)",
                 }}
               >
                 <path
