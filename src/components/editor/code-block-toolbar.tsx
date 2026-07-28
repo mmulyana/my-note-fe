@@ -1,6 +1,18 @@
 import { IconCheck, IconCopy } from "@tabler/icons-react";
 import { useState } from "react";
 import { CODE_LANGUAGES } from "@/lib/prism";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const PLAIN = "plain";
+
+const itemClass =
+  "mono min-h-6 rounded-md py-1 text-[11px] text-ink-2 focus:bg-surface-2 focus:text-ink";
 
 interface CodeBlockToolbarProps {
   language: string;
@@ -27,30 +39,45 @@ export function CodeBlockToolbar({
 
   return (
     <div className="code-block-bar" contentEditable={false}>
-      <select
-        className="code-block-lang"
-        value={language}
-        title="Language"
-        onChange={(e) => onLanguageChange(e.target.value)}
-        onMouseDown={(e) => e.stopPropagation()}
+      {/* Radix Select has no empty-string value, so "plain" stands in for it */}
+      <Select
+        value={language || PLAIN}
+        onValueChange={(v) => onLanguageChange(v === PLAIN ? "" : v)}
       >
-        <option value="">plain</option>
-        {CODE_LANGUAGES.map((lang) => (
-          <option key={lang} value={lang}>
-            {lang}
-          </option>
-        ))}
-      </select>
+        <SelectTrigger
+          size="sm"
+          className="code-block-lang"
+          title="Language"
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent
+          position="popper"
+          align="start"
+          className="max-h-64 min-w-32 rounded-lg border border-line-2 p-1 shadow-(--shadow-lg) ring-0"
+          onCloseAutoFocus={(e) => e.preventDefault()}
+        >
+          <SelectItem value={PLAIN} className={itemClass}>
+            {PLAIN}
+          </SelectItem>
+          {CODE_LANGUAGES.map((lang) => (
+            <SelectItem key={lang} value={lang} className={itemClass}>
+              {lang}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
       <button
         type="button"
         className="code-block-copy"
-        title="Copy code"
+        title={copied ? "Copied" : "Copy code"}
+        aria-label={copied ? "Copied" : "Copy code"}
         onClick={copy}
         onMouseDown={(e) => e.stopPropagation()}
       >
-        {copied ? <IconCheck size={13} /> : <IconCopy size={13} />}
-        {copied ? "Copied" : "Copy"}
+        {copied ? <IconCheck size={14} /> : <IconCopy size={14} />}
       </button>
     </div>
   );

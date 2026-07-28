@@ -14,7 +14,7 @@ import {
 } from "@/store/document";
 import type { DocItem, IApi, NoteDetail } from "@/lib/types";
 import { request } from "@/lib/api-client";
-import { relative } from "@/lib/utils";
+import { cn, relative } from "@/lib/utils";
 import { urls } from "@/lib/urls";
 
 interface DocumentCardProps {
@@ -74,7 +74,14 @@ export function DocumentCard({ doc }: DocumentCardProps) {
 
       {doc.preview ? (
         <div
-          className="rich-content rich-readonly px-4 pt-3.5 pb-1 max-h-80 overflow-hidden mask-[linear-gradient(to_bottom,black_78%,transparent)] hover:select-none"
+          // the lock overlay is pointer-events-none, so links stay clickable
+          // through it — block them here instead; inert also drops them from
+          // the tab order so they can't be reached by keyboard either
+          inert={Boolean(isSecret)}
+          className={cn(
+            "rich-content rich-readonly px-4 pt-3.5 pb-1 max-h-80 overflow-hidden mask-[linear-gradient(to_bottom,black_78%,transparent)] hover:select-none",
+            isSecret && "pointer-events-none",
+          )}
           dangerouslySetInnerHTML={{ __html: doc.preview }}
         />
       ) : (

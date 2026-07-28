@@ -15,6 +15,8 @@
   --surface-hi: oklch(0.275 0.009 264);
   --line: oklch(1 0 0 / 0.09);
   --line-2: oklch(1 0 0 / 0.14);
+  /* note: task row divider, dark theme; light value lives in [data-theme='light'] */
+  --task-line: oklch(85% 0.0001 271 / 0.14);
   --ink: oklch(0.965 0.003 264);
   --ink-2: oklch(0.74 0.006 264);
   --ink-3: oklch(0.56 0.006 264);
@@ -49,8 +51,9 @@
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
+  /* note: shadcn popovers follow app tokens; this app themes via data-theme, never .dark */
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
@@ -87,6 +90,8 @@
   --surface-hi: oklch(0.955 0.004 95);
   --line: oklch(0 0 0 / 0.1);
   --line-2: oklch(0 0 0 / 0.16);
+  /* note: task row divider, light theme */
+  --task-line: oklch(1 0 0 / 0.14);
   --ink: oklch(0.22 0.01 95);
   --ink-2: oklch(0.42 0.01 95);
   --ink-3: oklch(0.58 0.01 95);
@@ -351,17 +356,17 @@ textarea {
 }
 /* note: pull consecutive single-item task lists into one visual group */
 .rich-content ul[data-type="taskList"] + ul[data-type="taskList"] {
-  margin-top: -0.18em;
+  margin-top: -0.15em;
 }
 .rich-content ul[data-type="taskList"] li {
   display: flex;
   align-items: flex-start;
-  gap: 0.55em;
-  border-bottom: 1px dashed rgb(191, 191, 191);
+  gap: 0.5em;
+  border-bottom: 1px dashed var(--task-line);
 }
 .rich-content ul[data-type="taskList"] li > label {
   flex: 0 0 auto;
-  margin-top: 0.15em;
+  margin-top: 0.16em;
   user-select: none;
 }
 .rich-content ul[data-type="taskList"] li > div {
@@ -565,19 +570,19 @@ textarea {
 
 /* note: code block frame with a language picker + copy bar on top */
 .rich-content .code-block {
-  border: 1px solid var(--line);
   border-radius: 8px;
   overflow: hidden;
   background: var(--bg-2);
   margin: 0.5em 0;
 }
+/* note: language select sits left, copy icon right */
 .rich-content .code-block-bar {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 6px;
-  padding: 5px 8px;
-  border-bottom: 1px solid var(--line);
+  padding: 8px;
+  /* border-bottom: 1px solid var(--line); */
 }
 .rich-content .code-block > pre {
   margin: 0;
@@ -590,23 +595,28 @@ textarea {
   font-size: 10.5px;
   color: var(--ink-3);
   background: var(--surface-hi);
-  border: 1px solid var(--line);
   border-radius: 6px;
   cursor: pointer;
   transition: color 0.14s, background 0.14s;
 }
+/* note: height/padding override the shadcn trigger defaults to fit this bar */
 .code-block-lang {
-  padding: 2px 4px;
-  color-scheme: dark;
+  height: auto;
+  padding: 2px 4px 2px 7px;
+  gap: 3px;
+  border-radius: 6px;
 }
-[data-theme="light"] .code-block-lang {
-  color-scheme: light;
+.code-block-lang svg {
+  width: 12px;
+  height: 12px;
 }
+/* note: square icon-only button, matched to the select's height */
 .code-block-copy {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 7px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  flex: none;
 }
 .code-block-lang:hover,
 .code-block-copy:hover {
