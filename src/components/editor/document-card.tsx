@@ -76,7 +76,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
         </div>
       )}
 
-      <div className="pt-3 px-3 text-xs text-ink-2/50 flex justify-between items-center">
+      <div className="pt-3 px-3 text-xs text-ink-2/50 flex flex-col-reverse md:flex-row justify-between md:items-center">
         <div>
           {doc.folder && (
             <div className="flex items-center gap-1.5 flex-wrap">
