@@ -346,12 +346,13 @@ textarea {
 /* consecutive single-item task lists should read as one group — same gap
    as li-to-li inside a shared ul, not the wider block-to-block spacing */
 .rich-content ul[data-type="taskList"] + ul[data-type="taskList"] {
-  margin-top: -0.15em;
+  margin-top: -0.18em;
 }
 .rich-content ul[data-type="taskList"] li {
   display: flex;
   align-items: flex-start;
   gap: 0.55em;
+  border-bottom: 1px dashed rgb(191, 191, 191);
 }
 .rich-content ul[data-type="taskList"] li > label {
   flex: 0 0 auto;
@@ -378,6 +379,16 @@ textarea {
 /* hide old-format deadline picker elements stored in preview HTML */
 .rich-readonly .task-deadline {
   display: none;
+}
+/* read-only cards: keep each task on one line — equivalent of line-clamp-1.
+   Editor is excluded on purpose; clamping there would hide text while typing. */
+.rich-readonly ul[data-type="taskList"] li > div > p {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  overflow-wrap: anywhere;
 }
 /* dim deadline chip on completed tasks */
 .rich-readonly ul[data-type="taskList"] li[data-checked="true"][data-deadline]::after {

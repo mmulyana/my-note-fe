@@ -17,7 +17,7 @@ import { type TodoPriority } from "@/lib/types";
 import { TaskMetaPopup } from "./task-meta-popup";
 
 const chipBase =
-  "inline-flex items-center gap-[3px] h-[18px] px-1.5 text-[10.5px] font-medium leading-none rounded-md whitespace-nowrap border border-(--line) text-(--ink-3)";
+  "inline-flex items-center gap-[3px] h-[18px] px-1.5 text-[10.5px] font-medium leading-none rounded-md whitespace-nowrap border border-(--line) text-ink-3";
 const chipHigh =
   "text-[#e06c75] border-[color-mix(in_srgb,#e06c75_45%,transparent)]";
 const chipToday =
@@ -147,7 +147,7 @@ export function TaskItemView({ node, updateAttributes }: ReactNodeViewProps) {
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                className="grid place-items-center w-5.5 h-5.5 flex-none border border-(--line) rounded-md text-(--ink-3) text-[13px] cursor-pointer transition-[background,color] duration-140 hover:text-(--ink) hover:bg-(--surface-2)"
+                className="grid place-items-center w-5.5 h-5.5 flex-none rounded-md text-ink-3 text-[13px] cursor-pointer transition-[background,color] duration-140 hover:text-(--ink) hover:bg-surface-2"
                 title="Task details"
               >
                 <IconDots size={14} />
@@ -155,7 +155,7 @@ export function TaskItemView({ node, updateAttributes }: ReactNodeViewProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="w-60 bg-(--surface) border-(--line-2) rounded-xl shadow-(--shadow-lg) p-3"
+              className="w-60 bg-surface border-line-2 rounded-xl shadow-lg p-3"
               onCloseAutoFocus={(e) => e.preventDefault()}
             >
               <TaskMetaPopup
