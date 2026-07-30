@@ -45,8 +45,8 @@ export function TaskCheckbox({ checked, onChange }: TaskCheckboxProps) {
           strokeLinecap="round"
           strokeLinejoin="round"
           style={{
-            width: "calc(12px * var(--touch-scale))",
-            height: "calc(10px * var(--touch-scale))",
+            width: "var(--check-mark-w)",
+            height: "var(--check-mark-h)",
           }}
         >
           <path
@@ -85,6 +85,8 @@ interface TaskMetaProps {
   today: string | null;
   onChange: (attrs: TaskMetaChange) => void;
   onDelete?: () => void;
+  /* note: false keeps the chips but drops the dots trigger, for read-only previews */
+  showActions?: boolean;
 }
 
 export function TaskMeta({
@@ -94,6 +96,7 @@ export function TaskMeta({
   today,
   onChange,
   onDelete,
+  showActions = true,
 }: TaskMetaProps) {
   const [open, setOpen] = useState(false);
 
@@ -142,43 +145,45 @@ export function TaskMeta({
         </span>
       )}
 
-      <DropdownMenu open={open} onOpenChange={setOpen}>
-        <DropdownMenuTrigger asChild>
-          <button
-            type="button"
-            className="grid place-items-center w-5.5 h-5.5 flex-none border border-line rounded-md text-ink-3 text-[13px] cursor-pointer transition-[background,color] duration-140 hover:text-(--ink) hover:bg-surface-2"
-            title="Task details"
+      {showActions && (
+        <DropdownMenu open={open} onOpenChange={setOpen}>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className="grid place-items-center w-5.5 h-5.5 flex-none border border-line rounded-md text-ink-3 text-[13px] cursor-pointer transition-[background,color] duration-140 hover:text-(--ink) hover:bg-surface-2"
+              title="Task details"
+            >
+              <IconDots size={14} />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="w-60 bg-surface border-line-2 rounded-xl shadow-(--shadow-lg) p-3"
+            onCloseAutoFocus={(e) => e.preventDefault()}
           >
-            <IconDots size={14} />
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="end"
-          className="w-60 bg-surface border-line-2 rounded-xl shadow-(--shadow-lg) p-3"
-          onCloseAutoFocus={(e) => e.preventDefault()}
-        >
-          <TaskMetaPopup
-            deadline={deadline}
-            today={today}
-            priority={priority}
-            onChange={(attrs) =>
-              onChange({
-                priority: attrs.priority,
-                deadline: attrs.deadline,
-                today: attrs.today,
-              })
-            }
-            onDelete={
-              onDelete
-                ? () => {
-                    setOpen(false);
-                    onDelete();
-                  }
-                : undefined
-            }
-          />
-        </DropdownMenuContent>
-      </DropdownMenu>
+            <TaskMetaPopup
+              deadline={deadline}
+              today={today}
+              priority={priority}
+              onChange={(attrs) =>
+                onChange({
+                  priority: attrs.priority,
+                  deadline: attrs.deadline,
+                  today: attrs.today,
+                })
+              }
+              onDelete={
+                onDelete
+                  ? () => {
+                      setOpen(false);
+                      onDelete();
+                    }
+                  : undefined
+              }
+            />
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
     </span>
   );
 }

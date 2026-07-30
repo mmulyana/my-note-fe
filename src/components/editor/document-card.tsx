@@ -3,7 +3,6 @@ import {
   IconTagFilled,
   IconLock,
   IconPlus,
-  IconCheck,
 } from "@tabler/icons-react";
 import { useSetAtom } from "jotai";
 import {
@@ -13,6 +12,7 @@ import {
   editingLabelIdsAtom,
   editingFolderIdAtom,
 } from "@/store/document";
+import { TodoProgress } from "@/components/editor/todo-progress";
 import type { DocItem, IApi, NoteDetail } from "@/lib/types";
 import { request } from "@/lib/api-client";
 import { cn, relative } from "@/lib/utils";
@@ -31,6 +31,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
 
   const { total, done } = doc.todoSummary;
   const isSecret = doc.folder?.secret || doc.secret;
+  const hasFooter = total > 0 || doc.labels.length > 0;
 
   const handleOpen = async () => {
     try {
@@ -63,7 +64,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
   return (
     <article
       className={cn(
-        "group relative cursor-pointer rounded-[14px] border border-line bg-surface text-ink overflow-hidden outline-none transition-[box-shadow,border-color,transform] duration-150 hover:border-line-2 focus-visible:shadow-[0_0_0_2px_var(--accent)]",
+        "group relative flex flex-col cursor-pointer rounded-[14px] border border-line bg-surface text-ink overflow-hidden outline-none transition-[box-shadow,border-color,transform] duration-150 hover:border-line-2 focus-visible:shadow-[0_0_0_2px_var(--accent)]",
         !isSecret && "hover:shadow-(--shadow)",
       )}
       tabIndex={0}
@@ -94,85 +95,51 @@ export function DocumentCard({ doc }: DocumentCardProps) {
         <div
           inert={Boolean(isSecret)}
           className={cn(
-            "rich-content rich-readonly px-3 pt-1.5 pb-1 max-h-40 overflow-hidden mask-[linear-gradient(to_bottom,black_78%,transparent)] hover:select-none",
+            "rich-content rich-readonly flex-1 min-h-0 px-3 pt-1.5 pb-1 overflow-hidden mask-[linear-gradient(to_bottom,black_78%,transparent)] hover:select-none",
+            hasFooter && "-mb-3.5",
             isSecret && "pointer-events-none",
           )}
           dangerouslySetInnerHTML={{ __html: doc.preview }}
         />
       ) : (
-        <div className="px-3 pt-1.5 pb-2 text-[13px] italic text-ink-4">
+        <div
+          className={cn(
+            "flex-1 min-h-0 px-3 pt-1.5 pb-2 text-[13px] italic text-ink-4",
+            hasFooter && "-mb-3.5",
+          )}
+        >
           Catatan kosong
         </div>
       )}
 
-      <div className="gap-2 px-3 pb-2.5 pt-1.5 text-xs text-ink-3 absolute w-full bottom-0 bg-surface">
-        <div className="flex gap-1 items-center flex-wrap">
-          {total > 0 && (
-            <div
-              className={cn(
-                "border rounded-full flex items-center h-5 border-line pl-0.5 pr-1.5",
-              )}
-            >
-              <span className="inline-flex items-center gap-1">
-                {done === total ? (
-                  <div className="bg-[#1AAE75] rounded-full flex justify-center items-center h-3.5 w-3.5">
-                    <IconCheck size={10} className="shrink-0 stroke-3 text-white" />
-                  </div>
-                ) : (
-                  <svg width="14" height="14" viewBox="0 0 14 14">
-                    <circle
-                      cx="7"
-                      cy="7"
-                      r="5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeOpacity={0.20}
-                      strokeWidth="2.5"
-                    />
-                    <circle
-                      cx="7"
-                      cy="7"
-                      r="5"
-                      fill="none"
-                      stroke="#1AAE75"
-                      strokeWidth="2.5"
-                      strokeDasharray={31}
-                      strokeDashoffset={31 * (1 - done / total)}
-                      strokeLinecap="round"
-                      transform="rotate(-90 7 7)"
-                    />
-                  </svg>
-                )}
-                <p className="font-semibold text-xs text-ink-2">
-                  {done}
-                  <span className="opacity-60">/{total}</span>
-                </p>
-              </span>
-            </div>
-          )}
-          {doc.labels.length > 0 && (
-            <div className="flex gap-1 items-center text-sm">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-ink-2 border border-line">
-                  <IconTagFilled size={12} />
-                  {doc.labels?.[0].name}
-                </span>
-              </div>
-              {doc.labels.length > 1 && (
+      {hasFooter && (
+        <div className="relative shrink-0 gap-2 px-3 pb-2.5 pt-1.5 text-xs text-ink-3 bg-linear-to-b from-transparent via-surface via-60% to-surface">
+          <div className="flex gap-1 items-center flex-wrap">
+            <TodoProgress done={done} total={total} />
+            {doc.labels.length > 0 && (
+              <div className="flex gap-1 items-center text-sm">
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-ink-2 border border-line">
                     <IconTagFilled size={12} />
-                    <span className="flex items-center">
-                      <IconPlus size={9} />
-                      {doc.labels?.length - 1}
-                    </span>
+                    {doc.labels?.[0].name}
                   </span>
                 </div>
-              )}
-            </div>
-          )}
+                {doc.labels.length > 1 && (
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-ink-2 border border-line">
+                      <IconTagFilled size={12} />
+                      <span className="flex items-center">
+                        <IconPlus size={9} />
+                        {doc.labels?.length - 1}
+                      </span>
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </article>
   );
 }

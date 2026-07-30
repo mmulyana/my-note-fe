@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { IconPlus, IconChevronDown } from "@tabler/icons-react";
@@ -9,6 +9,7 @@ import type { IApi, Todo, TodoGroup, TodoTodayGroups, TodoView } from "@/lib/typ
 import { urls } from "@/lib/urls";
 import { cn, newId } from "@/lib/utils";
 import { TaskCheckbox, TaskMeta } from "@/components/editor/task-checkbox";
+import { TodoProgress } from "@/components/editor/todo-progress";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +17,12 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 type UpdatePayload = { id: string } & Partial<
   Pick<Todo, "text" | "checked" | "deadline" | "priority" | "today">
@@ -26,6 +33,8 @@ const TODAY_SECTIONS: { key: keyof TodoTodayGroups; label: string }[] = [
   { key: "overdue", label: "Overdue" },
   { key: "completed", label: "Completed" },
 ];
+
+const GRID = "masonry grid-view";
 
 export default function TodosPage() {
   const queryClient = useQueryClient();
@@ -81,7 +90,7 @@ export default function TodosPage() {
   const isLoading = view === "all" ? loadingAll : loadingToday;
 
   return (
-    <div className="max-w-165 mx-auto py-4">
+    <div className="py-4">
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-ink-3">
           {view === "all"
@@ -99,30 +108,26 @@ export default function TodosPage() {
         groups.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="flex flex-col gap-8">
+          <div className={GRID}>
             {groups.map((group) => (
-              <div key={group.noteId} className="flex flex-col">
-                <p className="text-[15px] font-semibold text-ink pb-2.5 mb-1 border-b-2 border-(--line)">
-                  {group.title ?? "Untitled"}
-                </p>
-                {group.todos.map((todo) => (
-                  <TodoItem
-                    key={todo.id}
-                    todo={todo}
-                    onUpdate={updateTodo}
-                    onDelete={deleteTodo}
+              <TodoCard
+                key={group.noteId}
+                title={group.title ?? "Untitled"}
+                todos={group.todos}
+                onUpdate={updateTodo}
+                onDelete={deleteTodo}
+                addRow={
+                  <AddTodoRow
+                    noteId={group.noteId}
+                    lastTodoId={
+                      group.todos.length > 0
+                        ? group.todos[group.todos.length - 1].id
+                        : undefined
+                    }
+                    onCreate={createTodo}
                   />
-                ))}
-                <AddTodoRow
-                  noteId={group.noteId}
-                  lastTodoId={
-                    group.todos.length > 0
-                      ? group.todos[group.todos.length - 1].id
-                      : undefined
-                  }
-                  onCreate={createTodo}
-                />
-              </div>
+                }
+              />
             ))}
           </div>
         )
@@ -130,28 +135,111 @@ export default function TodosPage() {
         TODAY_SECTIONS.every((s) => todayGroups[s.key].length === 0) ? (
         <EmptyState />
       ) : (
-        <div className="flex flex-col gap-8">
+        <div className={GRID}>
           {TODAY_SECTIONS.map(
             ({ key, label }) =>
               todayGroups[key].length > 0 && (
-                <div key={key} className="flex flex-col">
-                  <p className="text-[15px] font-semibold text-ink pb-2.5 mb-1 border-b-2 border-(--line)">
-                    {label}
-                  </p>
-                  {todayGroups[key].map((todo) => (
-                    <TodoItem
-                      key={todo.id}
-                      todo={todo}
-                      onUpdate={updateTodo}
-                      onDelete={deleteTodo}
-                    />
-                  ))}
-                </div>
+                <TodoCard
+                  key={key}
+                  title={label}
+                  todos={todayGroups[key]}
+                  onUpdate={updateTodo}
+                  onDelete={deleteTodo}
+                />
               ),
           )}
         </div>
       )}
     </div>
+  );
+}
+
+function TodoCard({
+  title,
+  todos,
+  onUpdate,
+  onDelete,
+  addRow,
+}: {
+  title: string;
+  todos: Todo[];
+  onUpdate: (payload: UpdatePayload) => void;
+  onDelete: (id: string) => void;
+  addRow?: ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  const done = todos.filter((t) => t.checked).length;
+
+  return (
+    <>
+      <section
+        className="flex flex-col rounded-[14px] border border-line bg-surface text-ink overflow-hidden cursor-pointer outline-none transition-[box-shadow,border-color] duration-150 hover:border-line-2 hover:shadow-(--shadow) focus-visible:shadow-[0_0_0_2px_var(--accent)]"
+        tabIndex={0}
+        onClick={() => setOpen(true)}
+        onKeyDown={(e) => e.key === "Enter" && setOpen(true)}
+      >
+        <div className="shrink-0 flex items-center justify-between gap-2 px-3 pt-2.5 pb-2 border-b border-line">
+          <p className="text-[13px] font-semibold truncate">{title}</p>
+          <div className="flex-none">
+            <TodoProgress done={done} total={todos.length} />
+          </div>
+        </div>
+
+        {/* note: pointer-events-none so row clicks fall through to the card and open the modal */}
+        <div
+          className={cn(
+            "flex-1 min-h-0 flex flex-col px-3 pt-1.5 pb-1 overflow-hidden pointer-events-none mask-[linear-gradient(to_bottom,black_78%,transparent)]",
+            addRow && "-mb-3.5",
+          )}
+        >
+          {todos.map((todo) => (
+            <TodoItem
+              key={todo.id}
+              todo={todo}
+              onUpdate={onUpdate}
+              onDelete={onDelete}
+              showActions={false}
+            />
+          ))}
+        </div>
+
+        {addRow && (
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative shrink-0 px-3 pb-2 pt-1.5 bg-linear-to-b from-transparent via-surface via-60% to-surface"
+          >
+            {addRow}
+          </div>
+        )}
+      </section>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-lg gap-3">
+          <DialogHeader>
+            <div className="flex items-center justify-between gap-2 pr-7">
+              <DialogTitle className="truncate">{title}</DialogTitle>
+              <div className="flex-none">
+                <TodoProgress done={done} total={todos.length} />
+              </div>
+            </div>
+          </DialogHeader>
+
+          <div className="flex flex-col max-h-[60vh] overflow-y-auto">
+            {todos.map((todo) => (
+              <TodoItem
+                key={todo.id}
+                todo={todo}
+                onUpdate={onUpdate}
+                onDelete={onDelete}
+                showActions
+              />
+            ))}
+          </div>
+
+          {addRow}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
@@ -198,10 +286,12 @@ function TodoItem({
   todo,
   onUpdate,
   onDelete,
+  showActions,
 }: {
   todo: Todo;
   onUpdate: (payload: UpdatePayload) => void;
   onDelete: (id: string) => void;
+  showActions?: boolean;
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(todo.text);
@@ -232,7 +322,7 @@ function TodoItem({
   };
 
   return (
-    <div className="flex items-center gap-3 px-1 py-2 rounded-lg hover:bg-(--surface-2) transition-colors duration-120">
+    <div className="shrink-0 flex items-center gap-2 py-1 border-b border-dashed border-(--task-line) hover:bg-(--surface-2) transition-colors duration-120">
       <TaskCheckbox
         checked={todo.checked}
         onChange={(checked) => onUpdate({ id: todo.id, checked })}
@@ -244,13 +334,15 @@ function TodoItem({
           onChange={(e) => setDraft(e.target.value)}
           onBlur={commit}
           onKeyDown={handleKeyDown}
-          className="text-[15px] flex-1 leading-snug bg-transparent outline-none border-b border-line focus:border-ink transition-colors duration-120"
+          className="text-sm flex-1 min-w-0 leading-snug bg-transparent outline-none border-b border-line focus:border-ink transition-colors duration-120"
         />
       ) : (
         <span
           onClick={startEdit}
           className={cn(
-            "text-[15px] flex-1 leading-snug cursor-text",
+            "text-sm flex-1 min-w-0 leading-snug cursor-text",
+            /* note: one line per task in the card preview, same as .rich-readonly */
+            showActions ? "break-words" : "line-clamp-1",
             todo.checked && "line-through text-ink-3",
           )}
         >
@@ -264,6 +356,7 @@ function TodoItem({
         today={todo.today}
         onChange={(attrs) => onUpdate({ id: todo.id, ...attrs })}
         onDelete={() => onDelete(todo.id)}
+        showActions={showActions}
       />
     </div>
   );
@@ -317,16 +410,16 @@ function AddTodoRow({
     return (
       <button
         onClick={open}
-        className="flex items-center gap-3 px-1 py-2.5 rounded-lg text-ink-3 hover:text-(--ink-2) hover:bg-(--surface-2) transition-colors duration-120 cursor-pointer"
+        className="flex w-full items-center gap-2 py-1 text-ink-3 hover:text-(--ink-2) transition-colors duration-120 cursor-pointer"
       >
-        <IconPlus size={16} />
-        <span className="text-[15px]">Add todo</span>
+        <IconPlus size={16} className="flex-none" />
+        <span className="text-sm">Add todo</span>
       </button>
     );
   }
 
   return (
-    <div className="flex items-center gap-3 px-1 py-2.5 rounded-lg bg-(--surface-2)">
+    <div className="flex items-center gap-2 py-1">
       <IconPlus size={16} className="text-(--ink-3) flex-none" />
       <input
         ref={inputRef}
@@ -335,7 +428,7 @@ function AddTodoRow({
         onBlur={commit}
         onKeyDown={handleKeyDown}
         placeholder="New todo..."
-        className="text-[15px] flex-1 leading-snug bg-transparent outline-none placeholder:text-(--ink-3)"
+        className="text-sm flex-1 min-w-0 leading-snug bg-transparent outline-none border-b border-line focus:border-ink transition-colors duration-120 placeholder:text-(--ink-3)"
       />
     </div>
   );

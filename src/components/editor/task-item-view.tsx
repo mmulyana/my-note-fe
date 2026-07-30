@@ -69,7 +69,7 @@ export function TaskItemView({ node, updateAttributes }: ReactNodeViewProps) {
             />
             <span
               className={cn(
-                "flex items-center justify-center w-touch-checkbox-editor h-touch-checkbox-editor rounded-(--check-radius) border-[1.5px] transition-[background-color,border-color] duration-200",
+                "flex items-center justify-center w-touch-checkbox h-touch-checkbox rounded-(--check-radius) border-[1.5px] transition-[background-color,border-color] duration-200",
                 checked
                   ? "bg-(--check-on-bg) border-(--check-on-border)"
                   : "border-(--check-off-border)",

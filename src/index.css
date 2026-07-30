@@ -39,9 +39,9 @@
   --touch-scale: 1;
 
   /* note: checkbox tokens shared by the editor node view and the card preview */
-  --check-size: calc(0.9375rem * var(--touch-scale));
-  --check-mark-w: calc(9px * var(--touch-scale));
-  --check-mark-h: calc(7px * var(--touch-scale));
+  --check-size: calc(1.0625rem * var(--touch-scale));
+  --check-mark-w: calc(10px * var(--touch-scale));
+  --check-mark-h: calc(8px * var(--touch-scale));
   --check-radius: 0.25rem;
   --check-off-bg: oklch(0.872 0.01 258.338); /* note: tailwind gray-300 */
   /* note: unchecked border, dark theme; light value lives in [data-theme='light'] */
@@ -397,7 +397,7 @@ textarea {
   -webkit-appearance: none;
   flex: 0 0 auto;
   margin: 0;
-  border: 1.6px solid var(--check-off-border);
+  border: 1.5px solid var(--check-off-border);
   border-radius: var(--check-radius);
   /* background-color: var(--check-off-bg); */
   background-repeat: no-repeat;
@@ -737,8 +737,8 @@ textarea {
   --radius-4xl: calc(var(--radius) * 2.6);
 
   /* note: touch-target sizes scaled by --touch-scale; generates w-/h-/px- utilities */
-  --spacing-touch-checkbox-editor: var(--check-size);
-  --spacing-touch-checkbox: calc(1.25rem * var(--touch-scale));
+  /* note: one token for every task checkbox — editor, card preview and todos page */
+  --spacing-touch-checkbox: var(--check-size);
   --spacing-touch-picker-h: calc(1.75rem * var(--touch-scale));
   --spacing-touch-picker-px: calc(0.625rem * var(--touch-scale));
 }
