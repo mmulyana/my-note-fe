@@ -1,7 +1,12 @@
-import { useRef, useState, type ReactNode } from "react";
+import { useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { IconPlus, IconChevronDown } from "@tabler/icons-react";
+import {
+  IconPlus,
+  IconChevronDown,
+  IconArrowRight,
+  IconX,
+} from "@tabler/icons-react";
 import { useApi } from "@/hooks/use-api";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { request } from "@/lib/api-client";
@@ -19,6 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -27,6 +33,24 @@ import {
 type UpdatePayload = { id: string } & Partial<
   Pick<Todo, "text" | "checked" | "deadline" | "priority" | "today">
 >;
+
+type CreatePayload = {
+  id: string;
+  noteId: string;
+  text: string;
+  lastTodoId?: string;
+};
+
+/* note: passed only by the "all notes" view; the Today sections have no single note to add into */
+type AddTarget = {
+  noteId: string;
+  lastTodoId?: string;
+  onCreate: (payload: CreatePayload) => void;
+};
+
+/* note: the reference layout's primary round button — inverted ink circle */
+const CIRCLE_BTN =
+  "grid h-7 w-7 flex-none place-items-center rounded-full bg-(--ink) text-(--surface) cursor-pointer outline-none transition-opacity duration-140 hover:opacity-85";
 
 const TODAY_SECTIONS: { key: keyof TodoTodayGroups; label: string }[] = [
   { key: "today", label: "Today" },
@@ -116,17 +140,14 @@ export default function TodosPage() {
                 todos={group.todos}
                 onUpdate={updateTodo}
                 onDelete={deleteTodo}
-                addRow={
-                  <AddTodoRow
-                    noteId={group.noteId}
-                    lastTodoId={
-                      group.todos.length > 0
-                        ? group.todos[group.todos.length - 1].id
-                        : undefined
-                    }
-                    onCreate={createTodo}
-                  />
-                }
+                add={{
+                  noteId: group.noteId,
+                  lastTodoId:
+                    group.todos.length > 0
+                      ? group.todos[group.todos.length - 1].id
+                      : undefined,
+                  onCreate: createTodo,
+                }}
               />
             ))}
           </div>
@@ -159,13 +180,13 @@ function TodoCard({
   todos,
   onUpdate,
   onDelete,
-  addRow,
+  add,
 }: {
   title: string;
   todos: Todo[];
   onUpdate: (payload: UpdatePayload) => void;
   onDelete: (id: string) => void;
-  addRow?: ReactNode;
+  add?: AddTarget;
 }) {
   const [open, setOpen] = useState(false);
   const done = todos.filter((t) => t.checked).length;
@@ -178,20 +199,15 @@ function TodoCard({
         onClick={() => setOpen(true)}
         onKeyDown={(e) => e.key === "Enter" && setOpen(true)}
       >
-        <div className="shrink-0 flex items-center justify-between gap-2 px-3 pt-2.5 pb-2 border-b border-line">
-          <p className="text-[13px] font-semibold truncate">{title}</p>
-          <div className="flex-none">
+        <div className="shrink-0 px-3 pt-2.5">
+          <div className="w-fit">
             <TodoProgress done={done} total={todos.length} />
           </div>
+          <p className="mt-1.5 text-sm font-semibold truncate">{title}</p>
         </div>
 
         {/* note: pointer-events-none so row clicks fall through to the card and open the modal */}
-        <div
-          className={cn(
-            "flex-1 min-h-0 flex flex-col px-3 pt-1.5 pb-1 overflow-hidden pointer-events-none mask-[linear-gradient(to_bottom,black_78%,transparent)]",
-            addRow && "-mb-3.5",
-          )}
-        >
+        <div className="flex-1 min-h-0 flex flex-col px-3 pt-1.5 overflow-hidden pointer-events-none mask-[linear-gradient(to_bottom,black_80%,transparent)]">
           {todos.map((todo) => (
             <TodoItem
               key={todo.id}
@@ -203,28 +219,52 @@ function TodoCard({
           ))}
         </div>
 
-        {addRow && (
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative shrink-0 px-3 pb-2 pt-1.5 bg-linear-to-b from-transparent via-surface via-60% to-surface"
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="shrink-0 flex items-center gap-2 px-3 py-2 border-t border-line bg-surface-2"
+        >
+          {add ? (
+            <AddTodo {...add} />
+          ) : (
+            <span className="flex-1 min-w-0 text-[13px] text-ink-3">
+              {todos.length} task{todos.length === 1 ? "" : "s"}
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className={CIRCLE_BTN}
+            title="Open"
+            aria-label="Open"
           >
-            {addRow}
-          </div>
-        )}
+            <IconArrowRight size={15} />
+          </button>
+        </div>
       </section>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-lg gap-3">
-          <DialogHeader>
-            <div className="flex items-center justify-between gap-2 pr-7">
-              <DialogTitle className="truncate">{title}</DialogTitle>
-              <div className="flex-none">
-                <TodoProgress done={done} total={todos.length} />
-              </div>
+        {/* note: only the close button dismisses this dialog — an outside click or Escape
+            while editing a row would otherwise throw away the whole modal */}
+        <DialogContent
+          showClose={false}
+          onInteractOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
+          className="max-w-lg gap-0 p-0 overflow-hidden"
+        >
+          <DialogHeader className="gap-1.5 px-4 pt-3.5">
+            <div className="flex items-center gap-2">
+              <TodoProgress done={done} total={todos.length} />
+              <DialogClose
+                className="ml-auto grid h-7 w-7 flex-none place-items-center rounded-full bg-surface-hi text-ink-3 outline-none cursor-pointer transition-colors duration-140 hover:text-ink"
+                aria-label="Close"
+              >
+                <IconX size={15} />
+              </DialogClose>
             </div>
+            <DialogTitle className="truncate">{title}</DialogTitle>
           </DialogHeader>
 
-          <div className="flex flex-col max-h-[60vh] overflow-y-auto">
+          <div className="flex flex-col max-h-[60vh] overflow-y-auto px-4 pt-2 pb-3">
             {todos.map((todo) => (
               <TodoItem
                 key={todo.id}
@@ -236,7 +276,11 @@ function TodoCard({
             ))}
           </div>
 
-          {addRow}
+          {add && (
+            <div className="flex items-center gap-2 px-3 py-2.5 border-t border-line bg-surface-2">
+              <AddTodo {...add} showSubmit />
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </>
@@ -322,7 +366,13 @@ function TodoItem({
   };
 
   return (
-    <div className="shrink-0 flex items-center gap-2 py-1 border-b border-dashed border-(--task-line) hover:bg-(--surface-2) transition-colors duration-120">
+    <div
+      className={cn(
+        "shrink-0 flex items-center border-b border-dashed border-(--task-line) transition-colors duration-120",
+        /* note: roomier rows in the modal, denser in the fixed-height card */
+        showActions ? "gap-2.5 py-2 hover:bg-surface-2" : "gap-2 py-1",
+      )}
+    >
       <TaskCheckbox
         checked={todo.checked}
         onChange={(checked) => onUpdate({ id: todo.id, checked })}
@@ -362,20 +412,13 @@ function TodoItem({
   );
 }
 
-function AddTodoRow({
+/* note: renders as footer-bar children, so the parent owns the flex row */
+function AddTodo({
   noteId,
   lastTodoId,
   onCreate,
-}: {
-  noteId: string;
-  lastTodoId?: string;
-  onCreate: (payload: {
-    id: string;
-    noteId: string;
-    text: string;
-    lastTodoId?: string;
-  }) => void;
-}) {
+  showSubmit,
+}: AddTarget & { showSubmit?: boolean }) {
   const [active, setActive] = useState(false);
   const [text, setText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -406,31 +449,46 @@ function AddTodoRow({
     }
   };
 
-  if (!active) {
-    return (
-      <button
-        onClick={open}
-        className="flex w-full items-center gap-2 py-1 text-ink-3 hover:text-(--ink-2) transition-colors duration-120 cursor-pointer"
-      >
-        <IconPlus size={16} className="flex-none" />
-        <span className="text-sm">Add todo</span>
-      </button>
-    );
-  }
-
   return (
-    <div className="flex items-center gap-2 py-1">
-      <IconPlus size={16} className="text-(--ink-3) flex-none" />
-      <input
-        ref={inputRef}
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        onBlur={commit}
-        onKeyDown={handleKeyDown}
-        placeholder="New todo..."
-        className="text-sm flex-1 min-w-0 leading-snug bg-transparent outline-none border-b border-line focus:border-ink transition-colors duration-120 placeholder:text-(--ink-3)"
-      />
-    </div>
+    <>
+      {active ? (
+        <div className="flex flex-1 min-w-0 items-center gap-2">
+          <IconPlus size={16} className="text-ink-3 flex-none" />
+          <input
+            ref={inputRef}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onBlur={commit}
+            onKeyDown={handleKeyDown}
+            placeholder="New todo..."
+            className="text-sm flex-1 min-w-0 leading-snug bg-transparent outline-none placeholder:text-ink-3"
+          />
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={open}
+          className="flex flex-1 min-w-0 items-center gap-2 text-ink-3 hover:text-ink-2 transition-colors duration-120 cursor-pointer"
+        >
+          <IconPlus size={16} className="flex-none" />
+          <span className="text-sm">Add todo</span>
+        </button>
+      )}
+
+      {showSubmit && (
+        <button
+          type="button"
+          /* note: keep focus on the input so its blur-commit does not race this click */
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => (active ? commit() : open())}
+          className={CIRCLE_BTN}
+          title={active ? "Add todo" : "New todo"}
+          aria-label={active ? "Add todo" : "New todo"}
+        >
+          {active ? <IconArrowRight size={15} /> : <IconPlus size={15} />}
+        </button>
+      )}
+    </>
   );
 }
 
