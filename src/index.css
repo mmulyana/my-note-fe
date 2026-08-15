@@ -204,6 +204,33 @@ textarea {
     --columns: 6;
   }
 }
+.backdrop-drift {
+  --drift-gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--drift-gap);
+  will-change: transform;
+  animation: backdrop-drift 50s linear infinite;
+}
+@media (min-width: 640px) {
+  .backdrop-drift {
+    --drift-gap: 16px;
+  }
+}
+@keyframes backdrop-drift {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(-50% - var(--drift-gap) / 2));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .backdrop-drift {
+    animation: none;
+  }
+}
+
 .masonry.rows-view {
   display: flex;
   flex-direction: column;
