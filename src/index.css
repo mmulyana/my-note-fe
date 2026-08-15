@@ -374,10 +374,12 @@ textarea {
 .rich-content ul[data-type="taskList"] {
   list-style: none;
   padding-left: 0;
+  /* border-top: 1px dashed var(--task-line); */
 }
 /* note: consecutive single-item task lists sit flush, same as li-to-li */
 .rich-content ul[data-type="taskList"] + ul[data-type="taskList"] {
   margin-top: 0;
+  border-top: none;
 }
 /* note: margin 0 drops the .rich-content li gap so rows stack against their dividers */
 .rich-content ul[data-type="taskList"] li {
@@ -385,7 +387,8 @@ textarea {
   align-items: center;
   gap: 0.5em;
   margin: 0;
-  border-bottom: 1px dashed var(--task-line);
+  height: 24px;
+  /* border-bottom: 1px dashed var(--task-line); */
 }
 /* note: height fit-content so each wrapper hugs its content and centering can do the aligning */
 .rich-content ul[data-type="taskList"] li > label {
