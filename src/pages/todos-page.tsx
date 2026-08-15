@@ -41,14 +41,12 @@ type CreatePayload = {
   lastTodoId?: string;
 };
 
-/* note: passed only by the "all notes" view; the Today sections have no single note to add into */
 type AddTarget = {
   noteId: string;
   lastTodoId?: string;
   onCreate: (payload: CreatePayload) => void;
 };
 
-/* note: the reference layout's primary round button — inverted ink circle */
 const CIRCLE_BTN =
   "grid h-7 w-7 flex-none place-items-center rounded-full bg-(--ink) text-(--surface) cursor-pointer outline-none transition-opacity duration-140 hover:opacity-85";
 
@@ -206,7 +204,6 @@ function TodoCard({
           <p className="mt-1.5 text-sm font-semibold truncate">{title}</p>
         </div>
 
-        {/* note: pointer-events-none so row clicks fall through to the card and open the modal */}
         <div className="flex-1 min-h-0 flex flex-col px-3 pt-1.5 overflow-hidden pointer-events-none mask-[linear-gradient(to_bottom,black_80%,transparent)]">
           {todos.map((todo) => (
             <TodoItem
@@ -243,8 +240,6 @@ function TodoCard({
       </section>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        {/* note: only the close button dismisses this dialog — an outside click or Escape
-            while editing a row would otherwise throw away the whole modal */}
         <DialogContent
           showClose={false}
           onInteractOutside={(e) => e.preventDefault()}
@@ -368,9 +363,8 @@ function TodoItem({
   return (
     <div
       className={cn(
-        "shrink-0 flex items-center border-b border-dashed border-(--task-line) transition-colors duration-120",
-        /* note: roomier rows in the modal, denser in the fixed-height card */
-        showActions ? "gap-2.5 py-2 hover:bg-surface-2" : "gap-2 py-1",
+        "shrink-0 flex items-center transition-colors duration-120",
+        showActions ? "gap-2.5 py-1 hover:bg-surface-2" : "gap-2 py-1",
       )}
     >
       <TaskCheckbox
