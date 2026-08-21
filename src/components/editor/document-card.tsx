@@ -1,6 +1,7 @@
 import {
   IconFolderFilled,
   IconTagFilled,
+  IconPinFilled,
   IconLock,
   IconPlus,
 } from "@tabler/icons-react";
@@ -88,7 +89,12 @@ export function DocumentCard({ doc }: DocumentCardProps) {
             </div>
           )}
         </div>
-        <p>{relative(doc.updatedAt)}</p>
+        <div className="flex items-center gap-1">
+          {doc.pinned && (
+            <IconPinFilled size={12} className="shrink-0 text-ink-2/70" />
+          )}
+          <p>{relative(doc.updatedAt)}</p>
+        </div>
       </div>
 
       {doc.preview ? (
@@ -108,7 +114,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
             hasFooter && "-mb-3.5",
           )}
         >
-          Catatan kosong
+          Empty
         </div>
       )}
 

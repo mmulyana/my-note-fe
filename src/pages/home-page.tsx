@@ -1,5 +1,5 @@
+import { GroupWithNotes } from "@/components/editor/group-with-notes";
 import { DocumentCard } from "@/components/editor/document-card";
-import { PinnedNotes } from "@/components/editor/pinned-notes";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { IconFileText, IconSearch } from "@tabler/icons-react";
 import type { DocItem, IApi, Notes } from "@/lib/types";
@@ -13,21 +13,31 @@ export default function DocumentEditorPage() {
   const search = useAtomValue(searchQueryAtom);
   const debouncedSearch = useDebouncedValue(search.trim(), 300);
 
+  const { data: pinnedData } = useApi<IApi<Notes[]>>({
+    url: buildQuery(urls.Notes, { q: debouncedSearch, pinned: true }),
+    queryKey: debouncedSearch
+      ? ["notes", "pinned", { search: debouncedSearch }]
+      : ["notes", "pinned"],
+    keepPreviousData: true,
+  });
+
   const { data: notesData } = useApi<IApi<Notes[]>>({
-    url: buildQuery(urls.Notes, { q: debouncedSearch, pinned: false }),
+    url: buildQuery(urls.Notes, { q: debouncedSearch, pinned: false, hasFolder: false }),
     queryKey: debouncedSearch
       ? ["notes", { search: debouncedSearch }]
       : ["notes"],
     keepPreviousData: true,
   });
 
-  const docs: DocItem[] = (notesData?.data ?? []).map(toDocItem);
+  const docs: DocItem[] = [
+    ...(pinnedData?.data ?? []).map((n) => ({ ...toDocItem(n), pinned: true })),
+    ...(notesData?.data ?? []).map(toDocItem),
+  ];
   const searching = debouncedSearch.length > 0;
 
   return (
     <>
-      <PinnedNotes />
-
+      {!searching && <GroupWithNotes />}
       {docs.length > 0 ? (
         <div className="masonry grid-view pb-4">
           {docs.map((d) => (

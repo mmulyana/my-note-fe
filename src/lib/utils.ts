@@ -4,6 +4,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type {
   DocItem,
+  FolderWithNotes,
   NoteListFields,
   Notes,
   TodoDiff,
@@ -162,4 +163,8 @@ export function buildQuery(
     .join('&')
 
   return query ? `${baseUrl}?${query}` : baseUrl
+}
+
+export function folderNoteCount(folder: FolderWithNotes): number {
+  return folder.totalNotes ?? folder.notes?.length ?? 0
 }

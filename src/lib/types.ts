@@ -14,6 +14,19 @@ export type Folder = {
   name: string;
   color?: string;
   secret?: boolean;
+  pinned?: boolean;
+};
+
+export type FolderNotePreview = {
+  title: string | null;
+  text?: string;
+};
+
+export type FolderWithNotes = Folder & {
+  createdAt?: string;
+  updatedAt?: string;
+  notes: FolderNotePreview[];
+  totalNotes?: number;
 };
 
 export type GridView = "grid-view" | "rows-view";

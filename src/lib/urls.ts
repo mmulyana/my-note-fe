@@ -10,6 +10,7 @@ export const urls = {
   Register: "/auth/register",
   Me: "/auth/me",
   Folder: "/folders",
+  FolderWithNotes: "/folders/with-notes",
   FolderById: (id: string) => `/folders/${id}`,
   Uploads: "/uploads",
   Profile: "/me",

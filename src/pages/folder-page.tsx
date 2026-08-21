@@ -10,6 +10,8 @@ import {
   IconCheck,
   IconX,
   IconPencil,
+  IconPin,
+  IconPinnedOff,
 } from "@tabler/icons-react";
 import {
   DropdownMenu,
@@ -48,10 +50,6 @@ export default function FolderPage() {
 
   const saveFolder = async (data: Folder) => {
     if (!id) return;
-    await request<IApi<Folder>>(urls.FolderById(id), {
-      method: "PATCH",
-      body: data,
-    });
     queryClient.setQueryData(["folder", id], (prev: IApi<Folder> | undefined) =>
       prev ? { ...prev, data } : prev,
     );
@@ -62,7 +60,27 @@ export default function FolderPage() {
         data: prev.data.map((f) => (f.id === id ? data : f)),
       };
     });
+
+    let saved = false;
+    try {
+      await request<IApi<Folder>>(urls.FolderById(id), {
+        method: "PATCH",
+        body: data,
+      });
+      saved = true;
+    } catch (err) {
+      console.warn("Failed to save folder:", err);
+    }
+
     queryClient.invalidateQueries({ queryKey: ["notes"] });
+    if (saved) {
+      queryClient.invalidateQueries({ queryKey: ["folders", "with-notes"] });
+    }
+  };
+
+  const togglePin = () => {
+    if (!folder) return;
+    saveFolder({ ...folder, pinned: !folder.pinned });
   };
 
   const toggleHide = () => {
@@ -144,6 +162,13 @@ export default function FolderPage() {
             align="end"
             className="w-40 bg-surface border-line-2 rounded-md shadow-(--shadow-lg) py-1 px-0"
           >
+            <DropdownMenuItem
+              className="flex items-center gap-2.5 text-[13px] rounded-none cursor-pointer dark:text-white/50"
+              onClick={togglePin}
+            >
+              {folder?.pinned ? <IconPinnedOff size={14} /> : <IconPin size={14} />}
+              {folder?.pinned ? "Unpin" : "Pin"}
+            </DropdownMenuItem>
             <DropdownMenuItem
               className="flex items-center gap-2.5 text-[13px] rounded-none cursor-pointer dark:text-white/50"
               onClick={toggleHide}
