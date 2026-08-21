@@ -1,8 +1,13 @@
 import { useEffect, useMemo } from "react";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { useParams } from "react-router-dom";
 import { useDocumentActions } from "@/hooks/use-document-actions";
-import { editingDocAtom, isNewNoteAtom } from "@/store/document";
+import {
+  editingDocAtom,
+  editingFolderIdAtom,
+  editingLabelIdsAtom,
+  isNewNoteAtom,
+} from "@/store/document";
 import { useApi } from "@/hooks/use-api";
 import type { IApi } from "@/lib/types";
 import { urls } from "@/lib/urls";
@@ -14,15 +19,13 @@ export default function EditorWrapper() {
     closeEditor,
     deleteDoc,
     archiveDoc,
-    labelIds,
-    setLabelIds,
-    folderId,
-    setFolderId,
     pinnedDoc,
     secretDoc
   } = useDocumentActions();
   const editingDoc = useAtomValue(editingDocAtom);
   const isNewNote = useAtomValue(isNewNoteAtom);
+  const [labelIds, setLabelIds] = useAtom(editingLabelIdsAtom);
+  const [folderId, setFolderId] = useAtom(editingFolderIdAtom);
 
   const { name: labelName } = useParams<{ name: string }>();
   const { data: labelsData } = useApi<IApi<{ id: string; name: string }[]>>({

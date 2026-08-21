@@ -1,4 +1,5 @@
-import { useAtom } from "jotai";
+import { useCallback } from "react";
+import { useStore } from "jotai";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   editingIdAtom,
@@ -31,161 +32,183 @@ function isEmptyHtml(html: string): boolean {
 }
 
 export function useDocumentActions() {
+  const store = useStore();
   const queryClient = useQueryClient();
-  const [editingId, setEditingId] = useAtom(editingIdAtom);
-  const [, setEditingDoc] = useAtom(editingDocAtom);
-  const [hasChanged, setHasChanged] = useAtom(hasChangedAtom);
-  const [isNewNote, setIsNewNote] = useAtom(isNewNoteAtom);
-  const [labelIds, setLabelIds] = useAtom(editingLabelIdsAtom);
-  const [folderId, setFolderId] = useAtom(editingFolderIdAtom);
 
-  const openNew = () => {
+  const resetEditing = useCallback(() => {
+    store.set(editingIdAtom, null);
+    store.set(editingDocAtom, null);
+    store.set(hasChangedAtom, false);
+    store.set(isNewNoteAtom, false);
+    store.set(editingLabelIdsAtom, []);
+    store.set(editingFolderIdAtom, null);
+  }, [store]);
+
+  const openNew = useCallback(() => {
     const id = newId();
-    setHasChanged(false);
-    setIsNewNote(true);
-    setEditingDoc({
+    store.set(hasChangedAtom, false);
+    store.set(isNewNoteAtom, true);
+    store.set(editingDocAtom, {
       id,
       content: "",
       preview: "",
       todoSummary: { total: 0, done: 0 },
       updatedAt: Date.now(),
-      labels: []
+      labels: [],
     });
-    setEditingId(id);
-  };
+    store.set(editingIdAtom, id);
+  }, [store]);
 
-  const persist = async (
-    payload: DocumentPayload,
-    opts: {
-      overrideLabelIds?: string[];
-      overrideFolderId?: string | null;
-      flags?: NoteFlags;
-    } = {},
-  ) => {
-    if (!editingId) return;
-    const { overrideLabelIds, overrideFolderId, flags } = opts;
-    const isMetadataOnlyChange =
-      overrideLabelIds !== undefined || overrideFolderId !== undefined;
-    if (isNewNote && !hasChanged && isMetadataOnlyChange) return;
-    setHasChanged(true);
+  const persist = useCallback(
+    async (
+      payload: DocumentPayload,
+      opts: {
+        overrideLabelIds?: string[];
+        overrideFolderId?: string | null;
+        flags?: NoteFlags;
+      } = {},
+    ) => {
+      const editingId = store.get(editingIdAtom);
+      if (!editingId) return;
 
-    if (flags) {
-      setEditingDoc((prev) => (prev ? { ...prev, ...flags } : prev));
-    }
+      const isNewNote = store.get(isNewNoteAtom);
+      const hasChanged = store.get(hasChangedAtom);
+      const { overrideLabelIds, overrideFolderId, flags } = opts;
+      const isMetadataOnlyChange =
+        overrideLabelIds !== undefined || overrideFolderId !== undefined;
+      if (isNewNote && !hasChanged && isMetadataOnlyChange) return;
+      store.set(hasChangedAtom, true);
 
-    const ids = overrideLabelIds ?? labelIds;
-    const fId = overrideFolderId !== undefined ? overrideFolderId : folderId;
-    const diff = payload.todoDiff;
-    const todoDiff = diff
-      ? {
-          added: diff.added.map((t) => ({
-            id: t.id,
-            checked: t.checked,
-            text: t.text,
-            deadline: t.deadline,
-            today: t.today,
-            priority: t.priority,
-          })),
-          updated: diff.updated.map((u) => ({
-            id: u.id,
-            fields: Object.fromEntries(
-              u.changedFields.map((f) => [f, u.after[f]]),
-            ),
-          })),
-          removed: diff.removed.map((t) => t.id),
-        }
-      : undefined;
-
-    const body = {
-      content: payload.content,
-      preview: payload.preview,
-      todoDiff,
-      labelIds: ids,
-      folderId: fId,
-      ...flags,
-    };
-
-    try {
-      if (isNewNote) {
-        await request<IApi<NoteDetail>>(urls.Notes, {
-          method: "POST",
-          body: { id: editingId, content: payload.content },
-        });
-        setIsNewNote(false);
+      if (flags) {
+        store.set(editingDocAtom, (prev) => (prev ? { ...prev, ...flags } : prev));
       }
-      await request(urls.Note(editingId), { method: "PATCH", body });
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
-    } catch (err) {
-      console.error("Save failed:", err);
-    }
-  };
 
-  const autoSave = (
-    payload: DocumentPayload,
-    overrideLabelIds?: string[],
-    overrideFolderId?: string | null,
-  ) => persist(payload, { overrideLabelIds, overrideFolderId });
+      const ids = overrideLabelIds ?? store.get(editingLabelIdsAtom);
+      const fId =
+        overrideFolderId !== undefined
+          ? overrideFolderId
+          : store.get(editingFolderIdAtom);
+      const diff = payload.todoDiff;
+      const todoDiff = diff
+        ? {
+            added: diff.added.map((t) => ({
+              id: t.id,
+              checked: t.checked,
+              text: t.text,
+              deadline: t.deadline,
+              today: t.today,
+              priority: t.priority,
+            })),
+            updated: diff.updated.map((u) => ({
+              id: u.id,
+              fields: Object.fromEntries(
+                u.changedFields.map((f) => [f, u.after[f]]),
+              ),
+            })),
+            removed: diff.removed.map((t) => t.id),
+          }
+        : undefined;
 
-  const closeEditor = async (finalContent: string) => {
-    const id = editingId;
-    const changed = hasChanged;
-    const wasNew = isNewNote;
-    setEditingId(null);
-    setEditingDoc(null);
-    setHasChanged(false);
-    setIsNewNote(false);
-    setLabelIds([]);
-    setFolderId(null);
+      const body = {
+        content: payload.content,
+        preview: payload.preview,
+        todoDiff,
+        labelIds: ids,
+        folderId: fId,
+        ...flags,
+      };
 
-    if (!id) return;
-
-    if (wasNew && !changed) {
-      return;
-    }
-
-    if (isEmptyHtml(finalContent)) {
-      if (!wasNew) {
-        try {
-          await request(urls.Note(id), { method: "DELETE" });
-        } catch (err) {
-          console.error("Failed to delete empty note:", err);
-        }
-      }
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
-    } else if (changed) {
       try {
-        await request(urls.Note(id), {
-          method: "PATCH",
-          body: {
-            content: finalContent,
-            preview: deriveListFields(finalContent).preview,
-            labelIds,
-            folderId,
-          },
-        });
+        if (isNewNote) {
+          await request<IApi<NoteDetail>>(urls.Notes, {
+            method: "POST",
+            body: { id: editingId, content: payload.content },
+          });
+          store.set(isNewNoteAtom, false);
+        }
+        await request(urls.Note(editingId), { method: "PATCH", body });
+        queryClient.invalidateQueries({ queryKey: ["notes"] });
       } catch (err) {
-        console.error("Final save failed:", err);
+        console.error("Save failed:", err);
       }
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
-    }
-  };
+    },
+    [store, queryClient],
+  );
 
-  const archiveDoc = (payload: DocumentPayload, archived = true) =>
-    persist(payload, { flags: { archived } });
-  const pinnedDoc = (payload: DocumentPayload, pinned = true) =>
-    persist(payload, { flags: { pinned } });
-  const secretDoc = (payload: DocumentPayload, secret = true) =>
-    persist(payload, { flags: { secret } });
+  const autoSave = useCallback(
+    (
+      payload: DocumentPayload,
+      overrideLabelIds?: string[],
+      overrideFolderId?: string | null,
+    ) => persist(payload, { overrideLabelIds, overrideFolderId }),
+    [persist],
+  );
 
-  const deleteDoc = async () => {
-    const id = editingId;
-    const wasNew = isNewNote;
-    setEditingId(null);
-    setEditingDoc(null);
-    setHasChanged(false);
-    setIsNewNote(false);
-    setLabelIds([]);
-    setFolderId(null);
+  const closeEditor = useCallback(
+    async (finalContent: string) => {
+      // note: snapshot before the reset, the final PATCH still needs these
+      const id = store.get(editingIdAtom);
+      const changed = store.get(hasChangedAtom);
+      const wasNew = store.get(isNewNoteAtom);
+      const labelIds = store.get(editingLabelIdsAtom);
+      const folderId = store.get(editingFolderIdAtom);
+      resetEditing();
+
+      if (!id) return;
+
+      if (wasNew && !changed) {
+        return;
+      }
+
+      if (isEmptyHtml(finalContent)) {
+        if (!wasNew) {
+          try {
+            await request(urls.Note(id), { method: "DELETE" });
+          } catch (err) {
+            console.error("Failed to delete empty note:", err);
+          }
+        }
+        queryClient.invalidateQueries({ queryKey: ["notes"] });
+      } else if (changed) {
+        try {
+          await request(urls.Note(id), {
+            method: "PATCH",
+            body: {
+              content: finalContent,
+              preview: deriveListFields(finalContent).preview,
+              labelIds,
+              folderId,
+            },
+          });
+        } catch (err) {
+          console.error("Final save failed:", err);
+        }
+        queryClient.invalidateQueries({ queryKey: ["notes"] });
+      }
+    },
+    [store, resetEditing, queryClient],
+  );
+
+  const archiveDoc = useCallback(
+    (payload: DocumentPayload, archived = true) =>
+      persist(payload, { flags: { archived } }),
+    [persist],
+  );
+  const pinnedDoc = useCallback(
+    (payload: DocumentPayload, pinned = true) =>
+      persist(payload, { flags: { pinned } }),
+    [persist],
+  );
+  const secretDoc = useCallback(
+    (payload: DocumentPayload, secret = true) =>
+      persist(payload, { flags: { secret } }),
+    [persist],
+  );
+
+  const deleteDoc = useCallback(async () => {
+    const id = store.get(editingIdAtom);
+    const wasNew = store.get(isNewNoteAtom);
+    resetEditing();
     if (id && !wasNew) {
       try {
         await request(urls.Note(id), { method: "DELETE" });
@@ -194,7 +217,7 @@ export function useDocumentActions() {
         console.error("Failed to delete note:", err);
       }
     }
-  };
+  }, [store, resetEditing, queryClient]);
 
   return {
     openNew,
@@ -204,9 +227,5 @@ export function useDocumentActions() {
     archiveDoc,
     pinnedDoc,
     secretDoc,
-    labelIds,
-    setLabelIds,
-    folderId,
-    setFolderId,
   };
 }

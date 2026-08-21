@@ -5,8 +5,10 @@ import {
   IconMinimize,
   IconPinFilled,
 } from "@tabler/icons-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import { useAtom, useAtomValue } from "jotai";
 import { EditorContent } from "@tiptap/react";
+import { closeRequestAtom, isFullScreenAtom } from "@/store/document";
 import { DragHandle } from "@tiptap/extension-drag-handle-react";
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 import { useAutoSave, type SaveStatus } from "@/hooks/use-autosave";
@@ -59,9 +61,11 @@ export function Editor({
 }: EditorProps) {
   const editor = useDocumentEditor(doc.content);
   const isMobile = useIsMobile();
-  const [isFull, setIsFull] = useState(false);
+  const [isFull, setIsFull] = useAtom(isFullScreenAtom);
   // mobile is always full screen; desktop follows the manual toggle
   const full = isFull || isMobile;
+
+  useEffect(() => () => setIsFull(false), [setIsFull]);
 
   const { status, triggerSave, flushPayload } = useAutoSave({
     editor,
@@ -116,23 +120,18 @@ export function Editor({
     [],
   );
 
-  const pushedRef = useRef(false);
   const handleCloseRef = useRef(handleClose);
   handleCloseRef.current = handleClose;
-  useEffect(() => {
-    if (!pushedRef.current) {
-      window.history.pushState({ noteEditor: true }, "");
-      pushedRef.current = true;
-    }
-    const onPop = () => handleCloseRef.current();
-    window.addEventListener("popstate", onPop);
-    return () => window.removeEventListener("popstate", onPop);
-  }, []);
 
-  const requestClose = useCallback(() => {
-    if (pushedRef.current) window.history.back();
-    else handleClose();
-  }, [handleClose]);
+  const closeRequest = useAtomValue(closeRequestAtom);
+  const seenCloseRequestRef = useRef(closeRequest);
+  useEffect(() => {
+    if (closeRequest === seenCloseRequestRef.current) return;
+    seenCloseRequestRef.current = closeRequest;
+    handleCloseRef.current();
+  }, [closeRequest]);
+
+  const requestClose = handleClose;
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
