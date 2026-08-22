@@ -1,6 +1,6 @@
 import type { FolderNotePreview, FolderWithNotes, IApi } from "@/lib/types";
 import { buildQuery, cn, folderNoteCount } from "@/lib/utils";
-import { IconPinFilled, IconLock } from "@tabler/icons-react";
+import { IconLock } from "@tabler/icons-react";
 import { useApi } from "@/hooks/use-api";
 import { Link } from "react-router-dom";
 import { urls } from "@/lib/urls";
@@ -17,10 +17,6 @@ export function GroupWithNotes() {
 
   return (
     <section className="mb-4">
-      <div className="flex items-center gap-1.5 mb-2 text-[10px] uppercase tracking-[0.08em] text-ink-3">
-        <IconPinFilled size={12} />
-        Pinned groups
-      </div>
       <div className="grid gap-2 sm:gap-3 grid-cols-[repeat(auto-fill,minmax(132px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(168px,1fr))]">
         {folders.map((folder) => (
           <FolderTile key={folder.id} folder={folder} />
