@@ -66,7 +66,7 @@ function FolderTile({ folder }: { folder: FolderWithNotes }) {
             })
           ) : (
             <div className="absolute inset-0 grid place-items-center rounded-lg border border-dashed border-line text-[10px] text-ink-3 italic">
-              Kosong
+              Empty
             </div>
           )}
         </div>

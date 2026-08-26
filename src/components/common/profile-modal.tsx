@@ -146,7 +146,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
             onChange={handleFileChange}
           />
           <span className="text-[11px] text-(--ink-3)">
-            Klik foto untuk mengganti
+            Click photo to change
           </span>
         </div>
 
@@ -169,7 +169,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
             className="h-8 px-3 rounded-md text-[13px] font-medium text-(--ink-2) transition-colors hover:text-(--ink) cursor-pointer"
             onClick={() => onOpenChange(false)}
           >
-            Batal
+            Cancel
           </button>
           <button
             type="button"
@@ -177,7 +177,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
             className="h-8 px-3.5 rounded-md text-[13px] font-medium bg-(--surface-hi) text-(--ink) border border-(--line-2) transition-colors hover:bg-(--surface-2) disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             onClick={handleSave}
           >
-            {saving ? "Menyimpan..." : "Simpan"}
+            {saving ? "Saving..." : "Save"}
           </button>
         </DialogFooter>
       </DialogContent>

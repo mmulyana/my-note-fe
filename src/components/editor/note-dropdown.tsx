@@ -31,7 +31,7 @@ export function NoteDropdown({
     <DropdownMenu>
       <DropdownMenuTrigger
         className={`grid place-items-center w-7 h-7 rounded-lg border border-(--line) bg-(--surface) text-(--ink-3) transition-[background,color,border-color] duration-150 hover:bg-(--surface-hi) hover:text-(--ink) hover:border-(--line-2) outline-none ${className ?? ""}`}
-        aria-label="Opsi catatan"
+        aria-label="Note options"
         onClick={(e) => e.stopPropagation()}
       >
         <IconDots size={15} />
@@ -72,7 +72,7 @@ export function NoteDropdown({
           }}
         >
           <IconTrash size={14} />
-          Hapus
+          Delete
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

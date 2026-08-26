@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useStore } from "jotai";
 import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import {
   editingIdAtom,
   editingDocAtom,
@@ -9,13 +10,14 @@ import {
   editingLabelIdsAtom,
   editingFolderIdAtom,
 } from "@/store/document";
-import type { DocumentPayload, NoteFlags } from "@/lib/types";
+import type { DocumentPayload, NoteDetail, NoteFlags } from "@/lib/types";
 import { newId, deriveListFields } from "@/lib/utils";
 import { request } from "@/lib/api-client";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import type { IApi } from "@/lib/types";
 import { urls } from "@/lib/urls";
 
-interface NoteDetail {
+interface CreateNoteResponse {
   id: string;
   title: string;
   content: string;
@@ -34,6 +36,8 @@ function isEmptyHtml(html: string): boolean {
 export function useDocumentActions() {
   const store = useStore();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const resetEditing = useCallback(() => {
     store.set(editingIdAtom, null);
@@ -57,7 +61,53 @@ export function useDocumentActions() {
       labels: [],
     });
     store.set(editingIdAtom, id);
-  }, [store]);
+    if (isMobile) navigate(`/note/${id}`);
+  }, [store, isMobile, navigate]);
+
+  const openNoteData = useCallback(
+    async (id: string) => {
+      try {
+        const detail = await request<IApi<NoteDetail>>(urls.Note(id));
+        store.set(hasChangedAtom, false);
+        store.set(
+          editingLabelIdsAtom,
+          (detail.data.labels ?? []).map((c) => c.id),
+        );
+        store.set(editingFolderIdAtom, detail.data.folderId ?? null);
+        store.set(editingDocAtom, {
+          id: detail.data.id,
+          content: detail.data.content,
+          preview: "",
+          todoSummary: { total: 0, done: 0 },
+          labels: (detail.data.labels ?? []).map(({ id, name }) => ({
+            id,
+            name,
+          })),
+          folderId: detail.data.folderId ?? null,
+          updatedAt: new Date(detail.data.updatedAt).getTime(),
+          folder: detail.data.folder,
+          secret: detail.data.secret,
+          archived: detail.data.archived,
+          pinned: detail.data.pinned,
+        });
+        store.set(editingIdAtom, id);
+      } catch (err) {
+        console.error("Failed to fetch note detail:", err);
+      }
+    },
+    [store],
+  );
+
+  const openNote = useCallback(
+    (id: string) => {
+      if (isMobile) {
+        navigate(`/note/${id}`);
+        return;
+      }
+      openNoteData(id);
+    },
+    [isMobile, navigate, openNoteData],
+  );
 
   const persist = useCallback(
     async (
@@ -120,7 +170,7 @@ export function useDocumentActions() {
 
       try {
         if (isNewNote) {
-          await request<IApi<NoteDetail>>(urls.Notes, {
+          await request<IApi<CreateNoteResponse>>(urls.Notes, {
             method: "POST",
             body: { id: editingId, content: payload.content },
           });
@@ -209,6 +259,7 @@ export function useDocumentActions() {
     const id = store.get(editingIdAtom);
     const wasNew = store.get(isNewNoteAtom);
     resetEditing();
+    if (isMobile) navigate(-1);
     if (id && !wasNew) {
       try {
         await request(urls.Note(id), { method: "DELETE" });
@@ -217,10 +268,12 @@ export function useDocumentActions() {
         console.error("Failed to delete note:", err);
       }
     }
-  }, [store, resetEditing, queryClient]);
+  }, [store, resetEditing, queryClient, isMobile, navigate]);
 
   return {
     openNew,
+    openNote,
+    openNoteData,
     autoSave,
     closeEditor,
     deleteDoc,

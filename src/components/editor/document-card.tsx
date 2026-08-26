@@ -5,62 +5,23 @@ import {
   IconLock,
   IconPlus,
 } from "@tabler/icons-react";
-import { useSetAtom } from "jotai";
-import {
-  editingIdAtom,
-  editingDocAtom,
-  hasChangedAtom,
-  editingLabelIdsAtom,
-  editingFolderIdAtom,
-} from "@/store/document";
 import { TodoProgress } from "@/components/editor/todo-progress";
-import type { DocItem, IApi, NoteDetail } from "@/lib/types";
-import { request } from "@/lib/api-client";
+import { useDocumentActions } from "@/hooks/use-document-actions";
+import type { DocItem } from "@/lib/types";
 import { cn, relative } from "@/lib/utils";
-import { urls } from "@/lib/urls";
 
 interface DocumentCardProps {
   doc: DocItem;
 }
 
 export function DocumentCard({ doc }: DocumentCardProps) {
-  const setEditingId = useSetAtom(editingIdAtom);
-  const setEditingDoc = useSetAtom(editingDocAtom);
-  const setHasChanged = useSetAtom(hasChangedAtom);
-  const setEditingLabelIds = useSetAtom(editingLabelIdsAtom);
-  const setEditingFolderId = useSetAtom(editingFolderIdAtom);
+  const { openNote } = useDocumentActions();
 
   const { total, done } = doc.todoSummary;
   const isSecret = doc.folder?.secret || doc.secret;
   const hasFooter = total > 0 || doc.labels.length > 0;
 
-  const handleOpen = async () => {
-    try {
-      const detail = await request<IApi<NoteDetail>>(urls.Note(doc.id));
-      setHasChanged(false);
-      setEditingLabelIds((detail.data.labels ?? []).map((c) => c.id));
-      setEditingFolderId(detail.data.folderId ?? null);
-      setEditingDoc({
-        id: detail.data.id,
-        content: detail.data.content,
-        preview: "",
-        todoSummary: { total: 0, done: 0 },
-        labels: (detail.data.labels ?? []).map(({ id, name }) => ({
-          id,
-          name,
-        })),
-        folderId: detail.data.folderId ?? null,
-        updatedAt: new Date(detail.data.updatedAt).getTime(),
-        folder: detail.data.folder,
-        secret: detail.data.secret,
-        archived: detail.data.archived,
-        pinned: detail.data.pinned,
-      });
-      setEditingId(doc.id);
-    } catch (err) {
-      console.error("Failed to fetch note detail:", err);
-    }
-  };
+  const handleOpen = () => openNote(doc.id);
 
   return (
     <article

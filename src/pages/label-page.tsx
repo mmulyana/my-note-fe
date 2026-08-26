@@ -46,7 +46,7 @@ export default function LabelPage() {
             No documents
           </div>
           <div className="text-sm max-w-75">
-            Belum ada catatan di label "{labelName}".
+            No notes in label "{labelName}" yet.
           </div>
         </div>
       )}

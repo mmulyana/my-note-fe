@@ -69,7 +69,7 @@ export function ImageSettingsPopup({
             )}
             onClick={() => onChange({ width: null })}
           >
-            Asli
+            Original
           </button>
         </div>
       </Field>
@@ -78,12 +78,12 @@ export function ImageSettingsPopup({
         <NumberField
           value={attrs.maxWidth}
           unit="px"
-          placeholder="Tanpa batas"
+          placeholder="No limit"
           onChange={(v) => onChange({ maxWidth: v ? `${v}px` : null })}
         />
       </Field>
 
-      <Field label="Posisi">
+      <Field label="Position">
         <div className="flex gap-1">
           {ALIGNS.map(({ value, icon: Icon }) => (
             <button
@@ -134,7 +134,7 @@ export function ImageSettingsPopup({
           </select>
         ) : (
           <p className="text-[11px] text-(--ink-3)">
-            Isi Height dulu supaya Object Fit kelihatan efeknya.
+            Set a height first to see the Object Fit effect.
           </p>
         )}
       </Field>

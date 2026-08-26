@@ -43,7 +43,7 @@ export function FolderPicker({
 
   const items =
     folders.length === 0 ? (
-      <p className="px-2 py-1.5 text-[12px] text-(--ink-3)">Belum ada folder</p>
+      <p className="px-2 py-1.5 text-[12px] text-(--ink-3)">No folders yet</p>
     ) : (
       folders.map((folder) => (
         <DropdownMenuCheckboxItem

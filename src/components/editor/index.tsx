@@ -4,9 +4,11 @@ import {
   IconMaximize,
   IconMinimize,
   IconPinFilled,
+  IconArrowLeft,
 } from "@tabler/icons-react";
 import { useCallback, useEffect, useRef } from "react";
 import { useAtom, useAtomValue } from "jotai";
+import { useNavigate } from "react-router-dom";
 import { EditorContent } from "@tiptap/react";
 import { closeRequestAtom, isFullScreenAtom } from "@/store/document";
 import { DragHandle } from "@tiptap/extension-drag-handle-react";
@@ -61,6 +63,7 @@ export function Editor({
 }: EditorProps) {
   const editor = useDocumentEditor(doc.content);
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
   const [isFull, setIsFull] = useAtom(isFullScreenAtom);
   // mobile is always full screen; desktop follows the manual toggle
   const full = isFull || isMobile;
@@ -131,7 +134,14 @@ export function Editor({
     handleCloseRef.current();
   }, [closeRequest]);
 
-  const requestClose = handleClose;
+  const requestClose = useCallback(() => {
+    // note: on mobile, closing means leaving the /note/:id route; useBackGuard saves+resets from there.
+    if (isMobile) {
+      navigate(-1);
+      return;
+    }
+    handleClose();
+  }, [isMobile, navigate, handleClose]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -158,6 +168,19 @@ export function Editor({
         )}
         onMouseDown={(e) => e.stopPropagation()}
       >
+        {isMobile && (
+          <div className="absolute top-3 left-3 z-10">
+            <button
+              type="button"
+              onClick={requestClose}
+              className="grid place-items-center w-7 h-7 rounded-lg border border-line bg-surface text-ink-3 transition-[background,color,border-color] duration-150 hover:bg-surface-hi hover:text-ink hover:border-line-2 outline-none"
+              aria-label="Back"
+              title="Back"
+            >
+              <IconArrowLeft size={15} />
+            </button>
+          </div>
+        )}
         <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
           {!isMobile && (
             <button

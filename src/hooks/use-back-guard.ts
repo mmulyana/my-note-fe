@@ -1,42 +1,31 @@
-import { useEffect } from "react";
-import { useBlocker } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import { useBlocker, useLocation } from "react-router-dom";
 import { useAtomValue, useSetAtom } from "jotai";
-import {
-  closeRequestAtom,
-  editingIdAtom,
-  isFullScreenAtom,
-} from "@/store/document";
-import { useIsMobile } from "@/hooks/use-is-mobile";
+import { closeRequestAtom, isFullScreenAtom } from "@/store/document";
 
-type Layer = "detail" | "full" | null;
-
-/**
- * - Mobile: back menutup note.
- * - Desktop: back dari full-screen kembali ke modal windowed.
- */
+// note: mobile note-close is driven by leaving the /note/:id route (see NotePage), not a blocker here.
 export function useBackGuard() {
-  const isMobile = useIsMobile();
-  const isDetailOpen = useAtomValue(editingIdAtom) !== null;
   const isFullScreen = useAtomValue(isFullScreenAtom);
   const setFullScreen = useSetAtom(isFullScreenAtom);
   const requestClose = useSetAtom(closeRequestAtom);
+  const location = useLocation();
+  const prevPathRef = useRef(location.pathname);
 
-  const layer: Layer = isMobile
-    ? isDetailOpen
-      ? "detail"
-      : null
-    : isFullScreen
-      ? "full"
-      : null;
+  useEffect(() => {
+    const prevPath = prevPathRef.current;
+    prevPathRef.current = location.pathname;
+    const leftNoteRoute =
+      prevPath.startsWith("/note/") && !location.pathname.startsWith("/note/");
+    if (leftNoteRoute) requestClose((n) => n + 1);
+  }, [location.pathname, requestClose]);
 
   const blocker = useBlocker(
-    ({ historyAction }) => historyAction === "POP" && layer !== null,
+    ({ historyAction }) => historyAction === "POP" && isFullScreen,
   );
 
   useEffect(() => {
     if (blocker.state !== "blocked") return;
-    if (layer === "detail") requestClose((n) => n + 1);
-    else if (layer === "full") setFullScreen(false);
+    setFullScreen(false);
     blocker.reset();
-  }, [blocker, layer, requestClose, setFullScreen]);
+  }, [blocker, setFullScreen]);
 }

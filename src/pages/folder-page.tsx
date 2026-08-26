@@ -154,7 +154,7 @@ export default function FolderPage() {
         <DropdownMenu>
           <DropdownMenuTrigger
             className="grid place-items-center w-7 h-7 rounded-lg border border-line bg-surface text-ink-3 transition-[background,color,border-color] duration-150 hover:bg-surface-hi hover:text-ink hover:border-line-2 outline-none"
-            aria-label="Opsi folder"
+            aria-label="Folder options"
           >
             <IconDots size={15} />
           </DropdownMenuTrigger>
@@ -195,7 +195,7 @@ export default function FolderPage() {
             No documents
           </div>
           <div className="text-sm max-w-75">
-            Belum ada catatan di folder "{folder?.name ?? ""}".
+            No notes in folder "{folder?.name ?? ""}" yet.
           </div>
         </div>
       )}

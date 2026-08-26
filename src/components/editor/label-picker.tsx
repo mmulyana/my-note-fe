@@ -46,7 +46,7 @@ export function LabelPicker({
 
   const items =
     labels.length === 0 ? (
-      <p className="px-2 py-1.5 text-[12px] text-(--ink-3)">Belum ada label</p>
+      <p className="px-2 py-1.5 text-[12px] text-(--ink-3)">No labels yet</p>
     ) : (
       labels.map((cat) => (
         <DropdownMenuCheckboxItem

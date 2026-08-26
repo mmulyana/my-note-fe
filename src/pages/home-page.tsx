@@ -50,12 +50,12 @@ export default function DocumentEditorPage() {
             {searching ? <IconSearch size={30} /> : <IconFileText size={30} />}
           </div>
           <div className="text-[17px] font-semibold text-ink-2">
-            {searching ? "Tidak ada hasil" : "No documents"}
+            {searching ? "No results" : "No notes yet"}
           </div>
           <div className="text-sm max-w-75">
             {searching
-              ? `Tidak ada catatan yang cocok dengan "${debouncedSearch}".`
-              : 'Klik "Take a note…" untuk bikin dokumen pertama.'}
+              ? `No notes match "${debouncedSearch}".`
+              : "Tap the + button to create your first note."}
           </div>
         </div>
       )}
