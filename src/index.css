@@ -384,10 +384,10 @@ textarea {
 /* note: margin 0 drops the .rich-content li gap so rows stack against their dividers */
 .rich-content ul[data-type="taskList"] li {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5em;
   margin: 0;
-  height: 24px;
+  min-height: 24px;
   /* border-bottom: 1px dashed var(--task-line); */
 }
 /* note: height fit-content so each wrapper hugs its content and centering can do the aligning */

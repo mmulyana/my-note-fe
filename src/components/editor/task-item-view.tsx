@@ -49,11 +49,11 @@ export function TaskItemView({ node, updateAttributes }: ReactNodeViewProps) {
       data-deadline={deadline ?? undefined}
       data-today={today ?? undefined}
     >
-      <div className="flex justify-between items-center">
-        <div className="flex gap-2 items-center flex-1 min-w-0">
+      <div className="flex justify-between items-start">
+        <div className="flex gap-2 items-start flex-1 min-w-0">
           <label
             contentEditable={false}
-            className="flex-none cursor-pointer select-none"
+            className="flex-none cursor-pointer select-none mt-[0.15em]"
           >
             <input
               type="checkbox"
