@@ -7,6 +7,15 @@ import { authTokenAtom } from '@/store/auth';
 import { useApi } from '@/hooks/use-api';
 import { urls } from '@/lib/urls';
 
+// note: spinner shown by react-router while protectedRouteLoader is restoring the session
+export function ProtectedRouteFallback() {
+  return (
+    <div className="flex h-screen w-screen items-center justify-center bg-surface">
+      <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand border-t-transparent" />
+    </div>
+  );
+}
+
 function ProtectedRoute() {
   const token = useAtomValue(authTokenAtom);
   const setProfile = useSetAtom(profileAtom);
@@ -25,3 +34,4 @@ function ProtectedRoute() {
 }
 
 export default memo(ProtectedRoute);
+

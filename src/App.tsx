@@ -1,5 +1,8 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import ProtectedRoute from "@/components/common/protected-route";
+import ProtectedRoute, {
+  ProtectedRouteFallback,
+} from "@/components/common/protected-route";
+import { protectedRouteLoader } from "@/lib/api-client";
 import RegisterPage from "@/pages/register-page";
 import AppLayout from "@/components/layouts/app-layout";
 import TrashPage from "@/pages/trash-page";
@@ -16,6 +19,9 @@ const router = createBrowserRouter([
   { path: "/register", element: <RegisterPage /> },
   {
     element: <ProtectedRoute />,
+    // note: restores the session and shows the fallback spinner before this route tree renders
+    loader: protectedRouteLoader,
+    HydrateFallback: ProtectedRouteFallback,
     children: [
       {
         path: "/",

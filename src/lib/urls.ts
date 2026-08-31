@@ -8,6 +8,8 @@ export const urls = {
   Labels: "/labels",
   Login: "/auth/login",
   Register: "/auth/register",
+  RefreshToken: "/auth/refresh",
+  Logout: "/auth/logout",
   Me: "/auth/me",
   Folder: "/folders",
   FolderWithNotes: "/folders/with-notes",

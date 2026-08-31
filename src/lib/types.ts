@@ -39,9 +39,26 @@ export interface IApi<T = void> {
 
 export interface AuthData {
   accessToken: string;
+  refreshToken?: string;
   expiresAt: number;
   email: string;
 }
+
+export interface RefreshTokenRequest {
+  refreshToken: string;
+}
+
+export interface RefreshTokenResponse {
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: number;
+  email: string;
+}
+
+export interface LogoutRequest {
+  refreshToken: string;
+}
+
 
 export interface ProfileResponse {
   id: string;

@@ -12,7 +12,7 @@ import { authTokenAtom } from "@/store/auth";
 import { profileAtom } from "@/store/profile";
 import { useApi } from "@/hooks/use-api";
 import type { AuthData, IApi } from "@/lib/types";
-import { setToken } from "@/lib/auth";
+import { setAuthTokens } from "@/lib/auth";
 import { urls } from "@/lib/urls";
 
 export default function RegisterPage() {
@@ -36,7 +36,11 @@ export default function RegisterPage() {
       { email, password },
       {
         onSuccess: (res) => {
-          setToken(res.data.accessToken, res.data.expiresAt);
+          setAuthTokens({
+            accessToken: res.data.accessToken,
+            refreshToken: res.data.refreshToken,
+            expiresAt: res.data.expiresAt,
+          });
           setAuthToken(res.data.accessToken);
           setProfile({ email: res.data.email });
           navigate("/");
