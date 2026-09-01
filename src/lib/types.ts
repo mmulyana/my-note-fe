@@ -152,6 +152,23 @@ export interface DocItem {
   archived?: boolean
 }
 
+export type FeedbackType = "report" | "feature_request" | "feedback";
+
+export interface FeedbackPayload {
+  type: FeedbackType;
+  title: string;
+  description: string;
+  customFields?: { rating?: number };
+}
+
+export interface FeedbackResponse {
+  id: string;
+  type: FeedbackType;
+  title: string;
+  status: string;
+  createdAt: string;
+}
+
 export interface NoteDetail {
   id: string;
   title: string;

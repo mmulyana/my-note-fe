@@ -16,6 +16,7 @@ export const urls = {
   FolderById: (id: string) => `/folders/${id}`,
   Uploads: "/uploads",
   Profile: "/me",
+  Feedback: "/feedback",
 };
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL ?? "/api").replace(/\/api\/?$/, "");

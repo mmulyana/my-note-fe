@@ -3,6 +3,7 @@ import EditorWrapper from "@/components/editor/wrapper";
 import { Sidebar } from "@/components/common/sidebar";
 import { Tabbar } from "@/components/common/tabbar";
 import { Topbar } from "@/components/common/topbar";
+import { FeedbackButton } from "@/components/common/feedback-button";
 import { useScrolledPast } from "@/hooks/use-scrolled-past";
 import { useBackGuard } from "@/hooks/use-back-guard";
 
@@ -13,6 +14,7 @@ export default function AppLayout() {
       <MainContent />
       <EditorWrapper />
       <Tabbar />
+      <FeedbackButton />
       <BackGuard />
     </div>
   );
