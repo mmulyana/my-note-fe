@@ -125,6 +125,38 @@ export interface TodoDiff {
   unchanged: number;
 }
 
+// link cards carry the OG metadata inline so a saved note renders without a
+// round trip; the server keeps its own copy so links stay queryable per user.
+export interface LinkPayload {
+  id: string;
+  url: string;
+  title: string;
+  description: string;
+  image: string;
+  favicon: string;
+  siteName: string;
+}
+
+// the fields the server knows how to update; `id` is the key, never a field
+export type LinkField = Exclude<keyof LinkPayload, "id">;
+
+export interface UpdatedLink {
+  id: string;
+  before: LinkPayload;
+  after: LinkPayload;
+  changedFields: LinkField[];
+}
+
+export interface LinkDiff {
+  added: LinkPayload[];
+  updated: UpdatedLink[];
+  removed: LinkPayload[];
+  unchanged: number;
+}
+
+// the shape GET /links/preview answers with
+export type LinkPreview = Omit<LinkPayload, "id">;
+
 export interface NoteFlags {
   archived?: boolean;
   pinned?: boolean;
@@ -136,6 +168,8 @@ export interface DocumentPayload {
   preview: string;
   todos: TodoPayload[];
   todoDiff?: TodoDiff;
+  links: LinkPayload[];
+  linkDiff?: LinkDiff;
 }
 
 export interface DocItem {

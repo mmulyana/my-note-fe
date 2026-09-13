@@ -7,10 +7,14 @@ import type {
   FolderWithNotes,
   NoteListFields,
   Notes,
+  LinkDiff,
+  LinkField,
+  LinkPayload,
   TodoDiff,
   TodoField,
   TodoPayload,
   TodoPriority,
+  UpdatedLink,
   UpdatedTodo,
 } from "@/lib/types";
 import { ALPHABET, MAX_BLOCKS, MAX_CHARS } from "./constants";
@@ -97,6 +101,78 @@ export function diffTodos(prev: TodoPayload[], next: TodoPayload[]): TodoDiff {
   }
 
   const removed = prev.filter((t) => !nextById.has(t.id));
+
+  return { added, updated, removed, unchanged };
+}
+
+const str = (value: unknown): string => (typeof value === "string" ? value : "");
+
+export function extractLinks(doc: JSONContent): LinkPayload[] {
+  const links: LinkPayload[] = [];
+  // note: a copied card carries its source id. First occurrence wins so the
+  // diff never sends two rows for one id; the paste handler re-mints the
+  // duplicate, so this only covers the gap before that transaction lands.
+  const seen = new Set<string>();
+
+  const walk = (node?: JSONContent) => {
+    if (!node) return;
+    if (node.type === "linkCard") {
+      const attrs = node.attrs ?? {};
+      const id = str(attrs.id);
+      const url = str(attrs.url);
+      // a card still resolving has no metadata worth persisting yet
+      if (id && url && !seen.has(id)) {
+        seen.add(id);
+        links.push({
+          id,
+          url,
+          title: str(attrs.title),
+          description: str(attrs.description),
+          image: str(attrs.image),
+          favicon: str(attrs.favicon),
+          siteName: str(attrs.siteName),
+        });
+      }
+    }
+    node.content?.forEach(walk);
+  };
+
+  walk(doc);
+  return links;
+}
+
+const LINK_FIELDS: LinkField[] = [
+  "url",
+  "title",
+  "description",
+  "image",
+  "favicon",
+  "siteName",
+];
+
+export function diffLinks(prev: LinkPayload[], next: LinkPayload[]): LinkDiff {
+  const prevById = new Map(prev.map((l) => [l.id, l]));
+  const nextById = new Map(next.map((l) => [l.id, l]));
+
+  const added: LinkPayload[] = [];
+  const updated: UpdatedLink[] = [];
+  let unchanged = 0;
+
+  for (const link of next) {
+    const before = prevById.get(link.id);
+    if (!before) {
+      added.push(link);
+      continue;
+    }
+    const changedFields = LINK_FIELDS.filter((f) => before[f] !== link[f]);
+    if (changedFields.length > 0) {
+      updated.push({ id: link.id, before, after: link, changedFields });
+    } else {
+      unchanged++;
+    }
+  }
+
+  const removed = prev.filter((l) => !nextById.has(l.id));
 
   return { added, updated, removed, unchanged };
 }

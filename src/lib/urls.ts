@@ -6,6 +6,8 @@ export const urls = {
   TodosGroupedToday: (date: string) => `/todos/group/today?date=${date}`,
   Todo: (id: string) => `/todos/${id}`,
   Labels: "/labels",
+  Links: "/links",
+  LinkPreview: (url: string) => `/links/preview?url=${encodeURIComponent(url)}`,
   Login: "/auth/login",
   Register: "/auth/register",
   RefreshToken: "/auth/refresh",

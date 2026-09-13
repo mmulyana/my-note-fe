@@ -5,6 +5,7 @@ import { TaskList } from "@tiptap/extension-list";
 import { CustomTaskItem } from "../components/editor/extensions/custom-task-item";
 import { CustomCodeBlock } from "../components/editor/extensions/code-block";
 import { CustomImage } from "../components/editor/extensions/image";
+import { LinkCard } from "../components/editor/extensions/link-card";
 
 export function useDocumentEditor(initialContent: string) {
   return useEditor({
@@ -20,6 +21,7 @@ export function useDocumentEditor(initialContent: string) {
       CustomImage.configure({
         HTMLAttributes: { class: "rich-image" },
       }),
+      LinkCard,
       Placeholder.configure({
         placeholder: "Write something",
       }),

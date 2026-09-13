@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Editor } from "@tiptap/react";
-import type { DocumentPayload, TodoPayload } from "@/lib/types";
-import { deriveListFields, diffTodos, extractTodos } from "@/lib/utils";
+import type { DocumentPayload, LinkPayload, TodoPayload } from "@/lib/types";
+import {
+  deriveListFields,
+  diffLinks,
+  diffTodos,
+  extractLinks,
+  extractTodos,
+} from "@/lib/utils";
 
 export type SaveStatus = "idle" | "dirty" | "saving" | "saved";
 
@@ -22,6 +28,7 @@ export function useAutoSave({ editor, onSave, delay = 1500 }: UseAutoSaveOptions
   const dirtyRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const baselineRef = useRef<TodoPayload[] | null>(null);
+  const linkBaselineRef = useRef<LinkPayload[] | null>(null);
   const initialContentRef = useRef<string | null>(null);
   const onSaveRef = useRef(onSave);
   onSaveRef.current = onSave;
@@ -29,17 +36,22 @@ export function useAutoSave({ editor, onSave, delay = 1500 }: UseAutoSaveOptions
   useEffect(() => {
     if (!editor) return;
     if (baselineRef.current === null) baselineRef.current = extractTodos(editor.getJSON());
+    if (linkBaselineRef.current === null) linkBaselineRef.current = extractLinks(editor.getJSON());
     if (initialContentRef.current === null) initialContentRef.current = editor.getHTML();
   }, [editor]);
 
   const buildPayload = useCallback((): DocumentPayload | null => {
     if (!editor) return null;
     const content = editor.getHTML();
-    const todos = extractTodos(editor.getJSON());
+    const json = editor.getJSON();
+    const todos = extractTodos(json);
     const todoDiff = diffTodos(baselineRef.current ?? [], todos);
     baselineRef.current = todos;
+    const links = extractLinks(json);
+    const linkDiff = diffLinks(linkBaselineRef.current ?? [], links);
+    linkBaselineRef.current = links;
     const { preview } = deriveListFields(content);
-    return { content, preview, todos, todoDiff };
+    return { content, preview, todos, todoDiff, links, linkDiff };
   }, [editor]);
 
   // note: used for non-editor changes (e.g. label/folder picks)

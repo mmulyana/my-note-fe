@@ -528,6 +528,137 @@ textarea {
   margin-left: auto;
 }
 
+.rich-link-card-wrap {
+  display: block;
+  margin: 12px 0;
+}
+
+.rich-content .rich-link-card,
+.rich-readonly .rich-link-card {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  overflow: hidden;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: inherit;
+  text-decoration: none;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.rich-content .rich-link-card:hover,
+.rich-readonly .rich-link-card:hover {
+  background: var(--surface-2);
+  border-color: var(--line-2);
+}
+
+.rich-link-card-wrap[data-selected="true"] .rich-link-card {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.rich-link-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.rich-link-card-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
+  /* note: two lines then ellipsis, so a long title can't stretch the card */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rich-link-card-desc {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--ink-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rich-link-card-foot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  min-width: 0;
+}
+
+.rich-link-card-favicon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 0;
+  object-fit: contain;
+  color: var(--ink-3);
+}
+
+.rich-link-card-site {
+  font-size: 0.6875rem;
+  color: var(--ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rich-link-card-thumb {
+  flex: none;
+  display: block;
+  width: 108px;
+  /* note: negative margins let the thumb bleed to the card edges */
+  margin: -12px -14px -12px 0;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.rich-link-card-thumb img,
+.rich-content .rich-link-card-thumb img,
+.rich-readonly .rich-link-card-thumb img {
+  width: 100%;
+  height: 100%;
+  min-height: 76px;
+  object-fit: cover;
+  border: 0;
+  border-radius: 0;
+  display: block;
+}
+
+/* the card is still resolving: dim it and hold the title on the host name */
+.rich-link-card[data-state="loading"] {
+  opacity: 0.6;
+}
+.rich-link-card[data-state="loading"] .rich-link-card-title {
+  animation: rich-link-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes rich-link-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@media (max-width: 480px) {
+  .rich-link-card-thumb {
+    width: 84px;
+  }
+  .rich-link-card-desc {
+    -webkit-line-clamp: 1;
+  }
+}
+
 /* note: box hugs the image so the settings button anchors to the image corner */
 .rich-image-wrapper {
   position: relative;

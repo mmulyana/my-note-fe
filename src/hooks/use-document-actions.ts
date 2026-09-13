@@ -30,7 +30,8 @@ function isEmptyHtml(html: string): boolean {
   const parsed = new DOMParser().parseFromString(html, "text/html");
   const hasText = (parsed.body.textContent ?? "").trim().length > 0;
   const hasTask = parsed.querySelector('[data-type="taskItem"]') != null;
-  return !hasText && !hasTask;
+  const hasLink = parsed.querySelector('[data-type="link-card"]') != null;
+  return !hasText && !hasTask && !hasLink;
 }
 
 export function useDocumentActions() {
@@ -159,10 +160,25 @@ export function useDocumentActions() {
           }
         : undefined;
 
+      const ld = payload.linkDiff;
+      const linkDiff = ld
+        ? {
+            added: ld.added,
+            updated: ld.updated.map((u) => ({
+              id: u.id,
+              fields: Object.fromEntries(
+                u.changedFields.map((f) => [f, u.after[f]]),
+              ),
+            })),
+            removed: ld.removed.map((l) => l.id),
+          }
+        : undefined;
+
       const body = {
         content: payload.content,
         preview: payload.preview,
         todoDiff,
+        linkDiff,
         labelIds: ids,
         folderId: fId,
         ...flags,
