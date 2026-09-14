@@ -169,7 +169,7 @@ export function Editor({
         onMouseDown={(e) => e.stopPropagation()}
       >
         {isMobile && (
-          <div className="absolute top-3 left-3 z-10">
+          <div className="absolute top-3 left-5 z-10">
             <button
               type="button"
               onClick={requestClose}

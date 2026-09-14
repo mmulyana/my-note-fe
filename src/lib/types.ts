@@ -79,19 +79,10 @@ export interface Todo {
   updatedAt: string
 }
 
-export interface TodoGroup {
-  noteId: string;
-  title: string | null;
+export interface TodoDateGroup {
+  date: string; // "2026-09-14"
   todos: Todo[];
 }
-
-export interface TodoTodayGroups {
-  today: Todo[];
-  overdue: Todo[];
-  completed: Todo[];
-}
-
-export type TodoView = "all" | "today";
 
 export type NoteListFields = {
   preview: string;

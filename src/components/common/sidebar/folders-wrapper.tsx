@@ -66,8 +66,8 @@ export default function FoldersWrapper({ sidebar }: Props) {
   return (
     <>
       <div className="flex flex-col gap-0.5 mt-5">
-        <div className="text-xs text-(--ink-3) px-2 font-medium">Folders</div>
-        <div className="max-h-24 overflow-y-auto">
+        <div className="text-xs text-ink-3 px-2 font-medium">Folders</div>
+        <div className="h-fit max-h-96 overflow-y-auto">
           {data?.data?.map((data) => {
             return (
               <ListItem

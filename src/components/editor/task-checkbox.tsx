@@ -69,20 +69,15 @@ const chipBase =
   "inline-flex items-center gap-[3px] h-[18px] px-1.5 text-[10.5px] font-medium leading-none rounded-md whitespace-nowrap border border-line text-ink-3";
 const chipHigh =
   "text-[#e06c75] border-[color-mix(in_srgb,#e06c75_45%,transparent)]";
-const chipToday =
-  "text-(--accent) border-[color-mix(in_srgb,var(--accent)_45%,transparent)]";
-
 interface TaskMetaChange {
   priority?: TodoPriority;
   deadline?: string | null;
-  today?: string | null;
 }
 
 interface TaskMetaProps {
   checked: boolean;
   priority: TodoPriority;
   deadline: string | null;
-  today: string | null;
   onChange: (attrs: TaskMetaChange) => void;
   onDelete?: () => void;
   /* note: false keeps the chips but drops the dots trigger, for read-only previews */
@@ -93,7 +88,6 @@ export function TaskMeta({
   checked,
   priority,
   deadline,
-  today,
   onChange,
   onDelete,
   showActions = true,
@@ -103,11 +97,6 @@ export function TaskMeta({
   const parsed = deadline ? parseISO(deadline) : null;
   const valid = parsed != null && isValid(parsed);
   const overdue = valid && !checked && isBefore(parsed, startOfDay(new Date()));
-
-  const todayParsed = today ? parseISO(today) : null;
-  const todayValid = todayParsed != null && isValid(todayParsed);
-  const todayOverdue =
-    todayValid && !checked && isBefore(todayParsed, startOfDay(new Date()));
 
   return (
     <span className="flex-none inline-flex items-center gap-1">
@@ -139,12 +128,6 @@ export function TaskMeta({
       {deadline && (
         <span className={cn(chipBase, overdue && chipHigh)}>{deadline}</span>
       )}
-      {today && (
-        <span className={cn(chipBase, todayOverdue ? chipHigh : chipToday)}>
-          {todayOverdue ? "Overdue" : "Today"}
-        </span>
-      )}
-
       {showActions && (
         <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
@@ -163,13 +146,11 @@ export function TaskMeta({
           >
             <TaskMetaPopup
               deadline={deadline}
-              today={today}
               priority={priority}
               onChange={(attrs) =>
                 onChange({
                   priority: attrs.priority,
                   deadline: attrs.deadline,
-                  today: attrs.today,
                 })
               }
               onDelete={

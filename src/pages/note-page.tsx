@@ -4,7 +4,6 @@ import { useStore } from "jotai";
 import { editingIdAtom, isNewNoteAtom } from "@/store/document";
 import { useDocumentActions } from "@/hooks/use-document-actions";
 
-// note: renders nothing — pushing this route is what gives mobile back a history entry to consume.
 export default function NotePage() {
   const { id } = useParams<{ id: string }>();
   const { openNoteData } = useDocumentActions();

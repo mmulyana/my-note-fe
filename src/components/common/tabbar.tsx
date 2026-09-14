@@ -3,6 +3,8 @@ import {
   IconSmartHome,
   IconSquareCheck,
   IconArchive,
+  IconHash,
+  IconFolderFilled,
   IconPlus,
 } from "@tabler/icons-react";
 import { useIsMobile } from "@/hooks/use-is-mobile";
@@ -12,6 +14,8 @@ import { cn } from "@/lib/utils";
 const tabs = [
   { to: "/", label: "Notes", icon: IconSmartHome },
   { to: "/todos", label: "Todo", icon: IconSquareCheck },
+  { to: "/labels", label: "Labels", icon: IconHash },
+  { to: "/folders", label: "Folders", icon: IconFolderFilled },
   { to: "/archive", label: "Archive", icon: IconArchive },
 ] as const;
 

@@ -6,17 +6,18 @@ import {
   IconFileFilled,
   IconSmartHome,
   IconArchive,
+  IconHash,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import NewNoteButton from "./new-note-button";
-import LabelsWrapper from "./labels-wrapper";
 import FoldersWrapper from "./folders-wrapper";
 
 const navItems = [
   { to: "/", label: "All Notes", icon: IconSmartHome },
   { to: "/todos", label: "Todo", icon: IconSquareCheck },
+  { to: "/labels", label: "Labels", icon: IconHash },
   { to: "/archive", label: "Archive", icon: IconArchive },
 ] as const;
 
@@ -29,7 +30,7 @@ export const Sidebar = memo(function Sidebar() {
   return (
     <nav
       className={cn(
-        "h-full overflow-y-auto p-3.5 transition-all duration-300",
+      "h-full overflow-y-auto p-3.5 pl-2 pr-0 transition-all duration-300",
         sidebar ? "w-64" : "w-fit lg:p-3.5",
       )}
     >
@@ -88,7 +89,6 @@ export const Sidebar = memo(function Sidebar() {
           </NavLink>
         ))}
       </div>
-      <LabelsWrapper sidebar={sidebar} />
       <FoldersWrapper sidebar={sidebar} />
     </nav>
   );

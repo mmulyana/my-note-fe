@@ -20,9 +20,6 @@ const chipBase =
   "inline-flex items-center gap-[3px] h-[18px] px-1.5 text-[10.5px] font-medium leading-none rounded-md whitespace-nowrap border border-(--line) text-ink-3";
 const chipHigh =
   "text-[#e06c75] border-[color-mix(in_srgb,#e06c75_45%,transparent)]";
-const chipToday =
-  "text-(--accent) border-[color-mix(in_srgb,var(--accent)_45%,transparent)]";
-
 export function TaskItemView({ node, updateAttributes }: ReactNodeViewProps) {
   const [open, setOpen] = useState(false);
 
@@ -35,11 +32,6 @@ export function TaskItemView({ node, updateAttributes }: ReactNodeViewProps) {
   const parsed = deadline ? parseISO(deadline) : null;
   const valid = parsed != null && isValid(parsed);
   const overdue = valid && !checked && isBefore(parsed, startOfDay(new Date()));
-
-  const todayParsed = today ? parseISO(today) : null;
-  const todayValid = todayParsed != null && isValid(todayParsed);
-  const todayOverdue =
-    todayValid && !checked && isBefore(todayParsed, startOfDay(new Date()));
 
   return (
     <NodeViewWrapper
@@ -137,12 +129,6 @@ export function TaskItemView({ node, updateAttributes }: ReactNodeViewProps) {
               {deadline}
             </span>
           )}
-          {today && (
-            <span className={cn(chipBase, todayOverdue ? chipHigh : chipToday)}>
-              {todayOverdue ? "Overdue" : "Today"}
-            </span>
-          )}
-
           <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger asChild>
               <button
@@ -160,7 +146,6 @@ export function TaskItemView({ node, updateAttributes }: ReactNodeViewProps) {
             >
               <TaskMetaPopup
                 deadline={deadline}
-                today={today}
                 priority={priority}
                 // [tags disabled] re-enable: pass tags={tags}
                 onChange={(attrs) => updateAttributes(attrs)}

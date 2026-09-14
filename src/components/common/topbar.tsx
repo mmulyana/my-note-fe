@@ -13,7 +13,7 @@ export function Topbar({ scrolled = false }: Props) {
   return (
     <header
       className={cn(
-        "absolute inset-x-0 top-0 z-30 flex h-15 flex-none items-center gap-3.5 pl-2 md:pl-2.75 pr-2 justify-between",
+        "absolute inset-x-0 top-0 z-30 flex h-15 flex-none items-center gap-3.5 max-lg:pl-2 pl-2.75 pr-6.5 max-lg:pr-2 justify-between",
         "transition-[background-color,backdrop-filter] duration-200 ease-[ease]",
         scrolled ? "bg-(--bg)/20 backdrop-blur-sm" : "bg-(--bg)",
       )}

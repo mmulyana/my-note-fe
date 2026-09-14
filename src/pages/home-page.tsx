@@ -19,6 +19,7 @@ export default function DocumentEditorPage() {
       ? ["notes", "pinned", { search: debouncedSearch }]
       : ["notes", "pinned"],
     keepPreviousData: true,
+    gcTime: 0,
   });
 
   const { data: notesData } = useApi<IApi<Notes[]>>({
@@ -27,6 +28,7 @@ export default function DocumentEditorPage() {
       ? ["notes", { search: debouncedSearch }]
       : ["notes"],
     keepPreviousData: true,
+    gcTime: 0,
   });
 
   const docs: DocItem[] = [

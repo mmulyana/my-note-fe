@@ -2,8 +2,8 @@ export const urls = {
   Notes: "/notes",
   Note: (id: string) => `/notes/${id}`,
   Todos: "/todos",
-  TodosGrouped: "/todos/group/notes",
-  TodosGroupedToday: (date: string) => `/todos/group/today?date=${date}`,
+  TodosGroupedByDate: (from: string, to: string, tz: string) =>
+    `/todos/group/created?from=${from}&to=${to}&tz=${encodeURIComponent(tz)}`,
   Todo: (id: string) => `/todos/${id}`,
   Labels: "/labels",
   Links: "/links",
