@@ -155,6 +155,30 @@ export function Editor({
     return () => document.removeEventListener("keydown", handler);
   }, [requestClose]);
 
+  const pinButton = (
+    <button
+      type="button"
+      onClick={handlePinned}
+      className="grid place-items-center w-7 h-7 rounded-lg border border-line bg-surface text-ink-3 transition-[background,color,border-color] duration-150 hover:bg-surface-hi hover:text-ink hover:border-line-2 outline-none"
+      aria-label="Pin note"
+      title="Pin note"
+    >
+      {doc.pinned ? <IconPinFilled size={15} /> : <IconPin size={15} />}
+    </button>
+  );
+
+  const fullscreenButton = (
+    <button
+      type="button"
+      onClick={() => setIsFull((v) => !v)}
+      className="grid place-items-center w-7 h-7 rounded-lg border border-line bg-surface text-ink-3 transition-[background,color,border-color] duration-150 hover:bg-surface-hi hover:text-ink hover:border-line-2 outline-none"
+      aria-label={isFull ? "Exit full screen" : "Full screen"}
+      title={isFull ? "Exit full screen" : "Full screen"}
+    >
+      {isFull ? <IconMinimize size={15} /> : <IconMaximize size={15} />}
+    </button>
+  );
+
   return (
     <div
       className={cn(
@@ -185,36 +209,17 @@ export function Editor({
             </button>
           </div>
         )}
-        <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
-          {!isMobile && (
-            <button
-              type="button"
-              onClick={() => setIsFull((v) => !v)}
-              className="grid place-items-center w-7 h-7 rounded-lg border border-line bg-surface text-ink-3 transition-[background,color,border-color] duration-150 hover:bg-surface-hi hover:text-ink hover:border-line-2 outline-none"
-              aria-label={isFull ? "Exit full screen" : "Full screen"}
-              title={isFull ? "Exit full screen" : "Full screen"}
-            >
-              {isFull ? <IconMinimize size={15} /> : <IconMaximize size={15} />}
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={handlePinned}
-            className="grid place-items-center w-7 h-7 rounded-lg border border-line bg-surface text-ink-3 transition-[background,color,border-color] duration-150 hover:bg-surface-hi hover:text-ink hover:border-line-2 outline-none"
-            aria-label="Pin note"
-            title="Pin note"
-          >
-            {doc.pinned ? <IconPinFilled size={15} /> : <IconPin size={15} />}
-          </button>
-          {isMobile && (
+        {isMobile && (
+          <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
+            {pinButton}
             <NoteDropdown
               onDelete={onDelete}
               onArchive={handleArchive}
               onSecret={handleSecret}
               secret={doc.secret}
             />
-          )}
-        </div>
+          </div>
+        )}
         <div className={full ? "flex-1 min-h-0 overflow-y-auto" : ""}>
           <div
             className={cn(
@@ -261,6 +266,13 @@ export function Editor({
             <span className="text-[11px] text-ink-3">
               {STATUS_TEXT[status]}
             </span>
+
+            {!isMobile && (
+              <div className="flex items-center gap-2">
+                {pinButton}
+                {fullscreenButton}
+              </div>
+            )}
 
             {!isMobile && (
               <NoteDropdown

@@ -328,7 +328,7 @@ textarea {
 /* note: mobile editor text size; breakpoint must match useIsMobile() in use-is-mobile.ts */
 @media (max-width: 767px) {
   .rich-content:not(.rich-readonly) {
-    font-size: 16px;
+    font-size: 18px;
   }
 }
 /* note: one knob for all mobile touch targets; breakpoint must match useIsMobile() */
