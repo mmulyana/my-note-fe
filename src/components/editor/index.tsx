@@ -10,7 +10,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import { useNavigate } from "react-router-dom";
 import { EditorContent } from "@tiptap/react";
-import { closeRequestAtom, isFullScreenAtom } from "@/store/document";
+import { closeRequestAtom, isFullScreenAtom, isNewNoteAtom } from "@/store/document";
 import { DragHandle } from "@tiptap/extension-drag-handle-react";
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 import { useAutoSave, type SaveStatus } from "@/hooks/use-autosave";
@@ -70,8 +70,12 @@ export function Editor({
 
   useEffect(() => () => setIsFull(false), [setIsFull]);
 
+  // note: dibaca sekali saat mount; atom ini jadi false setelah save pertama
+  const startedNewRef = useRef(useAtomValue(isNewNoteAtom));
+
   const { status, triggerSave, flushPayload } = useAutoSave({
     editor,
+    startEmpty: startedNewRef.current,
     onSave: async (payload, overrideLabelIds, overrideFolderId) => {
       onAutoSave(payload, overrideLabelIds, overrideFolderId);
     },

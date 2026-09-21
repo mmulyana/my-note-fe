@@ -78,8 +78,8 @@ export const Sidebar = memo(function Sidebar() {
               cn(
                 "flex items-center flex-nowrap text-nowrap w-full gap-2 h-8 px-2 text-[14.5px] font-medium rounded-md text-ink-2 transition-[background,color] duration-150",
                 isActive
-                  ? "bg-gray-200 dark:bg-[#18191D] text-ink font-semibold"
-                  : "hover:bg-surface-2 hover:text-ink",
+                  ? "bg-black/6 dark:bg-[#18191D] text-ink font-semibold"
+                  : "hover:bg-black/4 dark:hover:bg-gray-200/10 hover:text-ink",
                 !sidebar && "justify-center px-0 gap-0 h-8 w-8",
               )
             }

@@ -49,21 +49,27 @@ export function useDocumentActions() {
     store.set(editingFolderIdAtom, null);
   }, [store]);
 
-  const openNew = useCallback(() => {
-    const id = newId();
-    store.set(hasChangedAtom, false);
-    store.set(isNewNoteAtom, true);
-    store.set(editingDocAtom, {
-      id,
-      content: "",
-      preview: "",
-      todoSummary: { total: 0, done: 0 },
-      updatedAt: Date.now(),
-      labels: [],
-    });
-    store.set(editingIdAtom, id);
-    if (isMobile) navigate(`/note/${id}`);
-  }, [store, isMobile, navigate]);
+  const openNewWith = useCallback(
+    (content: string) => {
+      const id = newId();
+      const { preview, todoSummary } = deriveListFields(content);
+      store.set(hasChangedAtom, false);
+      store.set(isNewNoteAtom, true);
+      store.set(editingDocAtom, {
+        id,
+        content,
+        preview,
+        todoSummary,
+        updatedAt: Date.now(),
+        labels: [],
+      });
+      store.set(editingIdAtom, id);
+      if (isMobile) navigate(`/note/${id}`);
+    },
+    [store, isMobile, navigate],
+  );
+
+  const openNew = useCallback(() => openNewWith(""), [openNewWith]);
 
   const openNoteData = useCallback(
     async (id: string) => {
@@ -288,6 +294,7 @@ export function useDocumentActions() {
 
   return {
     openNew,
+    openNewWith,
     openNote,
     openNoteData,
     autoSave,

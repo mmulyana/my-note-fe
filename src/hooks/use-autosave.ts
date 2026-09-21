@@ -19,9 +19,11 @@ interface UseAutoSaveOptions {
     overrideFolderId?: string | null,
   ) => Promise<void> | void;
   delay?: number;
+  // note: note baru belum ada di server, jadi todo/link dari konten awal (template) dihitung sebagai baru
+  startEmpty?: boolean;
 }
 
-export function useAutoSave({ editor, onSave, delay = 1500 }: UseAutoSaveOptions) {
+export function useAutoSave({ editor, onSave, delay = 1500, startEmpty = false }: UseAutoSaveOptions) {
   const [status, setStatus] = useState<SaveStatus>("idle");
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
 
@@ -35,10 +37,10 @@ export function useAutoSave({ editor, onSave, delay = 1500 }: UseAutoSaveOptions
 
   useEffect(() => {
     if (!editor) return;
-    if (baselineRef.current === null) baselineRef.current = extractTodos(editor.getJSON());
-    if (linkBaselineRef.current === null) linkBaselineRef.current = extractLinks(editor.getJSON());
+    if (baselineRef.current === null) baselineRef.current = startEmpty ? [] : extractTodos(editor.getJSON());
+    if (linkBaselineRef.current === null) linkBaselineRef.current = startEmpty ? [] : extractLinks(editor.getJSON());
     if (initialContentRef.current === null) initialContentRef.current = editor.getHTML();
-  }, [editor]);
+  }, [editor, startEmpty]);
 
   const buildPayload = useCallback((): DocumentPayload | null => {
     if (!editor) return null;
