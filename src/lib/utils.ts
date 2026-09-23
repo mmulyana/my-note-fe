@@ -29,6 +29,7 @@ export function toDocItem(n: Notes): DocItem {
     content: "",
     preview: n.preview,
     todoSummary: n.todoSummary,
+    todos: n.todos,
     labels: n.labels ?? [],
     updatedAt: new Date(n.updatedAt).getTime(),
     folder: n.folder,

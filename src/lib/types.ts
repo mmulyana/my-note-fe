@@ -1,8 +1,18 @@
+export type NoteTodoItem = {
+  id: string;
+  text: string;
+  checked: boolean;
+  deadline: string | null;
+  today: string | null;
+  priority: TodoPriority;
+};
+
 export type Notes = {
   id: string;
   title: string;
   preview: string;
   todoSummary: { total: number; done: number };
+  todos?: NoteTodoItem[];
   labels: { id: string; name: string }[];
   updatedAt: string;
   folder?: { id: string, name: string, color: string, secret: boolean } | null
@@ -168,6 +178,7 @@ export interface DocItem {
   content: string;
   preview: string;
   todoSummary: { total: number; done: number };
+  todos?: NoteTodoItem[];
   labels: { id: string; name: string }[];
   folderId?: string | null;
   folder?: { id: string, name: string, color: string, secret: boolean } | null
