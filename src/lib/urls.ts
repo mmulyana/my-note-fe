@@ -19,6 +19,8 @@ export const urls = {
   Uploads: "/uploads",
   Profile: "/me",
   Feedback: "/feedback",
+  AiStream: "/ai/stream",
+  AiUsage: "/ai/usage",
 };
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL ?? "/api").replace(/\/api\/?$/, "");

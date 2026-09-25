@@ -6,7 +6,7 @@ import {
   IconPinFilled,
   IconArrowLeft,
 } from "@tabler/icons-react";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import { useNavigate } from "react-router-dom";
 import { EditorContent } from "@tiptap/react";
@@ -15,13 +15,24 @@ import { DragHandle } from "@tiptap/extension-drag-handle-react";
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 import { useAutoSave, type SaveStatus } from "@/hooks/use-autosave";
 import { useDocumentEditor } from "@/hooks/use-editor";
+import { useAiEdit } from "@/hooks/use-ai-edit";
 import { useIsMobile } from "@/hooks/use-is-mobile";
-import { LabelPicker } from "@/components/editor/label-picker";
 import { FolderPicker } from "@/components/editor/folder-picker";
-import { InsertImageMenu } from "@/components/editor/insert-image-menu";
+import { AiBubbleMenu } from "@/components/editor/ai-bubble-menu";
+import { AiLoader } from "@/components/editor/ai-loader";
+import {
+  SlashMenu,
+  type SlashActionId,
+  type SlashAnchor,
+} from "@/components/editor/slash-menu";
+import {
+  SlashPopup,
+  type SlashPopupView,
+} from "@/components/editor/slash-popup";
+import type { SlashBridge, SlashState } from "@/components/editor/extensions/slash-command";
 import type { DocItem, DocumentPayload } from "@/lib/types";
 import { NoteDropdown } from "./note-dropdown";
-import { cn } from "@/lib/utils";
+import { cn, relative } from "@/lib/utils";
 
 const STATUS_TEXT: Record<SaveStatus, string> = {
   idle: "",
@@ -61,7 +72,22 @@ export function Editor({
   folderId = null,
   onFolderChange,
 }: EditorProps) {
-  const editor = useDocumentEditor(doc.content);
+  const [slash, setSlash] = useState<SlashState | null>(null);
+  const [popup, setPopup] = useState<{
+    view: SlashPopupView;
+    anchor: SlashAnchor;
+  } | null>(null);
+  const slashKeyRef = useRef<(event: KeyboardEvent) => boolean>(() => false);
+  const slashBridge = useMemo<SlashBridge>(
+    () => ({
+      open: setSlash,
+      close: () => setSlash(null),
+      keyDown: (event) => slashKeyRef.current(event),
+    }),
+    [],
+  );
+  const editor = useDocumentEditor(doc.content, slashBridge);
+  const ai = useAiEdit(editor);
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const [isFull, setIsFull] = useAtom(isFullScreenAtom);
@@ -80,6 +106,16 @@ export function Editor({
       onAutoSave(payload, overrideLabelIds, overrideFolderId);
     },
   });
+
+  // note: doc atom isnt refreshed by autosave, so track the last save locally
+  const [savedAt, setSavedAt] = useState<number | null>(null);
+  useEffect(() => {
+    if (status === "saved") setSavedAt(Date.now());
+  }, [status]);
+  const updatedText =
+    status === "dirty" || status === "saving"
+      ? STATUS_TEXT[status]
+      : `Updated ${relative(savedAt ?? doc.updatedAt)}`;
 
   const handleClose = useCallback(() => {
     onClose(editor ? editor.getHTML() : doc.content);
@@ -115,6 +151,14 @@ export function Editor({
     },
     [onFolderChange, triggerSave],
   );
+
+  const handleSlashPick = (id: SlashActionId, anchor: SlashAnchor) => {
+    if (id === "pin") {
+      handlePinned();
+      return;
+    }
+    setPopup({ view: id, anchor });
+  };
 
   const gripRef = useRef<HTMLDivElement>(null);
   const handleDragNodeChange = useCallback(
@@ -159,7 +203,7 @@ export function Editor({
     <button
       type="button"
       onClick={handlePinned}
-      className="grid place-items-center w-7 h-7 rounded-lg border border-line bg-surface text-ink-3 transition-[background,color,border-color] duration-150 hover:bg-surface-hi hover:text-ink hover:border-line-2 outline-none"
+      className="grid place-items-center w-7 h-7 rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi hover:text-ink focus-visible:bg-surface-hi focus-visible:text-ink outline-none"
       aria-label="Pin note"
       title="Pin note"
     >
@@ -171,7 +215,7 @@ export function Editor({
     <button
       type="button"
       onClick={() => setIsFull((v) => !v)}
-      className="grid place-items-center w-7 h-7 rounded-lg border border-line bg-surface text-ink-3 transition-[background,color,border-color] duration-150 hover:bg-surface-hi hover:text-ink hover:border-line-2 outline-none"
+      className="grid place-items-center w-7 h-7 rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi hover:text-ink focus-visible:bg-surface-hi focus-visible:text-ink outline-none"
       aria-label={isFull ? "Exit full screen" : "Full screen"}
       title={isFull ? "Exit full screen" : "Full screen"}
     >
@@ -196,22 +240,29 @@ export function Editor({
         )}
         onMouseDown={(e) => e.stopPropagation()}
       >
-        {isMobile && (
-          <div className="absolute top-3 left-5 z-10">
+        <header
+          className={cn(
+            "flex items-center gap-2 shrink-0 pt-3 pb-1",
+            full ? "w-full max-w-180 mx-auto px-5" : "px-3.5",
+          )}
+        >
+          {isMobile && (
             <button
               type="button"
               onClick={requestClose}
-              className="grid place-items-center w-7 h-7 rounded-lg border border-line bg-surface text-ink-3 transition-[background,color,border-color] duration-150 hover:bg-surface-hi hover:text-ink hover:border-line-2 outline-none"
+              className="grid place-items-center w-7 h-7 shrink-0 rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi hover:text-ink focus-visible:bg-surface-hi focus-visible:text-ink outline-none"
               aria-label="Back"
               title="Back"
             >
               <IconArrowLeft size={15} />
             </button>
-          </div>
-        )}
-        {isMobile && (
-          <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
-            {pinButton}
+          )}
+          <FolderPicker selectedId={folderId} onChange={handleFolderChange} />
+          <span className="ml-auto min-w-0 truncate text-[11px] text-ink-3">
+            {updatedText}
+          </span>
+          <div className="flex items-center gap-1 shrink-0">
+            {isMobile ? pinButton : fullscreenButton}
             <NoteDropdown
               onDelete={onDelete}
               onArchive={handleArchive}
@@ -219,17 +270,55 @@ export function Editor({
               secret={doc.secret}
             />
           </div>
-        )}
+        </header>
         <div className={full ? "flex-1 min-h-0 overflow-y-auto" : ""}>
           <div
             className={cn(
               "flex flex-col gap-2.5",
-              full
-                ? "w-full max-w-180 mx-auto px-5 pt-12 pb-2"
-                : "px-5 pt-4.5 pb-2",
+              full ? "w-full max-w-180 mx-auto px-5 pt-2 pb-4" : "px-5 pt-2 pb-4",
             )}
           >
             <EditorContent editor={editor} />
+            {editor && (
+              <AiBubbleMenu
+                editor={editor}
+                onRun={ai.run}
+                busy={ai.status === "streaming"}
+              />
+            )}
+            {editor && (
+              <SlashMenu
+                editor={editor}
+                state={slash}
+                pinned={!!doc.pinned}
+                keyHandlerRef={slashKeyRef}
+                onPick={handleSlashPick}
+              />
+            )}
+            {editor && popup && (
+              <SlashPopup
+                editor={editor}
+                anchor={popup.anchor}
+                view={popup.view}
+                onClose={() => setPopup(null)}
+                onAiSubmit={(prompt) => ai.run("ask", prompt)}
+                folderId={folderId}
+                onFolderChange={handleFolderChange}
+                labelIds={labelIds}
+                onLabelChange={handleLabelChange}
+              />
+            )}
+            {editor && (
+              <AiLoader
+                editor={editor}
+                origin={ai.origin}
+                status={ai.status}
+                error={ai.error}
+                onStop={ai.stop}
+                onKeep={ai.keep}
+                onUndo={ai.undo}
+              />
+            )}
             {/* note: disabled on mobile*/}
             {editor && !isMobile && (
               <DragHandle
@@ -251,39 +340,6 @@ export function Editor({
           </div>
         </div>
 
-        <footer
-          className={cn(
-            "flex items-center gap-2 pt-2 pb-3",
-            full
-              ? "shrink-0 w-full max-w-180 mx-auto px-5"
-              : "px-3.5",
-          )}
-        >
-          <InsertImageMenu editor={editor} />
-          <LabelPicker selectedIds={labelIds} onChange={handleLabelChange} />
-          <FolderPicker selectedId={folderId} onChange={handleFolderChange} />
-          <div className="flex items-center gap-3 ml-auto">
-            <span className="text-[11px] text-ink-3">
-              {STATUS_TEXT[status]}
-            </span>
-
-            {!isMobile && (
-              <div className="flex items-center gap-2">
-                {pinButton}
-                {fullscreenButton}
-              </div>
-            )}
-
-            {!isMobile && (
-              <NoteDropdown
-                onDelete={onDelete}
-                onArchive={handleArchive}
-                onSecret={handleSecret}
-                secret={doc.secret}
-              />
-            )}
-          </div>
-        </footer>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import { clearToken, getRefreshToken, getToken, setRefreshToken, setToken } from
 import type { RefreshTokenResponse } from './types';
 import { urls } from './urls';
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? '/api';
+export const BASE_URL = import.meta.env.VITE_API_URL ?? '/api';
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
