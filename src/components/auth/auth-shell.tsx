@@ -1,6 +1,6 @@
-import { IconFileFilled } from "@tabler/icons-react";
 import { NavLink } from "react-router-dom";
 import type { ReactNode } from "react";
+import { AppLogoIcon } from "@/components/icons";
 import { AppBackdrop } from "./app-backdrop";
 import { cn } from "@/lib/utils";
 
@@ -23,9 +23,7 @@ export function AuthShell({ title, subtitle, children }: AuthShellProps) {
       <div className="relative flex min-h-screen items-center justify-center p-5">
         <div className="w-full max-w-100 rounded-3xl border border-line bg-surface p-7 shadow-card-lg">
           <div className="flex flex-col items-center gap-3 text-center">
-            <div className="grid h-12 w-12 place-items-center rounded-2xl border border-line bg-surface-2 text-ink">
-              <IconFileFilled size={22} />
-            </div>
+            <AppLogoIcon size={48} />
             <div>
               <h1 className="text-xl font-semibold text-ink">{title}</h1>
               <p className="mt-1 text-[13px] text-ink-2">{subtitle}</p>
