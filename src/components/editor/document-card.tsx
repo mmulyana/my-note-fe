@@ -1,8 +1,4 @@
-import {
-  IconArchive,
-  IconPinFilled,
-  IconLock,
-} from "@tabler/icons-react";
+import { IconPinFilled, IconLock } from "@tabler/icons-react";
 import { FolderIcon } from "@/components/icons";
 import { TodoProgress } from "@/components/editor/todo-progress";
 import { useDocumentActions } from "@/hooks/use-document-actions";
@@ -51,8 +47,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
         </div>
         <div className="flex items-center gap-1">
           {doc.archived && (
-            <span className="inline-flex items-center gap-1 rounded-[6px] border border-line px-1.5 py-px text-[10px] font-medium uppercase tracking-[0.06em] text-ink-3">
-              <IconArchive size={10} />
+            <span className="inline-flex items-center rounded-[6px] border border-line px-1.5 py-px text-[10px] font-medium uppercase tracking-[0.06em] text-ink-3">
               Archived
             </span>
           )}

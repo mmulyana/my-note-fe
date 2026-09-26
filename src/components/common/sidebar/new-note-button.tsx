@@ -72,11 +72,11 @@ export default function NewNoteButton({ sidebar }: { sidebar: boolean }) {
         onClick={openNew}
         className={cn(
           soft,
-          "flex-1 pr-8 justify-start items-center pl-1.5 rounded-l-full",
+          "flex-1 pr-8 justify-start items-center pl-1.5 rounded-l-full max-md:h-10 max-md:text-[15px]",
         )}
       >
-        <div className="shrink-0 w-4.5 h-4.5 flex justify-center items-center">
-          <IconPlus />
+        <div className="shrink-0 w-4.5 h-4.5 max-md:w-5 max-md:h-5 flex justify-center items-center">
+          <IconPlus className="max-md:size-5" />
         </div>
         New
       </Button>
@@ -87,9 +87,9 @@ export default function NewNoteButton({ sidebar }: { sidebar: boolean }) {
             variant="ghost"
             size="icon"
             aria-label="New note from template"
-            className={cn(soft, "w-11")}
+            className={cn(soft, "w-11 max-md:h-10 max-md:w-12")}
           >
-            <IconChevronDown />
+            <IconChevronDown className="max-md:size-5" />
           </Button>
         </DropdownMenuTrigger>
         {menu}

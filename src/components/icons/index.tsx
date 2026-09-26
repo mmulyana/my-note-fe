@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 export function AllNotesIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -223,6 +225,46 @@ export function FolderIcon({ className }: { className?: string }) {
       className={className}
     >
       <path d="M20 4h-8.59L10 2.59C9.62 2.21 9.12 2 8.59 2H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 14H4V6h16z"></path>
+    </svg>
+  );
+}
+
+export function SparklesIcon({
+  className,
+  gradient = true,
+}: {
+  className?: string;
+  gradient?: boolean;
+}) {
+  const gradientId = `sparkles-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
+
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      fill={gradient ? `url(#${gradientId})` : "currentColor"}
+      viewBox="0 0 24 24"
+      className={className}
+    >
+      {gradient && (
+        <defs>
+          <linearGradient
+            id={gradientId}
+            gradientUnits="userSpaceOnUse"
+            x1="2"
+            y1="22"
+            x2="22"
+            y2="2"
+          >
+            <stop offset="0" stopColor="#38bdf8" />
+            <stop offset="0.35" stopColor="#3b82f6" />
+            <stop offset="0.65" stopColor="#8b5cf6" />
+            <stop offset="1" stopColor="#ec4899" />
+          </linearGradient>
+        </defs>
+      )}
+      <path d="M16.41 10.41a.998.998 0 0 0 0-1.82l-4.15-1.84-1.84-4.15a.99.99 0 0 0-.91-.59c-.4-.03-.75.22-.92.58L6.74 6.6 2.56 8.61c-.35.17-.57.53-.57.92s.24.74.59.9l4.15 1.84 1.84 4.15a.998.998 0 0 0 1.82 0l1.84-4.15 4.15-1.84Zm-5.82.68L9.5 13.53l-1.09-2.44a.98.98 0 0 0-.51-.51L5.37 9.46l2.55-1.23c.21-.1.38-.27.47-.48l1.08-2.33 1.1 2.48c.1.23.28.41.51.51l2.44 1.09-2.44 1.09c-.23.1-.41.28-.51.51Zm11.01 5.3-2.77-1.23-1.23-2.77a.68.68 0 0 0-.6-.4c-.27-.02-.5.15-.61.39l-1.23 2.67-2.78 1.34c-.23.11-.38.35-.38.61s.16.49.4.6l2.77 1.23 1.23 2.77a.663.663 0 0 0 1.22 0l1.23-2.77 2.77-1.23c.24-.11.4-.35.4-.61s-.16-.5-.4-.61ZM7.76 18.63l-1.66-.74-.74-1.66a.41.41 0 0 0-.36-.24c-.16-.01-.3.09-.37.23l-.74 1.6-1.67.8c-.14.07-.23.21-.23.37s.1.3.24.36l1.66.74.74 1.66a.404.404 0 0 0 .74 0l.74-1.66 1.66-.74a.404.404 0 0 0 0-.74Z"></path>
     </svg>
   );
 }

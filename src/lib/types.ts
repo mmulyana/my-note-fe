@@ -42,7 +42,7 @@ export type FolderWithNotes = Folder & {
 };
 
 export type GridView = "grid-view" | "rows-view";
-export type Theme = "dark" | "light";
+export type Theme = "dark" | "light" | "system";
 
 export type Counts = {
   notes: number;

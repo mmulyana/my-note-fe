@@ -10,13 +10,13 @@ import {
   IconPhoto,
   IconPin,
   IconPinFilled,
-  IconSparkles,
   IconTagFilled,
   IconTypography,
 } from "@tabler/icons-react";
 import type { ChainedCommands, Editor } from "@tiptap/react";
 import { exitSuggestion } from "@tiptap/suggestion";
 import { SlashPluginKey, type SlashState } from "./extensions/slash-command";
+import { SparklesIcon } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
 export type SlashActionId = "ai" | "pin" | "folder" | "image";
@@ -65,7 +65,7 @@ export function SlashMenu({
         id: "ai",
         title: "Ask AI",
         group: "AI",
-        icon: <IconSparkles size={15} />,
+        icon: <SparklesIcon className="size-[15px]" />,
         keywords: ["ai", "write", "generate", "assistant"],
         action: "ai",
       },

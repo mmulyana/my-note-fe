@@ -5,10 +5,10 @@ import {
   IconCheck,
   IconLoader2,
   IconPlayerStopFilled,
-  IconSparkles,
   IconX,
 } from "@tabler/icons-react";
 import type { Editor } from "@tiptap/react";
+import { SparklesIcon } from "@/components/icons";
 import type { AiEditStatus } from "@/hooks/use-ai-edit";
 
 interface AiLoaderProps {
@@ -32,6 +32,23 @@ const GAP = 8;
 
 const btn =
   "flex items-center gap-1 h-6 px-2 rounded-md text-[12px] text-ink-2 transition-colors hover:bg-surface-hi hover:text-ink outline-none cursor-pointer";
+
+function WaveText({ text }: { text: string }) {
+  return (
+    <span aria-label={text}>
+      {Array.from(text).map((char, i) => (
+        <span
+          key={i}
+          aria-hidden
+          className="ai-wave-char"
+          style={{ animationDelay: `${i * 90}ms` }}
+        >
+          {char}
+        </span>
+      ))}
+    </span>
+  );
+}
 
 export function AiLoader({
   editor,
@@ -99,7 +116,9 @@ export function AiLoader({
       {status === "streaming" && (
         <>
           <IconLoader2 size={14} className="animate-spin text-ink-3" />
-          <span className="ml-1 mr-4">Writing…</span>
+          <span className="ml-1 mr-4">
+            <WaveText text="Writing…" />
+          </span>
           <button
             type="button"
             aria-label="Stop"
@@ -113,7 +132,7 @@ export function AiLoader({
       )}
       {status === "review" && (
         <>
-          <IconSparkles size={14} className="text-ink-3" />
+          <SparklesIcon className="size-3.5 text-ink-3" />
           {error && (
             <span className="ml-1 mr-1 truncate">Stopped: {error}</span>
           )}

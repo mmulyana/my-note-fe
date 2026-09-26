@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
-import { IconSparkles, IconArrowUp } from "@tabler/icons-react";
+import { IconArrowUp } from "@tabler/icons-react";
+import { SparklesIcon } from "@/components/icons";
 
 interface AiPromptInputProps {
   placeholder?: string;
@@ -24,7 +25,7 @@ export function AiPromptInput({
 
   return (
     <form onSubmit={handleSubmit} className="flex items-center gap-1">
-      <IconSparkles size={14} className="ml-1.5 text-ink-3" />
+      <SparklesIcon className="ml-1.5 size-3.5 text-ink-3" />
       <input
         autoFocus
         value={prompt}

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { IconSparkles } from "@tabler/icons-react";
 import type { Editor } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react/menus";
 import type { AiAction } from "@/lib/ai-stream";
+import { SparklesIcon } from "@/components/icons";
 import { AiPromptInput } from "./ai-prompt-input";
 
 const QUICK_ACTIONS: { label: string; action: AiAction }[] = [
@@ -37,6 +37,7 @@ export function AiBubbleMenu({ editor, onRun, busy }: AiBubbleMenuProps) {
   return (
     <BubbleMenu
       editor={editor}
+      className="z-60"
       options={{ placement: "top", offset: 8 }}
       shouldShow={({ editor: e, state }) =>
         e.isEditable && !state.selection.empty && !e.isActive("codeBlock")
@@ -68,7 +69,7 @@ export function AiBubbleMenu({ editor, onRun, busy }: AiBubbleMenuProps) {
                 className={`${btn} flex items-center gap-1 font-medium text-ink`}
                 onClick={() => setAsking(true)}
               >
-                <IconSparkles size={14} />
+                <SparklesIcon className="size-3.5" />
                 Ask AI
               </button>
               <span className="w-px h-4 bg-line mx-0.5" />

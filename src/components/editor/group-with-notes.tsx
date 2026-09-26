@@ -32,6 +32,8 @@ const STACK_BY_DEPTH = [
   "rotate-[5deg] scale-[0.92] group-hover:rotate-[9deg]",
 ];
 
+const BAR_WIDTHS = ["w-full", "w-4/5", "w-3/5"];
+
 function FolderTile({ folder }: { folder: FolderWithNotes }) {
   const notes = folder.notes ?? [];
   const previews = notes.slice(0, 3);
@@ -109,11 +111,23 @@ function NoteChip({
     >
       <div
         className={cn(
-          "text-[11px] sm:text-xs lg:text-sm font-medium leading-snug line-clamp-3 text-ink-2",
+          "text-[11px] sm:text-xs lg:text-sm font-medium leading-snug line-clamp-2 text-ink-2",
           dimmed && "text-ink-3",
         )}
       >
         {note.title?.trim() || "Untitled"}
+      </div>
+      <div aria-hidden className="mt-1.5 sm:mt-2 flex flex-col gap-1">
+        {BAR_WIDTHS.map((w) => (
+          <div
+            key={w}
+            className={cn(
+              "h-1 sm:h-1.5 rounded-full",
+              dimmed ? "bg-line" : "bg-line-2",
+              w,
+            )}
+          />
+        ))}
       </div>
     </div>
   );

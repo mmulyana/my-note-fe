@@ -8,7 +8,6 @@ import {
   topbarTitleSlotAtom,
 } from "@/store/topbar";
 import { AccountMenu } from "./account-menu";
-import ToggleTheme from "./toggle-theme";
 
 export function Topbar() {
   const { pathname } = useLocation();
@@ -45,7 +44,6 @@ export function Topbar() {
       </div>
       <div className="flex items-center gap-1.5">
         <div ref={setActionsSlot} className="flex items-center" />
-        <ToggleTheme />
         <AccountMenu />
       </div>
     </header>

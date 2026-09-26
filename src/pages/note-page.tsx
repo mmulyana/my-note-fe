@@ -115,26 +115,26 @@ export default function NotePage() {
             <button
               type="button"
               onClick={goBack}
-              className="grid place-items-center w-7 h-7 flex-none rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi hover:text-ink outline-none cursor-pointer"
+              className="grid place-items-center w-7 h-7 max-md:w-10 max-md:h-10 flex-none rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi hover:text-ink outline-none cursor-pointer"
               aria-label="Back"
               title="Back"
             >
-              <IconArrowLeft size={15} />
+              <IconArrowLeft size={15} className="max-md:size-5" />
             </button>
             <button
               type="button"
               onClick={note.onPinned}
               className={cn(
-                "grid place-items-center w-7 h-7 rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi focus-visible:bg-surface-hi focus-visible:text-ink outline-none hover:text-amber-400",
+                "grid place-items-center w-7 h-7 max-md:w-10 max-md:h-10 rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi focus-visible:bg-surface-hi focus-visible:text-ink outline-none hover:text-amber-400",
                 note.doc.pinned && "text-amber-500",
               )}
               aria-label="Pin note"
               title="Pin note"
             >
               {note.doc.pinned ? (
-                <IconPinFilled size={15} />
+                <IconPinFilled size={15} className="max-md:size-5" />
               ) : (
-                <IconPin size={15} />
+                <IconPin size={15} className="max-md:size-5" />
               )}
             </button>
           </>,

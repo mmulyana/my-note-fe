@@ -30,11 +30,11 @@ export function NoteDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className={`grid place-items-center w-7 h-7 rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi hover:text-ink focus-visible:bg-surface-hi focus-visible:text-ink data-[state=open]:bg-surface-hi data-[state=open]:text-ink outline-none ${className ?? ""}`}
+        className={`grid place-items-center w-7 h-7 max-md:w-10 max-md:h-10 rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi hover:text-ink focus-visible:bg-surface-hi focus-visible:text-ink data-[state=open]:bg-surface-hi data-[state=open]:text-ink outline-none ${className ?? ""}`}
         aria-label="Note options"
         onClick={(e) => e.stopPropagation()}
       >
-        <IconDots size={15} />
+        <IconDots size={15} className="max-md:size-5" />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
