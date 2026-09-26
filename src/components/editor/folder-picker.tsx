@@ -1,4 +1,4 @@
-import { IconFolderFilled } from "@tabler/icons-react";
+import { FolderIcon } from "@/components/icons";
 import { useApi } from "@/hooks/use-api";
 import { urls } from "@/lib/urls";
 import type { IApi } from "@/lib/types";
@@ -62,7 +62,7 @@ export function FolderPicker({
     return (
       <DropdownMenuSub>
         <DropdownMenuSubTrigger className="text-[13px] text-ink-2 rounded-none cursor-pointer">
-          <IconFolderFilled size={14} className="text-ink-3" />
+          <FolderIcon className="size-3.5 text-ink-3" />
           {selected ? selected.name : "Folder"}
         </DropdownMenuSubTrigger>
         <DropdownMenuSubContent className="w-44 bg-surface border-line-2 rounded-xl shadow-(--shadow-lg) p-1">
@@ -78,7 +78,7 @@ export function FolderPicker({
         className="inline-flex items-center h-7 justify-center gap-1 rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi hover:text-ink focus-visible:bg-surface-hi focus-visible:text-ink data-[state=open]:bg-surface-hi data-[state=open]:text-ink outline-none disabled:opacity-40 disabled:pointer-events-none px-1.5 text-xs hover:cursor-pointer"
         onClick={(e) => e.stopPropagation()}
       >
-        <IconFolderFilled size={16} className="shrink-0" />
+        <FolderIcon className="size-4 shrink-0" />
         {selected ? selected.name : "Add Folder"}
       </DropdownMenuTrigger>
 

@@ -1,10 +1,10 @@
+import { IconDots } from "@tabler/icons-react";
 import {
-  IconDots,
-  IconArchive,
-  IconLock,
-  IconTrash,
-  IconLockOpen2,
-} from "@tabler/icons-react";
+  ArchiveIcon,
+  LockIcon,
+  LockOpenIcon,
+  TrashIcon,
+} from "@/components/icons";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,7 +48,7 @@ export function NoteDropdown({
             onArchive?.();
           }}
         >
-          <IconArchive size={14} />
+          <ArchiveIcon className="size-3.5" />
           Archive
         </DropdownMenuItem>
 
@@ -59,7 +59,11 @@ export function NoteDropdown({
             onSecret?.();
           }}
         >
-          {secret ? <IconLockOpen2 size={14} /> : <IconLock size={14} />}
+          {secret ? (
+            <LockOpenIcon className="size-3.5" />
+          ) : (
+            <LockIcon className="size-3.5" />
+          )}
           {secret ? "Open" : "Hide"}
         </DropdownMenuItem>
 
@@ -71,7 +75,7 @@ export function NoteDropdown({
             onDelete?.();
           }}
         >
-          <IconTrash size={14} />
+          <TrashIcon className="size-3.5" />
           Delete
         </DropdownMenuItem>
       </DropdownMenuContent>

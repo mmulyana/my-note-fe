@@ -2,10 +2,10 @@ import {
   IconArrowUpRight,
   IconEye,
   IconEyeOff,
-  IconFolderFilled,
   IconPinFilled,
   IconLock,
 } from "@tabler/icons-react";
+import { FolderIcon } from "@/components/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   TaskCheckbox,
@@ -63,7 +63,7 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
           {doc.folder && (
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="text-nowrap inline-flex items-center gap-1 rounded-[8px] text-xs text-ink-2">
-                <IconFolderFilled size={12} />
+                <FolderIcon className="size-3" />
                 {doc.folder.name}
               </span>
             </div>

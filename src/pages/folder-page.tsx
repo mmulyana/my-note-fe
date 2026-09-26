@@ -6,15 +6,17 @@ import { useAtomValue } from "jotai";
 import {
   IconFileText,
   IconDots,
-  IconLock,
-  IconLockOpen2,
   IconPencil,
   IconPin,
   IconPinnedOff,
-  IconEye,
-  IconEyeOff,
-  IconTrash,
 } from "@tabler/icons-react";
+import {
+  EyeIcon,
+  EyeOffIcon,
+  LockIcon,
+  LockOpenIcon,
+  TrashIcon,
+} from "@/components/icons";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -222,9 +224,9 @@ export default function FolderPage() {
                 onClick={toggleHide}
               >
                 {folder?.secret ? (
-                  <IconLockOpen2 size={14} />
+                  <LockOpenIcon className="size-3.5" />
                 ) : (
-                  <IconLock size={14} />
+                  <LockIcon className="size-3.5" />
                 )}
                 {folder?.secret ? "Unhide" : "Hide"}
               </DropdownMenuItem>
@@ -233,11 +235,11 @@ export default function FolderPage() {
                 onClick={toggleIsolate}
               >
                 {folder?.isolated ? (
-                  <IconEye size={14} />
+                  <EyeIcon className="size-3.5" />
                 ) : (
-                  <IconEyeOff size={14} />
+                  <EyeOffIcon className="size-3.5" />
                 )}
-                {folder?.isolated ? "Show in All" : "Hide from All"}
+                {folder?.isolated ? "Show in All notes" : "Hide from All notes"}
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-line" />
               <DropdownMenuItem
@@ -245,7 +247,7 @@ export default function FolderPage() {
                 className="flex items-center gap-2.5 text-[13px] rounded-none cursor-pointer"
                 onClick={() => setConfirmDelete(true)}
               >
-                <IconTrash size={14} />
+                <TrashIcon className="size-3.5" />
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>

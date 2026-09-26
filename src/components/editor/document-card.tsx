@@ -1,11 +1,11 @@
 import {
   IconArchive,
-  IconFolderFilled,
   IconTagFilled,
   IconPinFilled,
   IconLock,
   IconPlus,
 } from "@tabler/icons-react";
+import { FolderIcon } from "@/components/icons";
 import { TodoProgress } from "@/components/editor/todo-progress";
 import { useDocumentActions } from "@/hooks/use-document-actions";
 import type { DocItem } from "@/lib/types";
@@ -45,7 +45,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
           {doc.folder && (
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="text-nowrap inline-flex items-center gap-1 rounded-[8px] text-xs text-ink-2">
-                <IconFolderFilled size={12} />
+                <FolderIcon className="size-3" />
                 {doc.folder.name}
               </span>
             </div>
