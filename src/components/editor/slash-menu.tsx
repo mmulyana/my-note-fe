@@ -19,7 +19,7 @@ import { exitSuggestion } from "@tiptap/suggestion";
 import { SlashPluginKey, type SlashState } from "./extensions/slash-command";
 import { cn } from "@/lib/utils";
 
-export type SlashActionId = "ai" | "pin" | "folder" | "labels" | "image";
+export type SlashActionId = "ai" | "pin" | "folder" | "image";
 
 export interface SlashAnchor {
   left: number;
@@ -48,7 +48,7 @@ interface SlashMenuProps {
 const MENU_W = 224;
 const FLIP_BELOW = 280;
 
-// note: entry point for the "/" menu; AI, blocks, image, pin, folder and label
+// note: entry point for the "/" menu; AI, blocks, image, label, pin and folder
 export function SlashMenu({
   editor,
   state,
@@ -126,6 +126,14 @@ export function SlashMenu({
         action: "image",
       },
       {
+        id: "label",
+        title: "Label",
+        group: "Blocks",
+        icon: <IconTagFilled size={15} />,
+        keywords: ["label", "tag", "hashtag"],
+        run: (c) => c.insertContent("#"),
+      },
+      {
         id: "pin",
         title: pinned ? "Unpin note" : "Pin note",
         group: "Note",
@@ -140,14 +148,6 @@ export function SlashMenu({
         icon: <IconFolderFilled size={15} />,
         keywords: ["folder", "move"],
         action: "folder",
-      },
-      {
-        id: "labels",
-        title: "Labels",
-        group: "Note",
-        icon: <IconTagFilled size={15} />,
-        keywords: ["label", "tag"],
-        action: "labels",
       },
     ],
     [pinned],

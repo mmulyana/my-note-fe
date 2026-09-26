@@ -15,7 +15,7 @@ import type { IApi } from "@/lib/types";
 import { AiPromptInput } from "./ai-prompt-input";
 import type { SlashAnchor } from "./slash-menu";
 
-export type SlashPopupView = "ai" | "folder" | "labels" | "image";
+export type SlashPopupView = "ai" | "folder" | "image";
 
 interface Named {
   id: string;
@@ -30,8 +30,6 @@ interface SlashPopupProps {
   onAiSubmit: (prompt: string) => void;
   folderId: string | null;
   onFolderChange: (id: string | null) => void;
-  labelIds: string[];
-  onLabelChange: (ids: string[]) => void;
 }
 
 const POPUP_W = 240;
@@ -46,8 +44,6 @@ export function SlashPopup({
   onAiSubmit,
   folderId,
   onFolderChange,
-  labelIds,
-  onLabelChange,
 }: SlashPopupProps) {
   const ref = useRef<HTMLDivElement>(null);
   const closeRef = useRef(onClose);
@@ -106,7 +102,7 @@ export function SlashPopup({
         }}
       />
     );
-  } else if (view === "folder") {
+  } else {
     body = (
       <PickList
         title="Folder"
@@ -117,25 +113,6 @@ export function SlashPopup({
         empty="No folders yet"
         isSelected={(id) => id === folderId}
         onToggle={(id) => onFolderChange(folderId === id ? null : id)}
-      />
-    );
-  } else {
-    body = (
-      <PickList
-        title="Labels"
-        role="menuitemcheckbox"
-        onDismiss={dismiss}
-        url={urls.Labels}
-        queryKey="labels"
-        empty="No labels yet"
-        isSelected={(id) => labelIds.includes(id)}
-        onToggle={(id) =>
-          onLabelChange(
-            labelIds.includes(id)
-              ? labelIds.filter((x) => x !== id)
-              : [...labelIds, id],
-          )
-        }
       />
     );
   }

@@ -72,7 +72,7 @@ export default function FoldersWrapper({ sidebar }: Props) {
   return (
     <>
       <div className="flex flex-col gap-0.5 mt-5">
-        <div className="text-xs text-ink-3 px-2 font-medium">Folders</div>
+        <div className="text-sm text-ink-3 px-2 font-medium">Folders</div>
         <div className="h-fit max-h-96 overflow-y-auto">
           {data?.data?.map((data) => {
             return (
@@ -239,8 +239,8 @@ function NewFolder() {
     setNewName("");
   };
   return (
-    <div className="flex items-center gap-2 h-9 px-2 rounded-md text-sm cursor-default group mt-1">
-      <div className="w-5 h-5 flex justify-center items-center">
+    <div className="flex items-center gap-2 h-8 px-2 rounded-md text-sm cursor-default group">
+      <div className="w-4.5 h-4.5 flex justify-center items-center">
         <IconPlus size={16} className="shrink-0 text-ink-2" />
       </div>
       <input

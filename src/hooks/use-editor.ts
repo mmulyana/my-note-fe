@@ -7,6 +7,7 @@ import { CustomTaskItem } from "../components/editor/extensions/custom-task-item
 import { CustomCodeBlock } from "../components/editor/extensions/code-block";
 import { CustomImage } from "../components/editor/extensions/image";
 import { LinkCard } from "../components/editor/extensions/link-card";
+import { LabelTag } from "../components/editor/extensions/label-tag";
 import {
   SlashCommand,
   type SlashBridge,
@@ -15,6 +16,7 @@ import {
 export function useDocumentEditor(
   initialContent: string,
   slashBridge: SlashBridge,
+  labelBridge: SlashBridge,
 ) {
   return useEditor({
     extensions: [
@@ -30,6 +32,7 @@ export function useDocumentEditor(
         HTMLAttributes: { class: "rich-image" },
       }),
       LinkCard,
+      LabelTag.configure({ bridge: labelBridge }),
       Markdown,
       SlashCommand.configure({ bridge: slashBridge }),
       Placeholder.configure({

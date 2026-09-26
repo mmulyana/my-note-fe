@@ -10,22 +10,16 @@ import { createPortal } from "react-dom";
 import { useAtomValue, useStore } from "jotai";
 import { useLocation, useNavigate } from "react-router-dom";
 import { EditorContent } from "@tiptap/react";
-import {
-  editingDocAtom,
-  editingIdAtom,
-  isNewNoteAtom,
-} from "@/store/document";
+import { editingDocAtom, editingIdAtom, isNewNoteAtom } from "@/store/document";
 import { topbarActionsSlotAtom, topbarTitleSlotAtom } from "@/store/topbar";
 import { DragHandle } from "@tiptap/extension-drag-handle-react";
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 import { useAutoSave, type SaveStatus } from "@/hooks/use-autosave";
 import { useDocumentEditor } from "@/hooks/use-editor";
 import { useAiEdit } from "@/hooks/use-ai-edit";
-import { useApi } from "@/hooks/use-api";
-import { urls } from "@/lib/urls";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { FolderPicker } from "@/components/editor/folder-picker";
-import { LabelPicker } from "@/components/editor/label-picker";
+import { LabelSuggestMenu } from "@/components/editor/label-suggest-menu";
 import { LabelsIcon } from "@/components/icons";
 import { AiBubbleMenu } from "@/components/editor/ai-bubble-menu";
 import { AiLoader } from "@/components/editor/ai-loader";
@@ -42,9 +36,9 @@ import type {
   SlashBridge,
   SlashState,
 } from "@/components/editor/extensions/slash-command";
-import type { DocItem, DocumentPayload, IApi } from "@/lib/types";
+import type { DocItem, DocumentPayload } from "@/lib/types";
 import { NoteDropdown } from "./note-dropdown";
-import { cn, relative } from "@/lib/utils";
+import { cn, extractLabels, relative } from "@/lib/utils";
 
 const STATUS_TEXT: Record<SaveStatus, string> = {
   idle: "",
@@ -57,13 +51,10 @@ interface EditorProps {
   doc: DocItem;
   onAutoSave: (
     payload: DocumentPayload,
-    overrideLabelIds?: string[],
     overrideFolderId?: string | null,
   ) => void;
   onClose: (finalContent: string) => void;
   onDelete: () => void;
-  labelIds?: string[];
-  onLabelChange?: (ids: string[]) => void;
   folderId?: string | null;
   onFolderChange?: (id: string | null) => void;
   onArchive?: (payload: DocumentPayload, value: boolean) => void;
@@ -72,26 +63,29 @@ interface EditorProps {
   mode?: "modal" | "page";
 }
 
-function useFirstLine(editor: ReturnType<typeof useDocumentEditor>) {
-  const [line, setLine] = useState("");
+function useNoteLabels(editor: ReturnType<typeof useDocumentEditor>) {
+  const [labels, setLabels] = useState<string[]>([]);
 
   useEffect(() => {
     if (!editor) return;
-    const read = () => {
-      let found = "";
-      editor.state.doc.forEach((node) => {
-        if (!found) found = node.textContent.trim();
-      });
-      setLine(found);
+
+    const sync = () => {
+      const next = extractLabels(editor.getJSON());
+      setLabels((prev) =>
+        prev.length === next.length && prev.every((n, i) => n === next[i])
+          ? prev
+          : next,
+      );
     };
-    read();
-    editor.on("update", read);
+
+    sync();
+    editor.on("update", sync);
     return () => {
-      editor.off("update", read);
+      editor.off("update", sync);
     };
   }, [editor]);
 
-  return line;
+  return labels;
 }
 
 export function Editor({
@@ -103,8 +97,6 @@ export function Editor({
   onPinned,
   onSecret,
   mode = "modal",
-  labelIds = [],
-  onLabelChange,
   folderId = null,
   onFolderChange,
 }: EditorProps) {
@@ -122,8 +114,19 @@ export function Editor({
     }),
     [],
   );
-  const editor = useDocumentEditor(doc.content, slashBridge);
+  const [labelSuggest, setLabelSuggest] = useState<SlashState | null>(null);
+  const labelKeyRef = useRef<(event: KeyboardEvent) => boolean>(() => false);
+  const labelBridge = useMemo<SlashBridge>(
+    () => ({
+      open: setLabelSuggest,
+      close: () => setLabelSuggest(null),
+      keyDown: (event) => labelKeyRef.current(event),
+    }),
+    [],
+  );
+  const editor = useDocumentEditor(doc.content, slashBridge, labelBridge);
   const ai = useAiEdit(editor);
+  const noteLabels = useNoteLabels(editor);
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const location = useLocation();
@@ -131,15 +134,6 @@ export function Editor({
   const isPage = mode === "page";
   const titleSlot = useAtomValue(topbarTitleSlotAtom);
   const actionsSlot = useAtomValue(topbarActionsSlotAtom);
-  const firstLine = useFirstLine(editor);
-
-  const { data: labelsData } = useApi<IApi<{ id: string; name: string }[]>>({
-    url: urls.Labels,
-    queryKey: ["labels"],
-  });
-  const noteLabels = (labelsData?.data ?? []).filter((l) =>
-    labelIds.includes(l.id),
-  );
 
   // note: dibaca sekali saat mount; atom ini jadi false setelah save pertama
   const startedNewRef = useRef(useAtomValue(isNewNoteAtom));
@@ -147,8 +141,8 @@ export function Editor({
   const { status, triggerSave, flushPayload } = useAutoSave({
     editor,
     startEmpty: startedNewRef.current,
-    onSave: async (payload, overrideLabelIds, overrideFolderId) => {
-      onAutoSave(payload, overrideLabelIds, overrideFolderId);
+    onSave: async (payload, overrideFolderId) => {
+      onAutoSave(payload, overrideFolderId);
     },
   });
 
@@ -177,18 +171,10 @@ export function Editor({
     if (payload) onSecret?.(payload, !doc.secret);
   }, [flushPayload, onSecret, doc]);
 
-  const handleLabelChange = useCallback(
-    (ids: string[]) => {
-      onLabelChange?.(ids);
-      triggerSave(ids);
-    },
-    [onLabelChange, triggerSave],
-  );
-
   const handleFolderChange = useCallback(
     (id: string | null) => {
       onFolderChange?.(id);
-      triggerSave(undefined, id);
+      triggerSave(id);
     },
     [onFolderChange, triggerSave],
   );
@@ -256,7 +242,10 @@ export function Editor({
     <button
       type="button"
       onClick={handlePinned}
-      className="grid place-items-center w-7 h-7 rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi hover:text-ink focus-visible:bg-surface-hi focus-visible:text-ink outline-none"
+      className={cn(
+        "grid place-items-center w-7 h-7 rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi focus-visible:bg-surface-hi focus-visible:text-ink outline-none hover:text-amber-400",
+        doc.pinned && "text-amber-500",
+      )}
       aria-label="Pin note"
       title="Pin note"
     >
@@ -295,25 +284,24 @@ export function Editor({
         </p>
         <FolderPicker selectedId={folderId} onChange={handleFolderChange} />
       </div>
-      <div className="mt-4">
-        <p className="mb-1 px-1.5 text-[10px] font-medium uppercase tracking-[0.08em] text-ink-3">
-          Labels
-        </p>
-        <LabelPicker selectedIds={labelIds} onChange={handleLabelChange} />
-        {noteLabels.length > 0 && (
-          <div className="mt-1 flex flex-wrap items-center gap-1 px-0.5">
-            {noteLabels.map((label) => (
+      {noteLabels.length > 0 && (
+        <div className="mt-4">
+          <p className="mb-1 px-1.5 text-[10px] font-medium uppercase tracking-[0.08em] text-ink-3">
+            Labels
+          </p>
+          <div className="flex flex-wrap items-center gap-1 px-0.5">
+            {noteLabels.map((name) => (
               <span
-                key={label.id}
+                key={name.toLowerCase()}
                 className="inline-flex max-w-full items-center gap-0.5 px-1.5 py-0.5 rounded-[8px] text-xs text-ink-2 border border-line"
               >
                 <LabelsIcon className="h-3 w-3 shrink-0" />
-                <span className="truncate">{label.name}</span>
+                <span className="truncate">{name}</span>
               </span>
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </>
   );
 
@@ -344,8 +332,13 @@ export function Editor({
           onAiSubmit={(prompt) => ai.run("ask", prompt)}
           folderId={folderId}
           onFolderChange={handleFolderChange}
-          labelIds={labelIds}
-          onLabelChange={handleLabelChange}
+        />
+      )}
+      {editor && (
+        <LabelSuggestMenu
+          editor={editor}
+          state={labelSuggest}
+          keyHandlerRef={labelKeyRef}
         />
       )}
       {editor && (
@@ -391,9 +384,7 @@ export function Editor({
               >
                 <IconArrowLeft size={15} />
               </button>
-              <h1 className="min-w-0 truncate text-[17px] font-semibold text-ink">
-                {firstLine || "Untitled"}
-              </h1>
+              {pinButton}
             </>,
             titleSlot,
           )}
@@ -403,7 +394,6 @@ export function Editor({
               <span className="hidden sm:inline mr-1 min-w-0 truncate text-[11px] text-ink-3">
                 {updatedText}
               </span>
-              {pinButton}
               <NoteDropdown
                 onDelete={onDelete}
                 onArchive={handleArchive}

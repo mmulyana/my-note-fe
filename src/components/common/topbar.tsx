@@ -55,7 +55,6 @@ export function Topbar() {
 function getPageTitle(pathname: string) {
   if (pathname === "/") return "Notes";
   if (pathname === "/todos") return "Todo";
-  if (pathname === "/labels") return "Labels";
   if (pathname === "/folders") return "Folders";
   if (pathname === "/archive") return "Archive";
   if (pathname === "/trash") return "Trash";

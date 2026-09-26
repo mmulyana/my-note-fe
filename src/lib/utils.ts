@@ -35,6 +35,7 @@ export function toDocItem(n: Notes): DocItem {
     updatedAt: new Date(n.updatedAt).getTime(),
     folder: n.folder,
     secret: n.secret,
+    archived: n.archived,
   };
 }
 
@@ -184,6 +185,42 @@ export function diffLinks(prev: LinkPayload[], next: LinkPayload[]): LinkDiff {
   const removed = prev.filter((l) => !nextById.has(l.id));
 
   return { added, updated, removed, unchanged };
+}
+
+export function extractLabels(doc: JSONContent): string[] {
+  const names: string[] = [];
+  const seen = new Set<string>();
+
+  const add = (run: string) => {
+    const match = /^#([\p{L}\p{N}_-]{1,32})$/u.exec(run);
+    if (!match) return;
+    const name = match[1];
+    const key = name.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    names.push(name);
+  };
+
+  const walk = (node?: JSONContent) => {
+    if (!node?.content) return;
+    let run = "";
+    for (const child of node.content) {
+      if (
+        child.type === "text" &&
+        child.marks?.some((m) => m.type === "labelTag")
+      ) {
+        run += str(child.text);
+        continue;
+      }
+      if (run) add(run);
+      run = "";
+      walk(child);
+    }
+    if (run) add(run);
+  };
+
+  walk(doc);
+  return names;
 }
 
 export function deriveListFields(

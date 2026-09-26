@@ -1,16 +1,6 @@
-import { useEffect, useMemo } from "react";
 import { useAtom, useAtomValue } from "jotai";
-import { useParams } from "react-router-dom";
 import { useDocumentActions } from "@/hooks/use-document-actions";
-import {
-  editingDocAtom,
-  editingFolderIdAtom,
-  editingLabelIdsAtom,
-  isNewNoteAtom,
-} from "@/store/document";
-import { useApi } from "@/hooks/use-api";
-import type { IApi } from "@/lib/types";
-import { urls } from "@/lib/urls";
+import { editingDocAtom, editingFolderIdAtom } from "@/store/document";
 import { Editor } from ".";
 
 export default function EditorWrapper({
@@ -27,27 +17,7 @@ export default function EditorWrapper({
     secretDoc
   } = useDocumentActions();
   const editingDoc = useAtomValue(editingDocAtom);
-  const isNewNote = useAtomValue(isNewNoteAtom);
-  const [labelIds, setLabelIds] = useAtom(editingLabelIdsAtom);
   const [folderId, setFolderId] = useAtom(editingFolderIdAtom);
-
-  const { name: labelName } = useParams<{ name: string }>();
-  const { data: labelsData } = useApi<IApi<{ id: string; name: string }[]>>({
-    url: urls.Labels,
-    queryKey: ["labels"],
-  });
-
-  const labelIdFromParam = useMemo(() => {
-    if (!labelName) return undefined;
-    const match = (labelsData?.data ?? []).find((c) => c.name === labelName);
-    return match?.id;
-  }, [labelName, labelsData]);
-
-  useEffect(() => {
-    if (isNewNote && labelIdFromParam && labelIds.length === 0) {
-      setLabelIds([labelIdFromParam]);
-    }
-  }, [isNewNote, labelIdFromParam, labelIds.length, setLabelIds]);
 
   if (editingDoc) {
     return (
@@ -61,8 +31,6 @@ export default function EditorWrapper({
         onPinned={pinnedDoc}
         onSecret={secretDoc}
         mode={mode}
-        labelIds={labelIds}
-        onLabelChange={setLabelIds}
         folderId={folderId}
         onFolderChange={setFolderId}
       />

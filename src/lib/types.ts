@@ -179,6 +179,7 @@ export interface DocumentPayload {
   todoDiff?: TodoDiff;
   links: LinkPayload[];
   linkDiff?: LinkDiff;
+  labels: string[];
 }
 
 export interface DocItem {

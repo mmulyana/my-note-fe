@@ -727,6 +727,22 @@ textarea {
     }
 }
 
+.rich-content .rich-label-tag,
+.rich-readonly .rich-label-tag {
+    display: inline;
+    padding: 0 6px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface-2);
+    color: var(--ink-2);
+    font-size: 0.875em;
+    line-height: 1.5;
+    white-space: nowrap;
+    vertical-align: baseline;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+
 /* note: box hugs the image so the settings button anchors to the image corner */
 .rich-image-wrapper {
     position: relative;

@@ -12,25 +12,23 @@ import { urls } from "@/lib/urls";
 import type { Counts, IApi } from "@/lib/types";
 import NewNoteButton from "./new-note-button";
 import FoldersWrapper from "./folders-wrapper";
+import LabelsWrapper from "./labels-wrapper";
 import {
   AllNotesIcon,
   AppLogoIcon,
   ArchiveIcon,
-  LabelsIcon,
   TodoIcon,
 } from "@/components/icons";
 
 const navItems = [
   { to: "/", label: "All Notes", icon: IconSmartHome },
   { to: "/todos", label: "Todo", icon: TodoIcon },
-  { to: "/labels", label: "Labels", icon: LabelsIcon },
   { to: "/archive", label: "Archive", icon: ArchiveIcon },
 ] as const;
 
 const countKeys: Record<(typeof navItems)[number]["to"], keyof Counts> = {
   "/": "notes",
   "/todos": "todos",
-  "/labels": "labels",
   "/archive": "archive",
 };
 
@@ -165,6 +163,7 @@ function SidebarNav({ sidebar, onToggle, onNavigate }: SidebarNavProps) {
         </div>
         <div className={cn(sidebar && "sidebar-folders-enter")}>
           <FoldersWrapper sidebar={sidebar} />
+          <LabelsWrapper sidebar={sidebar} onNavigate={onNavigate} />
         </div>
       </nav>
     </div>
@@ -187,12 +186,6 @@ function renderNavIcon(
       return (
         <TodoIcon
           className={cn("shrink-0 w-4.5 h-4.5", isActive && "text-teal-600")}
-        />
-      );
-    case "/labels":
-      return (
-        <LabelsIcon
-          className={cn("shrink-0 w-4.5 h-4.5", isActive && "text-purple-500")}
         />
       );
     case "/archive":
