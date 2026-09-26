@@ -2,7 +2,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { NavLink, useMatch } from "react-router-dom";
 import { useState } from "react";
 import {
-  IconFolderFilled,
   IconPencil,
   IconCheck,
   IconPlus,
@@ -31,22 +30,6 @@ export default function FoldersWrapper({ sidebar }: Props) {
     url: urls.NotesCounts,
     queryKey: ["notes", "counts"],
   });
-
-  const removeFolder = async (id: string) => {
-    const response = await request<IApi<any>>(`${urls.Folder}/${id}`, {
-      method: "DELETE",
-    });
-    if (response.message.includes("deleted")) {
-      queryClient.setQueryData(["folders"], (prev: IApi<any[]> | undefined) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          data: prev.data.filter((c) => c.id !== id),
-        };
-      });
-    }
-    queryClient.invalidateQueries({ queryKey: [query.Notes] });
-  };
 
   const handleEditFolder = async (id: string, name: string) => {
     const response = await request<IApi<any>>(`${urls.Folder}/${id}`, {
@@ -81,7 +64,6 @@ export default function FoldersWrapper({ sidebar }: Props) {
                 data={data}
                 count={counts?.data?.folders?.[data.id] ?? 0}
                 open={sidebar}
-                onRemove={removeFolder}
                 onEdit={handleEditFolder}
               />
             );
@@ -97,11 +79,10 @@ type ListProps = {
   data: any;
   count: number;
   open: boolean;
-  onRemove: (id: string) => void;
   onEdit: (id: string, name: string) => void;
 };
 
-function ListItem({ data, count, open, onRemove, onEdit }: ListProps) {
+function ListItem({ data, count, open, onEdit }: ListProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(data.name);
   const isActive = !!useMatch({ path: `/folder/${data.id}`, end: true });

@@ -1,9 +1,7 @@
 import {
   IconArchive,
-  IconTagFilled,
   IconPinFilled,
   IconLock,
-  IconPlus,
 } from "@tabler/icons-react";
 import { FolderIcon } from "@/components/icons";
 import { TodoProgress } from "@/components/editor/todo-progress";

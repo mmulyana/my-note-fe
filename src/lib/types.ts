@@ -17,6 +17,7 @@ export type Notes = {
   updatedAt: string;
   folder?: { id: string; name: string; color: string; secret: boolean } | null;
   secret?: boolean;
+  archived?: boolean;
 };
 
 export type Folder = {
