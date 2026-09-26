@@ -32,6 +32,11 @@ const SIDES = {
       "inset-y-0 right-0 h-full w-[calc(100%-2rem)] max-w-sm p-2 data-open:slide-in-from-right data-closed:slide-out-to-right",
     panel: "rounded-2xl border border-(--line-2) shadow-(--shadow-lg)",
   },
+  left: {
+    wrapper:
+      "inset-y-0 left-0 h-full w-[calc(100%-3rem)] max-w-72 data-open:slide-in-from-left data-closed:slide-out-to-left",
+    panel: "border-r border-line shadow-(--shadow-lg)",
+  },
   bottom: {
     wrapper:
       "inset-x-0 bottom-0 min-h-[45vh] max-h-[85vh] w-full data-open:slide-in-from-bottom data-closed:slide-out-to-bottom",

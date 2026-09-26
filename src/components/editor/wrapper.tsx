@@ -13,7 +13,11 @@ import type { IApi } from "@/lib/types";
 import { urls } from "@/lib/urls";
 import { Editor } from ".";
 
-export default function EditorWrapper() {
+export default function EditorWrapper({
+  mode = "modal",
+}: {
+  mode?: "modal" | "page";
+}) {
   const {
     autoSave,
     closeEditor,
@@ -56,6 +60,7 @@ export default function EditorWrapper() {
         onArchive={archiveDoc}
         onPinned={pinnedDoc}
         onSecret={secretDoc}
+        mode={mode}
         labelIds={labelIds}
         onLabelChange={setLabelIds}
         folderId={folderId}

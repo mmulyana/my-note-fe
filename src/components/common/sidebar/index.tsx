@@ -1,7 +1,10 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
+import { useAtom } from "jotai";
 import { memo, useEffect } from "react";
 import { IconLayoutSidebarFilled, IconSmartHome } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
+import { mobileSidebarOpenAtom } from "@/store/topbar";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { useApi } from "@/hooks/use-api";
@@ -33,11 +36,9 @@ const countKeys: Record<(typeof navItems)[number]["to"], keyof Counts> = {
 
 export const Sidebar = memo(function Sidebar() {
   const isMobile = useIsMobile();
+  const { pathname } = useLocation();
   const [sidebar, setSidebar] = useLocalStorage("sidebar", true);
-  const { data: counts } = useApi<IApi<Counts>>({
-    url: urls.NotesCounts,
-    queryKey: ["notes", "counts"],
-  });
+  const [mobileOpen, setMobileOpen] = useAtom(mobileSidebarOpenAtom);
 
   useEffect(() => {
     document.documentElement.style.setProperty(
@@ -46,14 +47,50 @@ export const Sidebar = memo(function Sidebar() {
     );
   }, [isMobile, sidebar]);
 
-  if (isMobile) return null;
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname, setMobileOpen]);
+
+  if (isMobile) {
+    return (
+      <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+        <SheetContent side="left" aria-describedby={undefined}>
+          <SheetTitle className="sr-only">Navigation</SheetTitle>
+          <SidebarNav sidebar onNavigate={() => setMobileOpen(false)} />
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  return <SidebarNav sidebar={sidebar} onToggle={() => setSidebar(!sidebar)} />;
+});
+
+type SidebarNavProps = {
+  sidebar: boolean;
+  onToggle?: () => void;
+  onNavigate?: () => void;
+};
+
+function SidebarNav({ sidebar, onToggle, onNavigate }: SidebarNavProps) {
+  const { data: counts } = useApi<IApi<Counts>>({
+    url: urls.NotesCounts,
+    queryKey: ["notes", "counts"],
+  });
 
   return (
-    <div className={cn("h-full flex-none", sidebar ? "w-64" : "w-fit")}>
+    <div
+      className={cn(
+        "h-full",
+        onToggle && "flex-none",
+        onToggle && (sidebar ? "w-64" : "w-fit"),
+        !onToggle && "min-h-0 w-full",
+      )}
+    >
       <nav
         className={cn(
-          "h-full overflow-y-auto px-2.5 pt-2.5 border-r border-line",
-          sidebar ? "w-64 sidebar-reveal" : "w-fit",
+          "h-full overflow-y-auto px-2.5 pt-2.5",
+          onToggle && "border-r border-line",
+          onToggle && (sidebar ? "w-64 sidebar-reveal" : "w-fit"),
         )}
       >
         <div
@@ -76,16 +113,18 @@ export const Sidebar = memo(function Sidebar() {
               </p>
             )}
           </div>
-          <button
-            onClick={() => setSidebar(!sidebar)}
-            className={cn(
-              "h-8 w-8 justify-center flex items-center text-ink-2 hover:text-ink-1 rounded-[8px] transition-[color,transform,opacity] duration-150 active:scale-[0.94] hover:cursor-pointer",
-              !sidebar &&
-                "bg-surface-2 absolute opacity-0 group-hover:opacity-100",
-            )}
-          >
-            <IconLayoutSidebarFilled width={18} height={18} />
-          </button>
+          {onToggle && (
+            <button
+              onClick={onToggle}
+              className={cn(
+                "h-8 w-8 justify-center flex items-center text-ink-2 hover:text-ink-1 rounded-[8px] transition-[color,transform,opacity] duration-150 active:scale-[0.94] hover:cursor-pointer",
+                !sidebar &&
+                  "bg-surface-2 absolute opacity-0 group-hover:opacity-100",
+              )}
+            >
+              <IconLayoutSidebarFilled width={18} height={18} />
+            </button>
+          )}
         </div>
         <div className={cn(sidebar && "sidebar-content-enter")}>
           <div className="mt-4 flex flex-col gap-1">
@@ -97,6 +136,7 @@ export const Sidebar = memo(function Sidebar() {
                   key={to}
                   to={to}
                   end
+                  onClick={onNavigate}
                   className={cn("flex w-full", !sidebar && "w-8")}
                 >
                   {({ isActive }) => (
@@ -129,7 +169,7 @@ export const Sidebar = memo(function Sidebar() {
       </nav>
     </div>
   );
-});
+}
 
 function renderNavIcon(
   to: (typeof navItems)[number]["to"],

@@ -188,7 +188,15 @@ textarea {
 .masonry.grid-view.todo-grid > * {
     width: min(100%, 40rem);
     height: fit-content;
-    max-height: 400px;
+}
+.note-page {
+    padding-right: var(--app-sidebar-width, 16rem);
+}
+/* note: desktop-only card height cap; breakpoint must match useIsMobile() in use-is-mobile.ts */
+@media (min-width: 768px) {
+    .masonry.grid-view.todo-grid > * {
+        max-height: 400px;
+    }
 }
 
 .sidebar-reveal {

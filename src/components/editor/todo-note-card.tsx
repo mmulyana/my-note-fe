@@ -18,9 +18,10 @@ import { cn, relative } from "@/lib/utils";
 
 interface TodoNoteCardProps {
   doc: DocItem;
+  hideCompleted?: boolean;
 }
 
-export function TodoNoteCard({ doc }: TodoNoteCardProps) {
+export function TodoNoteCard({ doc, hideCompleted = false }: TodoNoteCardProps) {
   const { openNote } = useDocumentActions();
   const queryClient = useQueryClient();
 
@@ -80,7 +81,7 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
       <div
         inert={Boolean(isSecret)}
         className={cn(
-          "flex min-h-0 flex-1 flex-col overflow-y-auto px-3 pt-1.5 pb-2",
+          "flex h-fit flex-col px-3 pt-1.5 pb-2 md:min-h-0 md:flex-1 md:overflow-y-auto",
           isSecret && "pointer-events-none",
         )}
       >
@@ -89,7 +90,8 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
             {doc.title}
           </h2>
         )}
-        {items.map((item) => (
+        {items.map((item) =>
+          hideCompleted && item.checked ? null : (
           <div
             key={item.id}
             className="flex items-start gap-2 py-1"
@@ -118,7 +120,8 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
               showActions={false}
             />
           </div>
-        ))}
+          ),
+        )}
       </div>
     </article>
   );

@@ -1,27 +1,23 @@
-import { Outlet } from "react-router-dom";
-import { FeedbackButton } from "@/components/common/feedback-button";
+import { Outlet, useLocation } from "react-router-dom";
 import EditorWrapper from "@/components/editor/wrapper";
 import { Sidebar } from "@/components/common/sidebar";
-import { Tabbar } from "@/components/common/tabbar";
+import { NewNoteFab } from "@/components/common/new-note-fab";
 import { Topbar } from "@/components/common/topbar";
-import { useBackGuard } from "@/hooks/use-back-guard";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
 export default function AppLayout() {
+  const isMobile = useIsMobile();
+  const { pathname } = useLocation();
+  const showModal = !isMobile && !pathname.startsWith("/note/");
+
   return (
     <div className="h-full flex flex-row bg-[--bg]">
       <Sidebar />
       <MainContent />
-      <EditorWrapper />
-      <Tabbar />
-      <FeedbackButton />
-      <BackGuard />
+      {showModal && <EditorWrapper mode="modal" />}
+      <NewNoteFab />
     </div>
   );
-}
-
-function BackGuard() {
-  useBackGuard();
-  return null;
 }
 
 function MainContent() {

@@ -1,9 +1,5 @@
 import { useState } from "react";
-import {
-  IconMessageReport,
-  IconStarFilled,
-  IconLoader2,
-} from "@tabler/icons-react";
+import { IconStarFilled, IconLoader2 } from "@tabler/icons-react";
 import {
   Dialog,
   DialogContent,
@@ -28,30 +24,12 @@ const TYPE_OPTIONS: { value: FeedbackType; label: string }[] = [
   { value: "feedback", label: "Feedback" },
 ];
 
-export function FeedbackButton() {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-label="Send feedback"
-        className="fixed right-4 bottom-18 md:right-6 md:bottom-6 z-40 grid h-9 w-9 md:h-11 md:w-11 place-items-center rounded-full bg-ink text-surface shadow-(--shadow-lg) transition-transform duration-150 active:scale-95 cursor-pointer"
-      >
-        <IconMessageReport size={18} className="shrink-0" />
-      </button>
-      <FeedbackModal open={open} onOpenChange={setOpen} />
-    </>
-  );
-}
-
 interface FeedbackModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-function FeedbackModal({ open, onOpenChange }: FeedbackModalProps) {
+export function FeedbackModal({ open, onOpenChange }: FeedbackModalProps) {
   const [type, setType] = useState<FeedbackType>("feedback");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");

@@ -1,11 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { useAtomValue } from "jotai";
-import { IconLogout, IconSparkles, IconUserCircle } from "@tabler/icons-react";
+import {
+  IconLogout,
+  IconMessageReport,
+  IconSparkles,
+  IconUserCircle,
+} from "@tabler/icons-react";
 import { useAuth } from "@/hooks/use-auth";
 import { profileAtom } from "@/store/profile";
 import { assetUrl } from "@/lib/urls";
 import { ProfileModal } from "@/components/common/profile-modal";
 import { AiUsageModal } from "@/components/common/ai-usage-modal";
+import { FeedbackModal } from "@/components/common/feedback-modal";
 
 export function AccountMenu() {
   const { logout } = useAuth();
@@ -13,6 +19,7 @@ export function AccountMenu() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [usageOpen, setUsageOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const initial = (profile?.email?.[0] ?? "?").toUpperCase();
@@ -68,6 +75,16 @@ export function AccountMenu() {
             className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] text-ink-2 transition-colors hover:text-ink"
             onClick={() => {
               setMenuOpen(false);
+              setFeedbackOpen(true);
+            }}
+          >
+            <IconMessageReport size={16} />
+            Send Feedback
+          </button>
+          <button
+            className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] text-ink-2 transition-colors hover:text-ink"
+            onClick={() => {
+              setMenuOpen(false);
               logout();
             }}
           >
@@ -78,6 +95,7 @@ export function AccountMenu() {
       )}
       <ProfileModal open={profileOpen} onOpenChange={setProfileOpen} />
       <AiUsageModal open={usageOpen} onOpenChange={setUsageOpen} />
+      <FeedbackModal open={feedbackOpen} onOpenChange={setFeedbackOpen} />
     </div>
   );
 }

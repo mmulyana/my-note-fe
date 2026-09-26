@@ -13,8 +13,8 @@ import {
 import type { DocumentPayload, NoteDetail, NoteFlags } from "@/lib/types";
 import { newId, deriveListFields } from "@/lib/utils";
 import { request } from "@/lib/api-client";
-import { useIsMobile } from "@/hooks/use-is-mobile";
 import type { IApi } from "@/lib/types";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import { urls } from "@/lib/urls";
 
 interface CreateNoteResponse {
