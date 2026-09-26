@@ -32,7 +32,7 @@ export function AiBubbleMenu({ editor, onRun, busy }: AiBubbleMenuProps) {
   }, [editor]);
 
   const btn =
-    "h-7 px-2 rounded-md text-[12px] text-(--ink-2) transition-colors hover:bg-(--surface-hi) hover:text-(--ink) outline-none cursor-pointer";
+    "h-7 px-2 rounded-md text-[12px] text-ink-2 transition-colors hover:bg-surface-hi hover:text-ink outline-none cursor-pointer";
 
   return (
     <BubbleMenu
@@ -44,7 +44,7 @@ export function AiBubbleMenu({ editor, onRun, busy }: AiBubbleMenuProps) {
     >
       {busy ? null : (
         <div
-          className="flex flex-col gap-1.5 rounded-xl border border-(--line-2) bg-(--surface) p-1 shadow-(--shadow-lg)"
+          className="flex flex-col gap-1.5 rounded-xl border border-line-2 bg-surface p-1 shadow-card-lg"
           // keep the editor selection while clicking inside the menu
           onMouseDown={(e) => {
             if (!(e.target instanceof HTMLInputElement)) e.preventDefault();
@@ -65,13 +65,13 @@ export function AiBubbleMenu({ editor, onRun, busy }: AiBubbleMenuProps) {
             <div className="flex items-center gap-0.5">
               <button
                 type="button"
-                className={`${btn} flex items-center gap-1 font-medium text-(--ink)`}
+                className={`${btn} flex items-center gap-1 font-medium text-ink`}
                 onClick={() => setAsking(true)}
               >
                 <IconSparkles size={14} />
                 Ask AI
               </button>
-              <span className="w-px h-4 bg-(--line) mx-0.5" />
+              <span className="w-px h-4 bg-line mx-0.5" />
               {QUICK_ACTIONS.map(({ label, action }) => (
                 <button
                   key={action}

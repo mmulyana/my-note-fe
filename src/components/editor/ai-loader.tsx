@@ -31,7 +31,7 @@ const HEIGHT = 36;
 const GAP = 8;
 
 const btn =
-  "flex items-center gap-1 h-6 px-2 rounded-md text-[12px] text-(--ink-2) transition-colors hover:bg-(--surface-hi) hover:text-(--ink) outline-none cursor-pointer";
+  "flex items-center gap-1 h-6 px-2 rounded-md text-[12px] text-ink-2 transition-colors hover:bg-surface-hi hover:text-ink outline-none cursor-pointer";
 
 export function AiLoader({
   editor,
@@ -88,7 +88,7 @@ export function AiLoader({
     <div
       role="status"
       aria-live="polite"
-      className="fixed z-60 flex items-center gap-1 rounded-xl border border-(--line-2) bg-(--surface) p-1 pl-2.5 text-[12px] text-(--ink-2) shadow-(--shadow-lg)"
+      className="fixed z-60 flex items-center gap-1 rounded-xl border border-line-2 bg-surface p-1 pl-2.5 text-[12px] text-ink-2 shadow-card-lg"
       style={{
         top: spot.top,
         left: spot.left,
@@ -98,7 +98,7 @@ export function AiLoader({
     >
       {status === "streaming" && (
         <>
-          <IconLoader2 size={14} className="animate-spin text-(--ink-3)" />
+          <IconLoader2 size={14} className="animate-spin text-ink-3" />
           <span className="ml-1 mr-4">Writing…</span>
           <button
             type="button"
@@ -113,7 +113,7 @@ export function AiLoader({
       )}
       {status === "review" && (
         <>
-          <IconSparkles size={14} className="text-(--ink-3)" />
+          <IconSparkles size={14} className="text-ink-3" />
           {error && (
             <span className="ml-1 mr-1 truncate">Stopped: {error}</span>
           )}
@@ -123,7 +123,7 @@ export function AiLoader({
           </button>
           <button
             type="button"
-            className={`${btn} bg-(--surface-hi) font-medium text-(--ink)`}
+            className={`${btn} bg-surface-hi font-medium text-ink`}
             onClick={onKeep}
           >
             <IconCheck size={13} />

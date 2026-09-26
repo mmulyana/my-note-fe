@@ -145,7 +145,7 @@ export function LabelSuggestMenu({
       id="label-menu"
       role="listbox"
       aria-label="Labels"
-      className="fixed z-60 max-h-64 overflow-y-auto rounded-xl border border-(--line-2) bg-(--surface) p-1 shadow-(--shadow-lg)"
+      className="fixed z-60 max-h-64 overflow-y-auto rounded-xl border border-line-2 bg-surface p-1 shadow-card-lg"
       style={{
         left,
         width: MENU_W,
@@ -167,11 +167,11 @@ export function LabelSuggestMenu({
           onClick={() => pick(item)}
           onMouseEnter={() => setActive(index)}
           className={cn(
-            "flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-[13px] text-(--ink-2) outline-none cursor-pointer",
-            index === active && "bg-(--surface-hi) text-(--ink)",
+            "flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-[13px] text-ink-2 outline-none cursor-pointer",
+            index === active && "bg-surface-hi text-ink",
           )}
         >
-          <span className="text-(--ink-3)">
+          <span className="text-ink-3">
             {item.create ? <IconPlus size={15} /> : <IconHash size={15} />}
           </span>
           <span className="truncate">

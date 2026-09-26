@@ -32,10 +32,10 @@ export function TaskCheckbox({ checked, onChange }: TaskCheckboxProps) {
       />
       <span
         className={cn(
-          "flex items-center justify-center w-touch-checkbox h-touch-checkbox rounded-(--check-radius) border-[1.5px] transition-[background-color,border-color] duration-200",
+          "flex items-center justify-center w-touch-checkbox h-touch-checkbox rounded-check border-[1.5px] transition-[background-color,border-color] duration-200",
           checked
-            ? "bg-(--check-on-bg) border-(--check-on-border)"
-            : "border-(--check-off-border)",
+            ? "bg-check-on border-check-on-border"
+            : "border-check-off-border",
         )}
       >
         <svg
@@ -98,7 +98,7 @@ export function TaskMeta({
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="grid place-items-center w-5.5 h-5.5 flex-none border border-line rounded-md text-ink-3 text-[13px] cursor-pointer transition-[background,color] duration-140 hover:text-(--ink) hover:bg-surface-2"
+              className="grid place-items-center w-5.5 h-5.5 flex-none border border-line rounded-md text-ink-3 text-[13px] cursor-pointer transition-[background,color] duration-140 hover:text-ink hover:bg-surface-2"
               title="Task details"
             >
               <IconDots size={14} />
@@ -106,7 +106,7 @@ export function TaskMeta({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-60 bg-surface border-line-2 rounded-xl shadow-(--shadow-lg) p-3"
+            className="w-60 bg-surface border-line-2 rounded-xl shadow-card-lg p-3"
             onCloseAutoFocus={(e) => e.preventDefault()}
           >
             <TaskMetaPopup

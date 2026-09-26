@@ -24,7 +24,7 @@ export function AiPromptInput({
 
   return (
     <form onSubmit={handleSubmit} className="flex items-center gap-1">
-      <IconSparkles size={14} className="ml-1.5 text-(--ink-3)" />
+      <IconSparkles size={14} className="ml-1.5 text-ink-3" />
       <input
         autoFocus
         value={prompt}
@@ -36,13 +36,13 @@ export function AiPromptInput({
           onCancel();
         }}
         placeholder={placeholder}
-        className="w-56 text-[12px] font-[inherit] text-(--ink) bg-transparent px-1 py-1 outline-none"
+        className="w-56 text-[12px] font-[inherit] text-ink bg-transparent px-1 py-1 outline-none"
       />
       <button
         type="submit"
         disabled={!prompt.trim()}
         aria-label="Send"
-        className="grid place-items-center w-6 h-6 rounded-md bg-(--surface-hi) text-(--ink) transition-colors hover:bg-(--surface-2) disabled:opacity-40 disabled:pointer-events-none"
+        className="grid place-items-center w-6 h-6 rounded-md bg-surface-hi text-ink transition-colors hover:bg-surface-2 disabled:opacity-40 disabled:pointer-events-none"
       >
         <IconArrowUp size={14} />
       </button>

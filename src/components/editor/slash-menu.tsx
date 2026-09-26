@@ -244,7 +244,7 @@ export function SlashMenu({
       id="slash-menu"
       role="listbox"
       aria-label="Commands"
-      className="fixed z-60 max-h-64 overflow-y-auto rounded-xl border border-(--line-2) bg-(--surface) p-1 shadow-(--shadow-lg)"
+      className="fixed z-60 max-h-64 overflow-y-auto rounded-xl border border-line-2 bg-surface p-1 shadow-card-lg"
       style={{
         left,
         width: MENU_W,
@@ -260,7 +260,7 @@ export function SlashMenu({
           {(index === 0 || filtered[index - 1].group !== item.group) && (
             <div
               aria-hidden
-              className="px-2 pt-1.5 pb-1 text-[10px] uppercase tracking-[0.08em] text-(--ink-3)"
+              className="px-2 pt-1.5 pb-1 text-[10px] uppercase tracking-[0.08em] text-ink-3"
             >
               {item.group}
             </div>
@@ -275,11 +275,11 @@ export function SlashMenu({
             onClick={() => pick(item)}
             onMouseEnter={() => setActive(index)}
             className={cn(
-              "flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-[13px] text-(--ink-2) outline-none cursor-pointer",
-              index === active && "bg-(--surface-hi) text-(--ink)",
+              "flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-[13px] text-ink-2 outline-none cursor-pointer",
+              index === active && "bg-surface-hi text-ink",
             )}
           >
-            <span className="text-(--ink-3)">{item.icon}</span>
+            <span className="text-ink-3">{item.icon}</span>
             {item.title}
           </button>
         </div>

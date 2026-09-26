@@ -1,7 +1,7 @@
 import { type JSONContent } from "@tiptap/react";
 import { formatDistanceToNow } from "date-fns";
 import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { extendTailwindMerge } from "tailwind-merge";
 import type {
   DocItem,
   FolderWithNotes,
@@ -18,6 +18,15 @@ import type {
   UpdatedTodo,
 } from "@/lib/types";
 import { ALPHABET, MAX_BLOCKS, MAX_CHARS } from "./constants";
+
+const twMerge = extendTailwindMerge({
+  extend: {
+    theme: {
+      shadow: ["card", "card-lg"],
+      radius: ["check"],
+    },
+  },
+});
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

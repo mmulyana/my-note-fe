@@ -27,8 +27,8 @@ export function DocumentCard({ doc }: DocumentCardProps) {
   return (
     <article
       className={cn(
-        "group relative flex flex-col cursor-pointer rounded-[12px] border border-line bg-surface text-ink overflow-hidden outline-none transition-[box-shadow,transform] duration-150 hover:border-line-2 focus-visible:shadow-[0_0_0_2px_var(--accent)]",
-        !isSecret && "hover:shadow-(--shadow)",
+        "group relative flex flex-col cursor-pointer rounded-[12px] border border-line bg-surface text-ink overflow-hidden outline-none transition-[box-shadow,transform] duration-150 hover:border-line-2 focus-visible:ring-2 focus-visible:ring-brand",
+        !isSecret && "hover:shadow-card",
       )}
       tabIndex={0}
       onClick={handleOpen}

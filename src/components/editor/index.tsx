@@ -428,7 +428,7 @@ export function Editor({
     >
       <div
         className={cn(
-          "relative bg-surface animate-[modal-in_0.18s_cubic-bezier(0.3,0.7,0.4,1)] w-full max-w-180 rounded-[16px] border border-line-2 shadow-(--shadow-lg)",
+          "relative bg-surface animate-[modal-in_0.18s_cubic-bezier(0.3,0.7,0.4,1)] w-full max-w-180 rounded-[16px] border border-line-2 shadow-card-lg",
         )}
         onMouseDown={(e) => e.stopPropagation()}
       >

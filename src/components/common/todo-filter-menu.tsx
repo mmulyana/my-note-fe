@@ -41,10 +41,10 @@ const triggerClass =
 const triggerActiveClass = "text-ink";
 
 const markerClass =
-  "absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-amber-400 ring-2 ring-(--surface)";
+  "absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-amber-400 ring-2 ring-surface";
 
 const panelClass =
-  "absolute right-0 top-full z-40 mt-1.5 overflow-hidden rounded-[12px] border border-(--line-2) bg-(--surface) shadow-card-lg";
+  "absolute right-0 top-full z-40 mt-1.5 overflow-hidden rounded-[12px] border border-line-2 bg-surface shadow-card-lg";
 
 function usePopover() {
   const [open, setOpen] = useState(false);
@@ -95,7 +95,7 @@ function OptionRow({
       className="flex w-full items-center gap-2.5 rounded-[8px] px-2.5 py-2 text-left text-[13px] text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink cursor-pointer"
     >
       <span className="min-w-0 flex-1 truncate">{label}</span>
-      {checked && <IconCheck size={15} className="flex-none text-(--accent)" />}
+      {checked && <IconCheck size={15} className="flex-none text-brand" />}
     </button>
   );
 }

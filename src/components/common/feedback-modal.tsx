@@ -89,12 +89,12 @@ export function FeedbackModal({ open, onOpenChange }: FeedbackModalProps) {
 
         {sent ? (
           <div className="flex flex-col items-center gap-2 py-4 text-center">
-            <p className="text-[13px] font-medium text-(--ink)">
+            <p className="text-[13px] font-medium text-ink">
               Thanks — got it.
             </p>
             <button
               type="button"
-              className="h-8 px-3.5 rounded-md text-[13px] font-medium bg-(--surface-hi) text-(--ink) border border-(--line-2) transition-colors hover:bg-(--surface-2) cursor-pointer"
+              className="h-8 px-3.5 rounded-md text-[13px] font-medium bg-surface-hi text-ink border border-line-2 transition-colors hover:bg-surface-2 cursor-pointer"
               onClick={() => handleOpenChange(false)}
             >
               Close
@@ -111,8 +111,8 @@ export function FeedbackModal({ open, onOpenChange }: FeedbackModalProps) {
                   className={cn(
                     "flex-1 h-7 rounded-md text-[12px] font-medium transition-colors cursor-pointer",
                     type === opt.value
-                      ? "bg-(--surface) text-(--ink) shadow-sm"
-                      : "text-(--ink-3) hover:text-(--ink-2)",
+                      ? "bg-surface text-ink shadow-sm"
+                      : "text-ink-3 hover:text-ink-2",
                   )}
                 >
                   {opt.label}
@@ -121,7 +121,7 @@ export function FeedbackModal({ open, onOpenChange }: FeedbackModalProps) {
             </div>
 
             <label className="flex flex-col gap-1.5">
-              <span className="text-[12px] font-medium text-(--ink-2)">
+              <span className="text-[12px] font-medium text-ink-2">
                 Title
               </span>
               <input
@@ -129,12 +129,12 @@ export function FeedbackModal({ open, onOpenChange }: FeedbackModalProps) {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Short summary"
-                className="text-[13px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[6px] px-3 py-2 outline-none focus:border-accent"
+                className="text-[13px] font-[inherit] text-ink bg-surface-2 border border-line rounded-[6px] px-3 py-2 outline-none focus:border-accent"
               />
             </label>
 
             <label className="flex flex-col gap-1.5">
-              <span className="text-[12px] font-medium text-(--ink-2)">
+              <span className="text-[12px] font-medium text-ink-2">
                 Description
               </span>
               <textarea
@@ -142,13 +142,13 @@ export function FeedbackModal({ open, onOpenChange }: FeedbackModalProps) {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Details (optional)"
                 rows={3}
-                className="text-[13px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[6px] px-3 py-2 outline-none focus:border-accent resize-none"
+                className="text-[13px] font-[inherit] text-ink bg-surface-2 border border-line rounded-[6px] px-3 py-2 outline-none focus:border-accent resize-none"
               />
             </label>
 
             {type === "feedback" && (
               <div className="flex flex-col gap-1.5">
-                <span className="text-[12px] font-medium text-(--ink-2)">
+                <span className="text-[12px] font-medium text-ink-2">
                   Rating
                 </span>
                 <div className="flex gap-1">
@@ -158,7 +158,7 @@ export function FeedbackModal({ open, onOpenChange }: FeedbackModalProps) {
                       type="button"
                       onClick={() => setRating(n === rating ? 0 : n)}
                       aria-label={`${n} star`}
-                      className="cursor-pointer text-(--ink-3) hover:text-(--ink-2)"
+                      className="cursor-pointer text-ink-3 hover:text-ink-2"
                     >
                       <IconStarFilled
                         size={20}
@@ -179,7 +179,7 @@ export function FeedbackModal({ open, onOpenChange }: FeedbackModalProps) {
             <DialogFooter>
               <button
                 type="button"
-                className="h-8 px-3 rounded-md text-[13px] font-medium text-(--ink-2) transition-colors hover:text-(--ink) cursor-pointer"
+                className="h-8 px-3 rounded-md text-[13px] font-medium text-ink-2 transition-colors hover:text-ink cursor-pointer"
                 onClick={() => handleOpenChange(false)}
               >
                 Cancel
@@ -187,7 +187,7 @@ export function FeedbackModal({ open, onOpenChange }: FeedbackModalProps) {
               <button
                 type="button"
                 disabled={isPending || !title.trim()}
-                className="h-8 px-3.5 rounded-md text-[13px] font-medium bg-(--surface-hi) text-(--ink) border border-(--line-2) transition-colors hover:bg-(--surface-2) disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="h-8 px-3.5 rounded-md text-[13px] font-medium bg-surface-hi text-ink border border-line-2 transition-colors hover:bg-surface-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 onClick={handleSubmit}
               >
                 {isPending ? (

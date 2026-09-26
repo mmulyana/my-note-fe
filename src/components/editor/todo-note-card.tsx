@@ -49,7 +49,7 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
     <article
       className={cn(
         "group relative flex flex-col rounded-[12px] border border-line bg-surface text-ink overflow-hidden transition-[box-shadow,border-color] duration-150 hover:border-line-2",
-        !isSecret && "hover:shadow-(--shadow)",
+        !isSecret && "hover:shadow-card",
       )}
     >
       {isSecret && (
@@ -127,7 +127,7 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
             </div>
             <span
               className={cn(
-                "text-[16px] flex-1 min-w-0 leading-snug break-words",
+                "text-[15px] flex-1 min-w-0 leading-snug break-words",
                 item.checked && "line-through text-ink-3",
               )}
             >

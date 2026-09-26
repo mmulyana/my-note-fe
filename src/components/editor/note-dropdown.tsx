@@ -30,7 +30,7 @@ export function NoteDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className={`grid place-items-center w-7 h-7 rounded-lg text-(--ink-3) transition-[background,color] duration-150 hover:bg-(--surface-hi) hover:text-(--ink) focus-visible:bg-(--surface-hi) focus-visible:text-(--ink) data-[state=open]:bg-(--surface-hi) data-[state=open]:text-(--ink) outline-none ${className ?? ""}`}
+        className={`grid place-items-center w-7 h-7 rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi hover:text-ink focus-visible:bg-surface-hi focus-visible:text-ink data-[state=open]:bg-surface-hi data-[state=open]:text-ink outline-none ${className ?? ""}`}
         aria-label="Note options"
         onClick={(e) => e.stopPropagation()}
       >
@@ -39,7 +39,7 @@ export function NoteDropdown({
 
       <DropdownMenuContent
         align="end"
-        className="w-40 bg-(--surface) border-(--line-2) rounded-md shadow-(--shadow-lg) py-1 px-0"
+        className="w-40 bg-surface border-line-2 rounded-md shadow-card-lg py-1 px-0"
       >
         <DropdownMenuItem
           className="flex items-center gap-2.5 text-[13px] rounded-none cursor-pointer dark:text-white/50"

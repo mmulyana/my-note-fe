@@ -120,7 +120,7 @@ export function SlashPopup({
   return createPortal(
     <div
       ref={ref}
-      className="fixed z-60 rounded-xl border border-(--line-2) bg-(--surface) p-1 shadow-(--shadow-lg)"
+      className="fixed z-60 rounded-xl border border-line-2 bg-surface p-1 shadow-card-lg"
       style={{
         left,
         width: POPUP_W,
@@ -155,7 +155,7 @@ function ImageUrlInput({ onSubmit }: { onSubmit: (src: string) => void }) {
     >
       <label
         htmlFor="slash-image-url"
-        className="text-[10px] uppercase tracking-[0.08em] text-(--ink-3)"
+        className="text-[10px] uppercase tracking-[0.08em] text-ink-3"
       >
         Image URL
       </label>
@@ -166,12 +166,12 @@ function ImageUrlInput({ onSubmit }: { onSubmit: (src: string) => void }) {
         placeholder="https://example.com/image.png"
         value={url}
         onChange={(e) => setUrl(e.target.value)}
-        className="text-[12px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[6px] px-2 py-1.5 outline-none focus:border-accent"
+        className="text-[12px] font-[inherit] text-ink bg-surface-2 border border-line rounded-[6px] px-2 py-1.5 outline-none focus:border-accent"
       />
       <button
         type="submit"
         disabled={!url.trim()}
-        className="h-7 rounded-md text-[12px] font-medium bg-(--surface-hi) text-(--ink) border border-(--line-2) transition-colors hover:bg-(--surface-2) disabled:opacity-50 disabled:cursor-not-allowed"
+        className="h-7 rounded-md text-[12px] font-medium bg-surface-hi text-ink border border-line-2 transition-colors hover:bg-surface-2 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Insert
       </button>
@@ -248,12 +248,12 @@ function PickList({
     >
       <div
         aria-hidden
-        className="px-2 pt-1.5 pb-1 text-[10px] uppercase tracking-[0.08em] text-(--ink-3)"
+        className="px-2 pt-1.5 pb-1 text-[10px] uppercase tracking-[0.08em] text-ink-3"
       >
         {title}
       </div>
       {rows.length === 0 ? (
-        <p role="none" className="px-2 py-1.5 text-[12px] text-(--ink-3)">
+        <p role="none" className="px-2 py-1.5 text-[12px] text-ink-3">
           {empty}
         </p>
       ) : (
@@ -264,11 +264,11 @@ function PickList({
             role={role}
             aria-checked={isSelected(row.id)}
             onClick={() => onToggle(row.id)}
-            className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-[13px] text-(--ink-2) outline-none cursor-pointer hover:bg-(--surface-hi) hover:text-(--ink) focus-visible:bg-(--surface-hi) focus-visible:text-(--ink) focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-(--line-2)"
+            className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-[13px] text-ink-2 outline-none cursor-pointer hover:bg-surface-hi hover:text-ink focus-visible:bg-surface-hi focus-visible:text-ink focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-line-2"
           >
             <span
               aria-hidden
-              className="grid w-4 place-items-center text-(--ink)"
+              className="grid w-4 place-items-center text-ink"
             >
               {isSelected(row.id) && <IconCheck size={14} />}
             </span>

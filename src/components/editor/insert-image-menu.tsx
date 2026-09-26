@@ -33,7 +33,7 @@ export function InsertImageMenu({ editor }: InsertImageMenuProps) {
       }}
     >
       <DropdownMenuTrigger
-        className="grid place-items-center w-7 h-7 rounded-lg border border-(--line) bg-(--surface) text-(--ink-3) transition-[background,color,border-color] duration-150 hover:bg-accent hover:text-accent-foreground hover:border-(--line-2) outline-none disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
+        className="grid place-items-center w-7 h-7 rounded-lg border border-line bg-surface text-ink-3 transition-[background,color,border-color] duration-150 hover:bg-accent hover:text-accent-foreground hover:border-line-2 outline-none disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
         title="Insert image from URL"
         aria-label="Insert image from URL"
         disabled={!editor}
@@ -44,12 +44,12 @@ export function InsertImageMenu({ editor }: InsertImageMenuProps) {
 
       <DropdownMenuContent
         align="end"
-        className="w-64 bg-(--surface) border-(--line-2) rounded-xl shadow-(--shadow-lg) p-3"
+        className="w-64 bg-surface border-line-2 rounded-xl shadow-card-lg p-3"
         onCloseAutoFocus={(e) => e.preventDefault()}
         onClick={(e) => e.stopPropagation()}
       >
         <form onSubmit={handleSubmit} className="flex flex-col gap-2 text-left">
-          <span className="text-[10px] uppercase tracking-[0.08em] text-(--ink-3)">
+          <span className="text-[10px] uppercase tracking-[0.08em] text-ink-3">
             Image URL
           </span>
           <input
@@ -58,12 +58,12 @@ export function InsertImageMenu({ editor }: InsertImageMenuProps) {
             placeholder="https://example.com/image.png"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            className="text-[12px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[6px] px-2 py-1.5 outline-none focus:border-accent"
+            className="text-[12px] font-[inherit] text-ink bg-surface-2 border border-line rounded-[6px] px-2 py-1.5 outline-none focus:border-accent"
           />
           <button
             type="submit"
             disabled={!url.trim()}
-            className="h-7 rounded-md text-[12px] font-medium bg-(--surface-hi) text-(--ink) border border-(--line-2) transition-colors hover:bg-(--surface-2) disabled:opacity-50 disabled:cursor-not-allowed"
+            className="h-7 rounded-md text-[12px] font-medium bg-surface-hi text-ink border border-line-2 transition-colors hover:bg-surface-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Insert
           </button>

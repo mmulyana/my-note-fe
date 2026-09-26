@@ -18,14 +18,14 @@ export function SearchBar() {
         onKeyDown={(e) => e.key === "Escape" && setQuery("")}
         placeholder="Search notes…"
         aria-label="Search notes"
-        className="h-8 w-full rounded-[8px] bg-line/60 pl-9 pr-9 text-sm text-(--ink) placeholder:text-ink-3 outline-none transition-[border-color,box-shadow] duration-150"
+        className="h-8 w-full rounded-[8px] bg-line/60 pl-9 pr-9 text-sm text-ink placeholder:text-ink-3 outline-none transition-[border-color,box-shadow] duration-150"
       />
       {query && (
         <button
           type="button"
           onClick={() => setQuery("")}
           aria-label="Clear search"
-          className="absolute right-2 top-1/2 -translate-y-1/2 grid place-items-center h-6 w-6 rounded-md text-ink-3 transition-colors hover:text-(--ink) hover:bg-surface-2"
+          className="absolute right-2 top-1/2 -translate-y-1/2 grid place-items-center h-6 w-6 rounded-md text-ink-3 transition-colors hover:text-ink hover:bg-surface-2"
         >
           <IconX size={15} />
         </button>

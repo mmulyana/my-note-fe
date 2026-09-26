@@ -55,7 +55,7 @@ export function CodeBlockToolbar({
         <SelectContent
           position="popper"
           align="start"
-          className="max-h-64 min-w-32 rounded-lg border border-line-2 p-1 shadow-(--shadow-lg) ring-0"
+          className="max-h-64 min-w-32 rounded-lg border border-line-2 p-1 shadow-card-lg ring-0"
           onCloseAutoFocus={(e) => e.preventDefault()}
         >
           <SelectItem value={PLAIN} className={itemClass}>

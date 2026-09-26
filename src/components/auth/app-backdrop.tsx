@@ -18,8 +18,8 @@ export function AppBackdrop() {
           </div>
         </div>
       </div>
-      <div className="absolute inset-0 bg-(--bg)/45" />
-      <div className="absolute inset-0 bg-[radial-gradient(115%_85%_at_50%_45%,transparent_0%,var(--bg)_100%)] opacity-70" />
+      <div className="absolute inset-0 bg-bg/45" />
+      <div className="absolute inset-0 bg-radial-[115%_85%_at_50%_45%] from-transparent from-0% to-bg to-100% opacity-70" />
     </div>
   );
 }

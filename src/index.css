@@ -968,6 +968,15 @@ textarea {
     --color-ink-3: var(--ink-3);
     --color-line: var(--line);
     --color-line-2: var(--line-2);
+    --color-bg: var(--bg);
+    --color-bg-2: var(--bg-2);
+    --color-brand: var(--accent);
+    --color-check-on: var(--check-on-bg);
+    --color-check-on-border: var(--check-on-border);
+    --color-check-off-border: var(--check-off-border);
+    --shadow-card: var(--shadow);
+    --shadow-card-lg: var(--shadow-lg);
+    --radius-check: var(--check-radius);
     --color-muted-foreground: var(--muted-foreground);
     --color-muted: var(--muted);
     --color-secondary-foreground: var(--secondary-foreground);

@@ -117,7 +117,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
         <div className="flex flex-col items-center gap-2 py-1">
           <button
             type="button"
-            className="group relative grid h-20 w-20 place-items-center overflow-hidden rounded-full border border-(--line-2) bg-(--surface-2) text-2xl font-semibold text-(--ink-2) cursor-pointer disabled:cursor-not-allowed"
+            className="group relative grid h-20 w-20 place-items-center overflow-hidden rounded-full border border-line-2 bg-surface-2 text-2xl font-semibold text-ink-2 cursor-pointer disabled:cursor-not-allowed"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
           >
@@ -145,13 +145,13 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
             className="hidden"
             onChange={handleFileChange}
           />
-          <span className="text-[11px] text-(--ink-3)">
+          <span className="text-[11px] text-ink-3">
             Click photo to change
           </span>
         </div>
 
         <label className="flex flex-col gap-1.5">
-          <span className="text-[12px] font-medium text-(--ink-2)">
+          <span className="text-[12px] font-medium text-ink-2">
             Username
           </span>
           <input
@@ -159,14 +159,14 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Username"
-            className="text-[13px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[6px] px-3 py-2 outline-none focus:border-accent"
+            className="text-[13px] font-[inherit] text-ink bg-surface-2 border border-line rounded-[6px] px-3 py-2 outline-none focus:border-accent"
           />
         </label>
 
         <DialogFooter>
           <button
             type="button"
-            className="h-8 px-3 rounded-md text-[13px] font-medium text-(--ink-2) transition-colors hover:text-(--ink) cursor-pointer"
+            className="h-8 px-3 rounded-md text-[13px] font-medium text-ink-2 transition-colors hover:text-ink cursor-pointer"
             onClick={() => onOpenChange(false)}
           >
             Cancel
@@ -174,7 +174,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
           <button
             type="button"
             disabled={busy}
-            className="h-8 px-3.5 rounded-md text-[13px] font-medium bg-(--surface-hi) text-(--ink) border border-(--line-2) transition-colors hover:bg-(--surface-2) disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="h-8 px-3.5 rounded-md text-[13px] font-medium bg-surface-hi text-ink border border-line-2 transition-colors hover:bg-surface-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             onClick={handleSave}
           >
             {saving ? "Saving..." : "Save"}

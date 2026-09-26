@@ -57,7 +57,7 @@ export function AiUsageModal({ open, onOpenChange }: AiUsageModalProps) {
         </DialogHeader>
 
         {isPending && (
-          <div className="grid place-items-center py-6 text-(--ink-3)">
+          <div className="grid place-items-center py-6 text-ink-3">
             <IconLoader2 size={18} className="animate-spin" />
           </div>
         )}
@@ -69,7 +69,7 @@ export function AiUsageModal({ open, onOpenChange }: AiUsageModalProps) {
             </p>
             <button
               type="button"
-              className="h-8 px-3 rounded-md text-[13px] font-medium bg-(--surface-hi) text-(--ink) border border-(--line-2) transition-colors hover:bg-(--surface-2) cursor-pointer"
+              className="h-8 px-3 rounded-md text-[13px] font-medium bg-surface-hi text-ink border border-line-2 transition-colors hover:bg-surface-2 cursor-pointer"
               onClick={() => refetch()}
             >
               Retry
@@ -80,10 +80,10 @@ export function AiUsageModal({ open, onOpenChange }: AiUsageModalProps) {
         {usage && (
           <div className="flex flex-col gap-3">
             <div className="flex items-baseline gap-1.5">
-              <span className="text-2xl font-semibold tabular-nums text-(--ink)">
+              <span className="text-2xl font-semibold tabular-nums text-ink">
                 {usage.remaining.toLocaleString()}
               </span>
-              <span className="text-[13px] text-(--ink-3)">tokens left</span>
+              <span className="text-[13px] text-ink-3">tokens left</span>
             </div>
 
             <div
@@ -91,7 +91,7 @@ export function AiUsageModal({ open, onOpenChange }: AiUsageModalProps) {
               aria-valuemin={0}
               aria-valuemax={usage.limit}
               aria-valuenow={usage.used}
-              className="h-1.5 w-full overflow-hidden rounded-full bg-(--surface-2)"
+              className="h-1.5 w-full overflow-hidden rounded-full bg-surface-2"
             >
               <div
                 className="h-full rounded-full bg-accent transition-[width] duration-300"
@@ -99,7 +99,7 @@ export function AiUsageModal({ open, onOpenChange }: AiUsageModalProps) {
               />
             </div>
 
-            <div className="flex items-center justify-between text-[12px] text-(--ink-3)">
+            <div className="flex items-center justify-between text-[12px] text-ink-3">
               <span className="tabular-nums">
                 {usage.used.toLocaleString()} of {usage.limit.toLocaleString()}{" "}
                 used

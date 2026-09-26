@@ -65,7 +65,7 @@ export function FolderPicker({
           <FolderIcon className="size-3.5 text-ink-3" />
           {selected ? selected.name : "Folder"}
         </DropdownMenuSubTrigger>
-        <DropdownMenuSubContent className="w-44 bg-surface border-line-2 rounded-xl shadow-(--shadow-lg) p-1">
+        <DropdownMenuSubContent className="w-44 bg-surface border-line-2 rounded-xl shadow-card-lg p-1">
           {items}
         </DropdownMenuSubContent>
       </DropdownMenuSub>
@@ -84,7 +84,7 @@ export function FolderPicker({
 
       <DropdownMenuContent
         align="start"
-        className="w-44 bg-surface border-line-2 rounded-xl shadow-(--shadow-lg) p-1"
+        className="w-44 bg-surface border-line-2 rounded-xl shadow-card-lg p-1"
         onClick={(e) => e.stopPropagation()}
       >
         <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.08em] text-ink-3 px-2 py-1">

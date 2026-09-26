@@ -206,7 +206,7 @@ export default function FolderPage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="w-44 bg-surface border-line-2 rounded-md shadow-(--shadow-lg) py-1 px-0"
+              className="w-44 bg-surface border-line-2 rounded-md shadow-card-lg py-1 px-0"
             >
               <DropdownMenuItem
                 className="flex items-center gap-2.5 text-[13px] rounded-none cursor-pointer dark:text-white/50"
