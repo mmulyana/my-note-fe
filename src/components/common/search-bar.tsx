@@ -6,7 +6,7 @@ export function SearchBar() {
   const [query, setQuery] = useAtom(searchQueryAtom);
 
   return (
-    <div className="relative min-w-0 flex-1 max-w-60">
+    <div className="relative w-full min-w-0">
       <IconSearch
         size={16}
         className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-3"
@@ -18,7 +18,7 @@ export function SearchBar() {
         onKeyDown={(e) => e.key === "Escape" && setQuery("")}
         placeholder="Search notes…"
         aria-label="Search notes"
-        className="h-8 w-full rounded-[10px] border border-line bg-surface pl-9 pr-9 text-sm text-(--ink) placeholder:text-ink-3 outline-none transition-[border-color,box-shadow] duration-150"
+        className="h-8 w-full rounded-[8px] bg-line/60 pl-9 pr-9 text-sm text-(--ink) placeholder:text-ink-3 outline-none transition-[border-color,box-shadow] duration-150"
       />
       {query && (
         <button

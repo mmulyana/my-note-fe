@@ -1,6 +1,9 @@
 import { IconChevronDown, IconFile, IconPlus } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
-import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group";
+import {
+  ButtonGroup,
+  ButtonGroupSeparator,
+} from "@/components/ui/button-group";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,9 +24,8 @@ export default function NewNoteButton({ sidebar }: { sidebar: boolean }) {
 
   const menu = (
     <DropdownMenuContent
-      align={sidebar ? "end" : "start"}
-      side={sidebar ? "bottom" : "right"}
       className="w-56"
+      align="start"
       onCloseAutoFocus={(e) => e.preventDefault()}
     >
       {!sidebar && (
@@ -64,23 +66,28 @@ export default function NewNoteButton({ sidebar }: { sidebar: boolean }) {
   }
 
   return (
-    <ButtonGroup className="w-full rounded-md border border-line bg-surface-2 dark:border-line-2 dark:bg-[#18191D] [&>[data-slot]:not(:has(~[data-slot]))]:rounded-r-md! mb-2">
+    <ButtonGroup className="mb-px w-full rounded-full border border-line dark:border-line-2 dark:bg-[#18191D] [&>[data-slot]:not(:has(~[data-slot]))]:rounded-r-full! bg-white">
       <Button
         variant="ghost"
         onClick={openNew}
-        className={cn(soft, "flex-1 rounded-l-md")}
+        className={cn(
+          soft,
+          "flex-1 pr-8 justify-start items-center pl-1.5 rounded-l-full",
+        )}
       >
-        <IconPlus />
+        <div className="shrink-0 w-4.5 h-4.5 flex justify-center items-center">
+          <IconPlus />
+        </div>
         New
       </Button>
-      <ButtonGroupSeparator className="bg-line-2 data-vertical:h-6 data-vertical:self-center" />
+      <ButtonGroupSeparator className="bg-line-2 data-vertical:h-5 data-vertical:self-center" />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
             size="icon"
             aria-label="New note from template"
-            className={soft}
+            className={cn(soft, "w-11")}
           >
             <IconChevronDown />
           </Button>

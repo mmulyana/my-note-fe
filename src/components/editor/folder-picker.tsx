@@ -43,7 +43,7 @@ export function FolderPicker({
 
   const items =
     folders.length === 0 ? (
-      <p className="px-2 py-1.5 text-[12px] text-(--ink-3)">No folders yet</p>
+      <p className="px-2 py-1.5 text-[12px] text-ink-3">No folders yet</p>
     ) : (
       folders.map((folder) => (
         <DropdownMenuCheckboxItem
@@ -51,7 +51,7 @@ export function FolderPicker({
           checked={selectedId === folder.id}
           onCheckedChange={() => toggle(folder.id)}
           onSelect={(e) => e.preventDefault()}
-          className="text-[13px] text-(--ink-2) rounded-lg cursor-pointer focus:bg-accent focus:text-accent-foreground"
+          className="text-[13px] text-ink-2 rounded-lg cursor-pointer focus:bg-accent focus:text-accent-foreground"
         >
           {folder.name}
         </DropdownMenuCheckboxItem>
@@ -61,11 +61,11 @@ export function FolderPicker({
   if (variant === "menu") {
     return (
       <DropdownMenuSub>
-        <DropdownMenuSubTrigger className="text-[13px] text-(--ink-2) rounded-none cursor-pointer">
-          <IconFolderFilled size={14} className="text-(--ink-3)" />
+        <DropdownMenuSubTrigger className="text-[13px] text-ink-2 rounded-none cursor-pointer">
+          <IconFolderFilled size={14} className="text-ink-3" />
           {selected ? selected.name : "Folder"}
         </DropdownMenuSubTrigger>
-        <DropdownMenuSubContent className="w-44 bg-(--surface) border-(--line-2) rounded-xl shadow-(--shadow-lg) p-1">
+        <DropdownMenuSubContent className="w-44 bg-surface border-line-2 rounded-xl shadow-(--shadow-lg) p-1">
           {items}
         </DropdownMenuSubContent>
       </DropdownMenuSub>
@@ -83,11 +83,11 @@ export function FolderPicker({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        align="end"
-        className="w-44 bg-(--surface) border-(--line-2) rounded-xl shadow-(--shadow-lg) p-1"
+        align="start"
+        className="w-44 bg-surface border-line-2 rounded-xl shadow-(--shadow-lg) p-1"
         onClick={(e) => e.stopPropagation()}
       >
-        <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.08em] text-(--ink-3) px-2 py-1">
+        <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.08em] text-ink-3 px-2 py-1">
           Folder
         </DropdownMenuLabel>
         {items}

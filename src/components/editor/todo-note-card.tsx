@@ -1,12 +1,15 @@
 import {
+  IconArrowUpRight,
   IconFolderFilled,
-  IconTagFilled,
   IconPinFilled,
   IconLock,
-  IconPlus,
 } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { TaskCheckbox, TaskMeta } from "@/components/editor/task-checkbox";
+import {
+  TaskCheckbox,
+  TaskMeta,
+  TaskPriority,
+} from "@/components/editor/task-checkbox";
 import { useDocumentActions } from "@/hooks/use-document-actions";
 import { request } from "@/lib/api-client";
 import { urls } from "@/lib/urls";
@@ -24,8 +27,10 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
   const { mutate: toggle } = useMutation({
     mutationFn: ({ id, checked }: { id: string; checked: boolean }) =>
       request(urls.Todo(id), { method: "PATCH", body: { checked } }),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["notes", { hasTodo: true }] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes", { hasTodo: true }] });
+      queryClient.invalidateQueries({ queryKey: ["notes", "counts"] });
+    },
   });
 
   const items = doc.todos ?? [];
@@ -35,12 +40,9 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
   return (
     <article
       className={cn(
-        "group relative flex flex-col cursor-pointer rounded-[14px] border border-line bg-surface text-ink overflow-hidden outline-none transition-[box-shadow,border-color] duration-150 hover:border-line-2 focus-visible:shadow-[0_0_0_2px_var(--accent)]",
+        "group relative flex flex-col rounded-[12px] border border-line bg-surface text-ink overflow-hidden transition-[box-shadow,border-color] duration-150 hover:border-line-2",
         !isSecret && "hover:shadow-(--shadow)",
       )}
-      tabIndex={0}
-      onClick={handleOpen}
-      onKeyDown={(e) => e.key === "Enter" && handleOpen()}
     >
       {isSecret && (
         <div className="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-md bg-black/5 pointer-events-none">
@@ -52,7 +54,7 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
         <div>
           {doc.folder && (
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-nowrap inline-flex items-center gap-1 rounded-[10px] text-xs text-ink-2">
+              <span className="text-nowrap inline-flex items-center gap-1 rounded-[8px] text-xs text-ink-2">
                 <IconFolderFilled size={12} />
                 {doc.folder.name}
               </span>
@@ -64,29 +66,45 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
             <IconPinFilled size={12} className="shrink-0 text-ink-2/70" />
           )}
           <p>{relative(doc.updatedAt)}</p>
+          <button
+            type="button"
+            onClick={handleOpen}
+            className="ml-0.5 grid h-6 w-6 place-items-center rounded-[4px] text-ink-3 transition-colors hover:bg-surface-2 hover:text-ink cursor-pointer"
+            aria-label={`Open ${doc.title?.trim() || "note"}`}
+          >
+            <IconArrowUpRight size={15} />
+          </button>
         </div>
       </div>
 
       <div
         inert={Boolean(isSecret)}
         className={cn(
-          "flex-1 min-h-0 px-3 pt-1.5 pb-1 flex flex-col max-h-45 overflow-hidden mask-[linear-gradient(to_bottom,black_85%,transparent)]",
+          "flex min-h-0 flex-1 flex-col overflow-y-auto px-3 pt-1.5 pb-2",
           isSecret && "pointer-events-none",
         )}
       >
+        {doc.title?.trim() && (
+          <h2 className="mb-1.5 text-sm font-semibold leading-snug text-ink">
+            {doc.title}
+          </h2>
+        )}
         {items.map((item) => (
           <div
             key={item.id}
-            className="flex items-center gap-2 py-0.5"
+            className="flex items-start gap-2 py-1"
             onClick={(e) => e.stopPropagation()}
           >
-            <TaskCheckbox
-              checked={item.checked}
-              onChange={(checked) => toggle({ id: item.id, checked })}
-            />
+            <div className="flex h-[22px] flex-none items-center gap-2">
+              <TaskCheckbox
+                checked={item.checked}
+                onChange={(checked) => toggle({ id: item.id, checked })}
+              />
+              <TaskPriority priority={item.priority} />
+            </div>
             <span
               className={cn(
-                "text-sm flex-1 min-w-0 leading-snug break-words",
+                "text-[16px] flex-1 min-w-0 leading-snug break-words",
                 item.checked && "line-through text-ink-3",
               )}
             >
@@ -102,32 +120,6 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
           </div>
         ))}
       </div>
-
-      {doc.labels.length > 0 && (
-        <div className="relative shrink-0 gap-2 px-3 pb-2.5 pt-1.5 text-xs text-ink-3 bg-linear-to-b from-transparent via-surface via-60% to-surface">
-          <div className="flex gap-1 items-center flex-wrap">
-            <div className="flex gap-1 items-center text-sm">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-ink-2 border border-line">
-                  <IconTagFilled size={12} />
-                  {doc.labels?.[0].name}
-                </span>
-              </div>
-              {doc.labels.length > 1 && (
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-ink-2 border border-line">
-                    <IconTagFilled size={12} />
-                    <span className="flex items-center">
-                      <IconPlus size={9} />
-                      {doc.labels?.length - 1}
-                    </span>
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </article>
   );
 }

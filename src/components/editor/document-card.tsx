@@ -26,7 +26,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
   return (
     <article
       className={cn(
-        "group relative flex flex-col cursor-pointer rounded-[14px] border border-line bg-surface text-ink overflow-hidden outline-none transition-[box-shadow,border-color,transform] duration-150 hover:border-line-2 focus-visible:shadow-[0_0_0_2px_var(--accent)]",
+        "group relative flex flex-col cursor-pointer rounded-[12px] border border-line bg-surface text-ink overflow-hidden outline-none transition-[box-shadow,transform] duration-150 hover:border-line-2 focus-visible:shadow-[0_0_0_2px_var(--accent)]",
         !isSecret && "hover:shadow-(--shadow)",
       )}
       tabIndex={0}
@@ -43,7 +43,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
         <div>
           {doc.folder && (
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-nowrap inline-flex items-center gap-1 rounded-[10px] text-xs text-ink-2">
+              <span className="text-nowrap inline-flex items-center gap-1 rounded-[8px] text-xs text-ink-2">
                 <IconFolderFilled size={12} />
                 {doc.folder.name}
               </span>
@@ -86,14 +86,14 @@ export function DocumentCard({ doc }: DocumentCardProps) {
             {doc.labels.length > 0 && (
               <div className="flex gap-1 items-center text-sm">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-ink-2 border border-line">
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[8px] text-xs text-ink-2 border border-line">
                     <IconTagFilled size={12} />
                     {doc.labels?.[0].name}
                   </span>
                 </div>
                 {doc.labels.length > 1 && (
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-ink-2 border border-line">
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[8px] text-xs text-ink-2 border border-line">
                       <IconTagFilled size={12} />
                       <span className="flex items-center">
                         <IconPlus size={9} />

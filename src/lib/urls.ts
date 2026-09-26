@@ -1,5 +1,6 @@
 export const urls = {
   Notes: "/notes",
+  NotesCounts: "/notes/counts",
   Note: (id: string) => `/notes/${id}`,
   Todos: "/todos",
   TodosGroupedByDate: (from: string, to: string, tz: string) =>
@@ -23,7 +24,10 @@ export const urls = {
   AiUsage: "/ai/usage",
 };
 
-const API_ORIGIN = (import.meta.env.VITE_API_URL ?? "/api").replace(/\/api\/?$/, "");
+const API_ORIGIN = (import.meta.env.VITE_API_URL ?? "/api").replace(
+  /\/api\/?$/,
+  "",
+);
 
 export function assetUrl(path?: string | null): string | undefined {
   if (!path) return undefined;

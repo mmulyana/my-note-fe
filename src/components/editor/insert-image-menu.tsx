@@ -58,7 +58,7 @@ export function InsertImageMenu({ editor }: InsertImageMenuProps) {
             placeholder="https://example.com/image.png"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            className="text-[12px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[7px] px-2 py-1.5 outline-none focus:border-accent"
+            className="text-[12px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[6px] px-2 py-1.5 outline-none focus:border-accent"
           />
           <button
             type="submit"

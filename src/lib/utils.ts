@@ -26,6 +26,7 @@ export function cn(...inputs: ClassValue[]) {
 export function toDocItem(n: Notes): DocItem {
   return {
     id: n.id,
+    title: n.title,
     content: "",
     preview: n.preview,
     todoSummary: n.todoSummary,
@@ -61,7 +62,7 @@ export function extractTodos(doc: JSONContent): TodoPayload[] {
 }
 
 function normalizePriority(value: unknown): TodoPriority {
-  return value === "low" || value === "high" ? value : "medium";
+  return value === "low" || value === "medium" || value === "high" ? value : "";
 }
 
 function ownText(node: JSONContent): string {
@@ -73,7 +74,13 @@ function ownText(node: JSONContent): string {
     .join("");
 }
 
-const FIELDS: TodoField[] = ["checked", "text", "deadline", "priority", "today"];
+const FIELDS: TodoField[] = [
+  "checked",
+  "text",
+  "deadline",
+  "priority",
+  "today",
+];
 
 function sameValue(field: TodoField, a: TodoPayload, b: TodoPayload): boolean {
   return a[field] === b[field];
@@ -106,7 +113,8 @@ export function diffTodos(prev: TodoPayload[], next: TodoPayload[]): TodoDiff {
   return { added, updated, removed, unchanged };
 }
 
-const str = (value: unknown): string => (typeof value === "string" ? value : "");
+const str = (value: unknown): string =>
+  typeof value === "string" ? value : "";
 
 export function extractLinks(doc: JSONContent): LinkPayload[] {
   const links: LinkPayload[] = [];
@@ -225,23 +233,25 @@ export function relative(ms: number): string {
 
 export function buildQuery(
   baseUrl: string,
-  params: Record<string, string | number | boolean | undefined | null | any>
+  params: Record<string, string | number | boolean | undefined | null | any>,
 ) {
   const query = Object.entries(params)
-    .filter(([, value]) => value !== undefined && value !== null && value !== '')
+    .filter(
+      ([, value]) => value !== undefined && value !== null && value !== "",
+    )
     .flatMap(([key, value]) => {
       if (Array.isArray(value)) {
         return value
-          .filter(val => val !== undefined && val !== null && val !== '')
-          .map(val => `${key}[]=${encodeURIComponent(String(val))}`)
+          .filter((val) => val !== undefined && val !== null && val !== "")
+          .map((val) => `${key}[]=${encodeURIComponent(String(val))}`);
       }
-      return `${key}=${encodeURIComponent(String(value))}`
+      return `${key}=${encodeURIComponent(String(value))}`;
     })
-    .join('&')
+    .join("&");
 
-  return query ? `${baseUrl}?${query}` : baseUrl
+  return query ? `${baseUrl}?${query}` : baseUrl;
 }
 
 export function folderNoteCount(folder: FolderWithNotes): number {
-  return folder.totalNotes ?? folder.notes?.length ?? 0
+  return folder.totalNotes ?? folder.notes?.length ?? 0;
 }

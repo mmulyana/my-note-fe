@@ -24,13 +24,7 @@ export function AppBackdrop() {
   );
 }
 
-function Bar({
-  w,
-  className,
-}: {
-  w: string;
-  className?: string;
-}) {
+function Bar({ w, className }: { w: string; className?: string }) {
   return <div className={cn("h-2.5 rounded-full bg-ink/10", w, className)} />;
 }
 
@@ -99,7 +93,7 @@ interface MockCardProps {
 
 function MockCard({ lines, title, folder, footer }: MockCardProps) {
   return (
-    <article className="flex flex-col overflow-hidden rounded-[14px] border border-line bg-surface">
+    <article className="flex flex-col overflow-hidden rounded-[12px] border border-line bg-surface">
       <div className="flex items-center justify-between px-3 pt-3.5">
         {folder ? <Bar w="w-12" className="h-2" /> : <span />}
         <Bar w="w-14" className="h-2" />

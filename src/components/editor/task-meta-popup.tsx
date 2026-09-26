@@ -15,7 +15,7 @@ interface TaskMetaPopupProps {
   onDelete?: () => void;
 }
 
-const PRIORITIES: TodoPriority[] = ["low", "medium", "high"];
+const PRIORITIES: TodoPriority[] = ["", "low", "medium", "high"];
 
 export function TaskMetaPopup({
   deadline,
@@ -32,14 +32,14 @@ export function TaskMetaPopup({
               key={p}
               type="button"
               className={cn(
-                "flex-1 h-7 rounded-md text-[11px] font-medium capitalize border transition-colors",
+                "flex-1 h-7 rounded-md text-[11px] font-medium border transition-colors",
                 priority === p
                   ? "bg-(--surface-hi) text-(--ink) border-(--line-2)"
                   : "text-(--ink-3) border-(--line) hover:text-(--ink)",
               )}
               onClick={() => onChange({ priority: p })}
             >
-              {p}
+              {p || "None"}
             </button>
           ))}
         </div>
@@ -49,7 +49,7 @@ export function TaskMetaPopup({
         <div className="flex items-center gap-1.5">
           <input
             type="date"
-            className="text-[12px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[7px] px-2 py-1.25 outline-none scheme-light dark:scheme-dark focus:border-accent flex-1"
+            className="text-[12px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[6px] px-2 py-1.25 outline-none scheme-light dark:scheme-dark focus:border-accent flex-1"
             value={deadline ?? ""}
             onChange={(e) => onChange({ deadline: e.target.value || null })}
           />

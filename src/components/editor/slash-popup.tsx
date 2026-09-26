@@ -172,7 +172,10 @@ function ImageUrlInput({ onSubmit }: { onSubmit: (src: string) => void }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-2 p-1.5 text-left">
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-2 p-1.5 text-left"
+    >
       <label
         htmlFor="slash-image-url"
         className="text-[10px] uppercase tracking-[0.08em] text-(--ink-3)"
@@ -186,7 +189,7 @@ function ImageUrlInput({ onSubmit }: { onSubmit: (src: string) => void }) {
         placeholder="https://example.com/image.png"
         value={url}
         onChange={(e) => setUrl(e.target.value)}
-        className="text-[12px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[7px] px-2 py-1.5 outline-none focus:border-accent"
+        className="text-[12px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[6px] px-2 py-1.5 outline-none focus:border-accent"
       />
       <button
         type="submit"
@@ -227,8 +230,9 @@ function PickList({
 
   const items = () =>
     Array.from(
-      listRef.current?.querySelectorAll<HTMLButtonElement>("[role^=menuitem]") ??
-        [],
+      listRef.current?.querySelectorAll<HTMLButtonElement>(
+        "[role^=menuitem]",
+      ) ?? [],
     );
 
   // note: move focus into the list once rows exist (first selected, else first)
@@ -285,7 +289,10 @@ function PickList({
             onClick={() => onToggle(row.id)}
             className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-[13px] text-(--ink-2) outline-none cursor-pointer hover:bg-(--surface-hi) hover:text-(--ink) focus-visible:bg-(--surface-hi) focus-visible:text-(--ink) focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-(--line-2)"
           >
-            <span aria-hidden className="grid w-4 place-items-center text-(--ink)">
+            <span
+              aria-hidden
+              className="grid w-4 place-items-center text-(--ink)"
+            >
               {isSelected(row.id) && <IconCheck size={14} />}
             </span>
             {row.name}

@@ -15,7 +15,12 @@ import {
 import { useApi } from "@/hooks/use-api";
 import { urls } from "@/lib/urls";
 import { cn } from "@/lib/utils";
-import type { FeedbackPayload, FeedbackResponse, FeedbackType, IApi } from "@/lib/types";
+import type {
+  FeedbackPayload,
+  FeedbackResponse,
+  FeedbackType,
+  IApi,
+} from "@/lib/types";
 
 const TYPE_OPTIONS: { value: FeedbackType; label: string }[] = [
   { value: "report", label: "Report bug" },
@@ -53,10 +58,11 @@ function FeedbackModal({ open, onOpenChange }: FeedbackModalProps) {
   const [rating, setRating] = useState(0);
   const [sent, setSent] = useState(false);
 
-  const { mutate: sendFeedback, isPending, error } = useApi<
-    IApi<FeedbackResponse>,
-    FeedbackPayload
-  >({
+  const {
+    mutate: sendFeedback,
+    isPending,
+    error,
+  } = useApi<IApi<FeedbackResponse>, FeedbackPayload>({
     url: urls.Feedback,
     method: "POST",
   });
@@ -83,7 +89,9 @@ function FeedbackModal({ open, onOpenChange }: FeedbackModalProps) {
         type,
         title: trimmed,
         description: description.trim(),
-        ...(type === "feedback" && rating > 0 ? { customFields: { rating } } : {}),
+        ...(type === "feedback" && rating > 0
+          ? { customFields: { rating } }
+          : {}),
       },
       {
         onSuccess: () => setSent(true),
@@ -103,7 +111,9 @@ function FeedbackModal({ open, onOpenChange }: FeedbackModalProps) {
 
         {sent ? (
           <div className="flex flex-col items-center gap-2 py-4 text-center">
-            <p className="text-[13px] font-medium text-(--ink)">Thanks — got it.</p>
+            <p className="text-[13px] font-medium text-(--ink)">
+              Thanks — got it.
+            </p>
             <button
               type="button"
               className="h-8 px-3.5 rounded-md text-[13px] font-medium bg-(--surface-hi) text-(--ink) border border-(--line-2) transition-colors hover:bg-(--surface-2) cursor-pointer"
@@ -133,30 +143,36 @@ function FeedbackModal({ open, onOpenChange }: FeedbackModalProps) {
             </div>
 
             <label className="flex flex-col gap-1.5">
-              <span className="text-[12px] font-medium text-(--ink-2)">Title</span>
+              <span className="text-[12px] font-medium text-(--ink-2)">
+                Title
+              </span>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Short summary"
-                className="text-[13px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[8px] px-3 py-2 outline-none focus:border-accent"
+                className="text-[13px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[6px] px-3 py-2 outline-none focus:border-accent"
               />
             </label>
 
             <label className="flex flex-col gap-1.5">
-              <span className="text-[12px] font-medium text-(--ink-2)">Description</span>
+              <span className="text-[12px] font-medium text-(--ink-2)">
+                Description
+              </span>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Details (optional)"
                 rows={3}
-                className="text-[13px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[8px] px-3 py-2 outline-none focus:border-accent resize-none"
+                className="text-[13px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[6px] px-3 py-2 outline-none focus:border-accent resize-none"
               />
             </label>
 
             {type === "feedback" && (
               <div className="flex flex-col gap-1.5">
-                <span className="text-[12px] font-medium text-(--ink-2)">Rating</span>
+                <span className="text-[12px] font-medium text-(--ink-2)">
+                  Rating
+                </span>
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map((n) => (
                     <button

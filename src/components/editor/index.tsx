@@ -10,7 +10,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import { useNavigate } from "react-router-dom";
 import { EditorContent } from "@tiptap/react";
-import { closeRequestAtom, isFullScreenAtom, isNewNoteAtom } from "@/store/document";
+import {
+  closeRequestAtom,
+  isFullScreenAtom,
+  isNewNoteAtom,
+} from "@/store/document";
 import { DragHandle } from "@tiptap/extension-drag-handle-react";
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
 import { useAutoSave, type SaveStatus } from "@/hooks/use-autosave";
@@ -29,7 +33,10 @@ import {
   SlashPopup,
   type SlashPopupView,
 } from "@/components/editor/slash-popup";
-import type { SlashBridge, SlashState } from "@/components/editor/extensions/slash-command";
+import type {
+  SlashBridge,
+  SlashState,
+} from "@/components/editor/extensions/slash-command";
 import type { DocItem, DocumentPayload } from "@/lib/types";
 import { NoteDropdown } from "./note-dropdown";
 import { cn, relative } from "@/lib/utils";
@@ -236,7 +243,7 @@ export function Editor({
           "relative bg-surface animate-[modal-in_0.18s_cubic-bezier(0.3,0.7,0.4,1)]",
           full
             ? "w-full h-full flex flex-col overflow-hidden rounded-none border-0"
-            : "w-full max-w-180 rounded-[18px] border border-line-2 shadow-(--shadow-lg)",
+            : "w-full max-w-180 rounded-[16px] border border-line-2 shadow-(--shadow-lg)",
         )}
         onMouseDown={(e) => e.stopPropagation()}
       >
@@ -275,7 +282,9 @@ export function Editor({
           <div
             className={cn(
               "flex flex-col gap-2.5",
-              full ? "w-full max-w-180 mx-auto px-5 pt-2 pb-4" : "px-5 pt-2 pb-4",
+              full
+                ? "w-full max-w-180 mx-auto px-5 pt-2 pb-4"
+                : "px-5 pt-2 pb-4",
             )}
           >
             <EditorContent editor={editor} />
@@ -339,7 +348,6 @@ export function Editor({
             )}
           </div>
         </div>
-
       </div>
     </div>
   );

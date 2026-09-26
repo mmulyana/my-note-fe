@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { isBefore, isValid, parseISO, startOfDay } from "date-fns";
+import { format, isValid, parseISO } from "date-fns";
 import { IconDots } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import {
@@ -65,10 +65,6 @@ export function TaskCheckbox({ checked, onChange }: TaskCheckboxProps) {
   );
 }
 
-const chipBase =
-  "inline-flex items-center gap-[3px] h-[18px] px-1.5 text-[10.5px] font-medium leading-none rounded-md whitespace-nowrap border border-line text-ink-3";
-const chipHigh =
-  "text-[#e06c75] border-[color-mix(in_srgb,#e06c75_45%,transparent)]";
 interface TaskMetaChange {
   priority?: TodoPriority;
   deadline?: string | null;
@@ -94,40 +90,9 @@ export function TaskMeta({
 }: TaskMetaProps) {
   const [open, setOpen] = useState(false);
 
-  const parsed = deadline ? parseISO(deadline) : null;
-  const valid = parsed != null && isValid(parsed);
-  const overdue = valid && !checked && isBefore(parsed, startOfDay(new Date()));
-
   return (
     <span className="flex-none inline-flex items-center gap-1">
-      {priority === "medium" && (
-        <svg
-          width="11"
-          height="11"
-          viewBox="0 0 11 11"
-          fill="currentColor"
-          className="text-yellow-400"
-        >
-          <rect x="0" y="5" width="3" height="6" rx="1.5" />
-          <rect x="4.5" y="2" width="3" height="9" rx="1.5" />
-        </svg>
-      )}
-      {priority === "high" && (
-        <svg
-          width="11"
-          height="11"
-          viewBox="0 0 11 11"
-          fill="currentColor"
-          className="text-red-500"
-        >
-          <rect x="0" y="5" width="3" height="6" rx="1.5" />
-          <rect x="4" y="2.5" width="3" height="8.5" rx="1.5" />
-          <rect x="8" y="0" width="3" height="11" rx="1.5" />
-        </svg>
-      )}
-      {deadline && (
-        <span className={cn(chipBase, overdue && chipHigh)}>{deadline}</span>
-      )}
+      <TaskDeadline deadline={deadline} checked={checked} />
       {showActions && (
         <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
@@ -165,6 +130,83 @@ export function TaskMeta({
           </DropdownMenuContent>
         </DropdownMenu>
       )}
+    </span>
+  );
+}
+
+const DEFAULT_PRIORITY_COLOR = "text-ink-3";
+
+const PRIORITY_COLORS: Record<string, string> = {
+  high: "text-red-500",
+  medium: "text-yellow-400",
+  low: DEFAULT_PRIORITY_COLOR,
+};
+
+const DEFAULT_PRIORITY_BARS = 1;
+
+const PRIORITY_BARS: Record<string, number> = {
+  high: 3,
+  medium: 2,
+  low: DEFAULT_PRIORITY_BARS,
+};
+
+export function TaskPriority({ priority }: { priority: TodoPriority }) {
+  if (!priority) return null;
+
+  const activeBars = PRIORITY_BARS[priority] ?? DEFAULT_PRIORITY_BARS;
+  const activeColor = PRIORITY_COLORS[priority] ?? DEFAULT_PRIORITY_COLOR;
+
+  return (
+    <svg
+      width="11"
+      height="11"
+      viewBox="0 0 11 11"
+      fill="currentColor"
+      className="flex-none self-center"
+      aria-label={`${priority} priority`}
+    >
+      <rect
+        x="0"
+        y="5"
+        width="3"
+        height="6"
+        rx="1.5"
+        className={activeBars >= 1 ? activeColor : "text-ink-3/30"}
+      />
+      <rect
+        x="4"
+        y="2.5"
+        width="3"
+        height="8.5"
+        rx="1.5"
+        className={activeBars >= 2 ? activeColor : "text-ink-3/30"}
+      />
+      <rect
+        x="8"
+        y="0"
+        width="3"
+        height="11"
+        rx="1.5"
+        className={activeBars >= 3 ? activeColor : "text-ink-3/30"}
+      />
+    </svg>
+  );
+}
+
+export function TaskDeadline({
+  deadline,
+}: {
+  deadline: string | null;
+  checked: boolean;
+}) {
+  if (!deadline) return null;
+
+  const parsed = parseISO(deadline);
+  const valid = isValid(parsed);
+
+  return (
+    <span className="inline-flex h-[18px] items-center rounded-[4px] bg-ink/5 px-1.5 text-[10.5px] font-medium whitespace-nowrap text-[#e06c75]">
+      {valid ? format(parsed, "d MMM") : deadline}
     </span>
   );
 }

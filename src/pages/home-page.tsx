@@ -23,7 +23,7 @@ export default function DocumentEditorPage() {
   });
 
   const { data: notesData } = useApi<IApi<Notes[]>>({
-    url: buildQuery(urls.Notes, { q: debouncedSearch, pinned: false, hasFolder: false }),
+    url: buildQuery(urls.Notes, { q: debouncedSearch, pinned: false }),
     queryKey: debouncedSearch
       ? ["notes", { search: debouncedSearch }]
       : ["notes"],

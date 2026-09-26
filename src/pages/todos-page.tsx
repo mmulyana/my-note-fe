@@ -16,7 +16,7 @@ export default function TodosPage() {
   return (
     <>
       {docs.length > 0 ? (
-        <div className="masonry grid-view pb-4">
+        <div className="masonry grid-view todo-grid pb-4">
           {docs.map((d) => (
             <TodoNoteCard key={d.id} doc={d} />
           ))}

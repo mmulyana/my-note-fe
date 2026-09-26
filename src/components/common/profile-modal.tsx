@@ -159,7 +159,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Username"
-            className="text-[13px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[8px] px-3 py-2 outline-none focus:border-accent"
+            className="text-[13px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[6px] px-3 py-2 outline-none focus:border-accent"
           />
         </label>
 

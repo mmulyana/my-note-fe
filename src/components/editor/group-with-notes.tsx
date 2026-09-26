@@ -43,7 +43,7 @@ function FolderTile({ folder }: { folder: FolderWithNotes }) {
   return (
     <Link
       to={`/folder/${folder.id}`}
-      className="group flex flex-col rounded-[14px] border border-line bg-surface p-2 outline-none transition-[box-shadow,border-color] duration-150 hover:border-line-2 hover:shadow-(--shadow) focus-visible:shadow-[0_0_0_2px_var(--accent)]"
+      className="group flex flex-col rounded-[12px] border border-line bg-surface p-2 outline-none transition-[box-shadow,border-color] duration-150 hover:border-line-2 hover:shadow-(--shadow) focus-visible:shadow-[0_0_0_2px_var(--accent)]"
     >
       <div className="relative aspect-4/3 w-full">
         <div

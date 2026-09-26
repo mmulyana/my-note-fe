@@ -18,9 +18,9 @@ import { cn } from "@/lib/utils";
 type Label = { id: string; name: string };
 
 const ICON_BTN =
-  "w-6 h-6 grid place-items-center rounded-[6px] text-ink-3 hover:bg-surface-hi hover:text-ink cursor-pointer transition-[color,background] duration-120";
+  "w-6 h-6 grid place-items-center rounded-[5px] text-ink-3 hover:bg-surface-hi hover:text-ink cursor-pointer transition-[color,background] duration-120";
 const ICON_BTN_DANGER =
-  "w-6 h-6 grid place-items-center rounded-[6px] text-[oklch(0.68_0.17_25)] hover:bg-[color-mix(in_srgb,oklch(0.68_0.17_25)_14%,transparent)] cursor-pointer transition-[color,background] duration-120";
+  "w-6 h-6 grid place-items-center rounded-[5px] text-[oklch(0.68_0.17_25)] hover:bg-[color-mix(in_srgb,oklch(0.68_0.17_25)_14%,transparent)] cursor-pointer transition-[color,background] duration-120";
 
 export default function LabelsPage() {
   const queryClient = useQueryClient();
@@ -67,7 +67,7 @@ export default function LabelsPage() {
         </span>
       </div>
 
-      <div className="overflow-hidden rounded-[14px] border border-line bg-surface">
+      <div className="overflow-hidden rounded-[12px] border border-line bg-surface">
         <NewLabel />
         {labels.length === 0 ? (
           <div className="px-3 py-10 text-center text-[13px] text-ink-3">
@@ -202,6 +202,7 @@ function NewLabel() {
       queryClient.setQueryData(["labels"], (prev: IApi<Label[]> | undefined) =>
         prev ? { ...prev, data: [...(prev.data ?? []), res.data] } : res,
       );
+      queryClient.invalidateQueries({ queryKey: ["notes", "counts"] });
     },
   });
 

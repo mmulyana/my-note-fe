@@ -124,7 +124,7 @@ export function ImageSettingsPopup({
             onChange={(e) =>
               onChange({ objectFit: e.target.value as ImageObjectFit })
             }
-            className="text-[12px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[7px] px-2 py-1.5 outline-none focus:border-accent capitalize"
+            className="text-[12px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[6px] px-2 py-1.5 outline-none focus:border-accent capitalize"
           >
             {OBJECT_FITS.map((v) => (
               <option key={v} value={v}>
@@ -164,7 +164,7 @@ function NumberField({
         onChange={(e) =>
           onChange(e.target.value === "" ? null : Number(e.target.value))
         }
-        className="text-[12px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[7px] px-2 py-1.5 outline-none focus:border-accent flex-1 min-w-0"
+        className="text-[12px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[6px] px-2 py-1.5 outline-none focus:border-accent flex-1 min-w-0"
       />
       <span className="text-[11px] text-(--ink-3) w-5">{unit}</span>
     </div>
