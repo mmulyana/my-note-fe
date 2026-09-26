@@ -1,5 +1,7 @@
 import {
   IconArrowUpRight,
+  IconEye,
+  IconEyeOff,
   IconFolderFilled,
   IconPinFilled,
   IconLock,
@@ -11,6 +13,7 @@ import {
   TaskPriority,
 } from "@/components/editor/task-checkbox";
 import { useDocumentActions } from "@/hooks/use-document-actions";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { request } from "@/lib/api-client";
 import { urls } from "@/lib/urls";
 import type { DocItem } from "@/lib/types";
@@ -18,11 +21,14 @@ import { cn, relative } from "@/lib/utils";
 
 interface TodoNoteCardProps {
   doc: DocItem;
-  hideCompleted?: boolean;
 }
 
-export function TodoNoteCard({ doc, hideCompleted = false }: TodoNoteCardProps) {
+export function TodoNoteCard({ doc }: TodoNoteCardProps) {
   const { openNote } = useDocumentActions();
+  const [hideCompleted, setHideCompleted] = useLocalStorage(
+    `todos-hide-completed:${doc.id}`,
+    false,
+  );
   const queryClient = useQueryClient();
 
   const { mutate: toggle } = useMutation({
@@ -35,6 +41,7 @@ export function TodoNoteCard({ doc, hideCompleted = false }: TodoNoteCardProps) 
   });
 
   const items = doc.todos ?? [];
+  const hasCompleted = items.some((item) => item.checked);
   const isSecret = doc.folder?.secret || doc.secret;
   const handleOpen = () => openNote(doc.id);
 
@@ -67,10 +74,24 @@ export function TodoNoteCard({ doc, hideCompleted = false }: TodoNoteCardProps) 
             <IconPinFilled size={12} className="shrink-0 text-ink-2/70" />
           )}
           <p>{relative(doc.updatedAt)}</p>
+          {(hasCompleted || hideCompleted) && (
+            <>
+              <span aria-hidden className="mx-1 h-3.5 w-px flex-none bg-line-2" />
+              <button
+                type="button"
+                onClick={() => setHideCompleted(!hideCompleted)}
+                title={hideCompleted ? "Show completed" : "Hide completed"}
+                aria-label={hideCompleted ? "Show completed" : "Hide completed"}
+                className="grid h-6 w-6 place-items-center rounded-[4px] text-ink-3 transition-colors hover:bg-surface-2 hover:text-ink cursor-pointer"
+              >
+                {hideCompleted ? <IconEyeOff size={15} /> : <IconEye size={15} />}
+              </button>
+            </>
+          )}
           <button
             type="button"
             onClick={handleOpen}
-            className="ml-0.5 grid h-6 w-6 place-items-center rounded-[4px] text-ink-3 transition-colors hover:bg-surface-2 hover:text-ink cursor-pointer"
+            className="grid h-6 w-6 place-items-center rounded-[4px] text-ink-3 transition-colors hover:bg-surface-2 hover:text-ink cursor-pointer"
             aria-label={`Open ${doc.title?.trim() || "note"}`}
           >
             <IconArrowUpRight size={15} />
