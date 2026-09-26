@@ -6,6 +6,8 @@ import type { DocItem, IApi, Notes } from "@/lib/types";
 import { searchQueryAtom } from "@/store/search";
 import { buildQuery, toDocItem } from "@/lib/utils";
 import { useApi } from "@/hooks/use-api";
+import { useInfiniteApi } from "@/hooks/use-infinite-api";
+import { InfiniteSentinel } from "@/components/common/infinite-sentinel";
 import { useAtomValue } from "jotai";
 import { urls } from "@/lib/urls";
 
@@ -22,8 +24,14 @@ export default function DocumentEditorPage() {
     gcTime: 0,
   });
 
-  const { data: notesData } = useApi<IApi<Notes[]>>({
-    url: buildQuery(urls.Notes, { q: debouncedSearch, pinned: false }),
+  const {
+    items: notes,
+    hasNextPage,
+    isFetching,
+    fetchNextPage,
+  } = useInfiniteApi<Notes>({
+    url: urls.Notes,
+    params: { q: debouncedSearch, pinned: false },
     queryKey: debouncedSearch
       ? ["notes", { search: debouncedSearch }]
       : ["notes"],
@@ -33,7 +41,7 @@ export default function DocumentEditorPage() {
 
   const docs: DocItem[] = [
     ...(pinnedData?.data ?? []).map((n) => ({ ...toDocItem(n), pinned: true })),
-    ...(notesData?.data ?? []).map(toDocItem),
+    ...notes.map(toDocItem),
   ];
   const searching = debouncedSearch.length > 0;
 
@@ -41,11 +49,18 @@ export default function DocumentEditorPage() {
     <>
       {!searching && <GroupWithNotes />}
       {docs.length > 0 ? (
-        <div className="masonry grid-view pb-4">
-          {docs.map((d) => (
-            <DocumentCard key={d.id} doc={d} />
-          ))}
-        </div>
+        <>
+          <div className="masonry grid-view pb-4">
+            {docs.map((d) => (
+              <DocumentCard key={d.id} doc={d} />
+            ))}
+          </div>
+          <InfiniteSentinel
+            hasNextPage={hasNextPage}
+            isFetching={isFetching}
+            onLoadMore={fetchNextPage}
+          />
+        </>
       ) : (
         <div className="flex flex-col items-center gap-2 py-22.5 text-center text-ink-3">
           <div className="grid place-items-center w-19.5 h-19.5 rounded-full bg-surface-2 border border-line mb-1.5">

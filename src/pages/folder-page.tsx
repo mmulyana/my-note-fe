@@ -34,10 +34,12 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { DocumentCard } from "@/components/editor/document-card";
+import { InfiniteSentinel } from "@/components/common/infinite-sentinel";
 import { useApi } from "@/hooks/use-api";
+import { useInfiniteApi } from "@/hooks/use-infinite-api";
 import { request } from "@/lib/api-client";
 import type { DocItem, Folder, IApi, Notes } from "@/lib/types";
-import { buildQuery, toDocItem } from "@/lib/utils";
+import { toDocItem } from "@/lib/utils";
 import { urls } from "@/lib/urls";
 import { topbarActionsSlotAtom, topbarTitleSlotAtom } from "@/store/topbar";
 
@@ -61,13 +63,19 @@ export default function FolderPage() {
 
   const folder = folderData?.data;
 
-  const { data: notesData } = useApi<IApi<Notes[]>>({
-    url: buildQuery(urls.Notes, { folderId: id }),
+  const {
+    items: notes,
+    hasNextPage,
+    isFetching,
+    fetchNextPage,
+  } = useInfiniteApi<Notes>({
+    url: urls.Notes,
+    params: { folderId: id },
     queryKey: ["notes", { folderId: id }],
     enabled: !!id,
   });
 
-  const docs: DocItem[] = (notesData?.data ?? []).map(toDocItem);
+  const docs: DocItem[] = notes.map(toDocItem);
 
   const saveFolder = async (data: Folder) => {
     if (!id) return;
@@ -284,11 +292,18 @@ export default function FolderPage() {
       </Dialog>
 
       {docs.length > 0 ? (
-        <div className="masonry grid-view">
-          {docs.map((d) => (
-            <DocumentCard key={d.id} doc={d} />
-          ))}
-        </div>
+        <>
+          <div className="masonry grid-view">
+            {docs.map((d) => (
+              <DocumentCard key={d.id} doc={d} />
+            ))}
+          </div>
+          <InfiniteSentinel
+            hasNextPage={hasNextPage}
+            isFetching={isFetching}
+            onLoadMore={fetchNextPage}
+          />
+        </>
       ) : (
         <div className="flex flex-col items-center gap-2 py-22.5 text-center text-ink-3">
           <div className="grid place-items-center w-19.5 h-19.5 rounded-full bg-surface-2 border border-line mb-1.5">
