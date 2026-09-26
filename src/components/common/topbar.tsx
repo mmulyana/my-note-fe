@@ -1,31 +1,67 @@
-import { IconFileFilled } from "@tabler/icons-react";
+import { useLocation } from "react-router-dom";
+import { useSetAtom } from "jotai";
+import { IconMenu2 } from "@tabler/icons-react";
+import { useIsMobile } from "@/hooks/use-is-mobile";
+import {
+  mobileSidebarOpenAtom,
+  topbarActionsSlotAtom,
+  topbarTitleSlotAtom,
+} from "@/store/topbar";
 import { AccountMenu } from "./account-menu";
-import { SearchBar } from "./search-bar";
 import ToggleTheme from "./toggle-theme";
-import { cn } from "@/lib/utils";
 
-type Props = {
-  // note: true once content has scrolled past the topbar's height
-  scrolled?: boolean;
-};
+export function Topbar() {
+  const { pathname } = useLocation();
+  const setTitleSlot = useSetAtom(topbarTitleSlotAtom);
+  const setActionsSlot = useSetAtom(topbarActionsSlotAtom);
+  const setMobileSidebarOpen = useSetAtom(mobileSidebarOpenAtom);
+  const isMobile = useIsMobile();
+  const usesTitleSlot =
+    pathname.startsWith("/folder/") || pathname.startsWith("/note/");
 
-export function Topbar({ scrolled = false }: Props) {
   return (
-    <header
-      className={cn(
-        "absolute inset-x-0 top-0 z-30 flex h-15 flex-none items-center gap-3.5 max-lg:pl-2 pl-2.75 pr-6.5 max-lg:pr-2 justify-between",
-        scrolled ? "bg-(--bg)/20 backdrop-blur-sm" : "bg-(--bg)",
-      )}
-    >
-      <div className="flex gap-1 items-center flex-nowrap transition-all md:hidden">
-        <IconFileFilled className="shrink-0 text-ink" height={24} width={24} />
-        <p className="text-sm font-semibold text-nowrap text-ink">My Note</p>
+    <header className="absolute inset-x-0 top-0 z-30 flex h-[52px] flex-none items-center gap-3.5 max-lg:px-2 px-2.75 justify-between bg-linear-to-b from-bg via-bg/82 via-65% to-transparent">
+      <div className="flex min-w-0 items-center gap-1.5">
+        {isMobile && (
+          <button
+            type="button"
+            onClick={() => setMobileSidebarOpen(true)}
+            aria-label="Open menu"
+            className="inline-flex h-8 w-8 flex-none items-center justify-center rounded-[8px] text-ink-2 transition-[color,transform] duration-150 hover:text-ink active:scale-[0.94] cursor-pointer"
+          >
+            <IconMenu2 size={20} />
+          </button>
+        )}
+        {usesTitleSlot ? (
+          <div
+            ref={setTitleSlot}
+            className="flex min-w-0 items-center gap-1.5"
+          />
+        ) : (
+          <h1 className="min-w-0 truncate text-[17px] font-semibold text-ink">
+            {getPageTitle(pathname)}
+          </h1>
+        )}
       </div>
-      <SearchBar />
       <div className="flex items-center gap-1.5">
+        <div ref={setActionsSlot} className="flex items-center" />
         <ToggleTheme />
         <AccountMenu />
       </div>
     </header>
   );
+}
+
+function getPageTitle(pathname: string) {
+  if (pathname === "/") return "Notes";
+  if (pathname === "/todos") return "Todo";
+  if (pathname === "/folders") return "Folders";
+  if (pathname === "/archive") return "Archive";
+  if (pathname === "/trash") return "Trash";
+
+  const [, section, value] = pathname.split("/");
+  if (section === "label" && value) return decodeURIComponent(value);
+  if (section === "note") return "Note";
+
+  return "My Note";
 }

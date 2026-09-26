@@ -52,7 +52,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-(--line-2) bg-(--surface) p-5 shadow-(--shadow-lg) duration-150 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 flex flex-col gap-4",
+          "fixed top-1/2 left-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-line-2 bg-surface p-5 shadow-card-lg duration-150 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 flex flex-col gap-4",
           className
         )}
         {...props}
@@ -60,7 +60,7 @@ function DialogContent({
         {children}
         {showClose && (
           <DialogPrimitive.Close
-            className="absolute top-3.5 right-3.5 grid h-6 w-6 place-items-center rounded-md text-(--ink-3) transition-colors hover:bg-(--surface-hi) hover:text-(--ink) outline-none cursor-pointer"
+            className="absolute top-3.5 right-3.5 grid h-6 w-6 place-items-center rounded-md text-ink-3 transition-colors hover:bg-surface-hi hover:text-ink outline-none cursor-pointer"
             aria-label="Close"
           >
             <IconX size={15} />
@@ -98,7 +98,7 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("text-[15px] font-semibold text-(--ink)", className)}
+      className={cn("text-[15px] font-semibold text-ink", className)}
       {...props}
     />
   )
@@ -111,7 +111,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn("text-[12px] text-(--ink-3)", className)}
+      className={cn("text-[12px] text-ink-3", className)}
       {...props}
     />
   )

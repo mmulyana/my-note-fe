@@ -1,10 +1,10 @@
+import { IconDots } from "@tabler/icons-react";
 import {
-  IconDots,
-  IconArchive,
-  IconLock,
-  IconTrash,
-  IconLockOpen2,
-} from "@tabler/icons-react";
+  ArchiveIcon,
+  LockIcon,
+  LockOpenIcon,
+  TrashIcon,
+} from "@/components/icons";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,7 +30,7 @@ export function NoteDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className={`grid place-items-center w-7 h-7 rounded-lg border border-(--line) bg-(--surface) text-(--ink-3) transition-[background,color,border-color] duration-150 hover:bg-(--surface-hi) hover:text-(--ink) hover:border-(--line-2) outline-none ${className ?? ""}`}
+        className={`grid place-items-center w-7 h-7 rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi hover:text-ink focus-visible:bg-surface-hi focus-visible:text-ink data-[state=open]:bg-surface-hi data-[state=open]:text-ink outline-none ${className ?? ""}`}
         aria-label="Note options"
         onClick={(e) => e.stopPropagation()}
       >
@@ -39,7 +39,7 @@ export function NoteDropdown({
 
       <DropdownMenuContent
         align="end"
-        className="w-40 bg-(--surface) border-(--line-2) rounded-md shadow-(--shadow-lg) py-1 px-0"
+        className="w-40 bg-surface border-line-2 rounded-md shadow-card-lg py-1 px-0"
       >
         <DropdownMenuItem
           className="flex items-center gap-2.5 text-[13px] rounded-none cursor-pointer dark:text-white/50"
@@ -48,7 +48,7 @@ export function NoteDropdown({
             onArchive?.();
           }}
         >
-          <IconArchive size={14} />
+          <ArchiveIcon className="size-3.5" />
           Archive
         </DropdownMenuItem>
 
@@ -59,7 +59,11 @@ export function NoteDropdown({
             onSecret?.();
           }}
         >
-          {secret ? <IconLockOpen2 size={14} /> : <IconLock size={14} />}
+          {secret ? (
+            <LockOpenIcon className="size-3.5" />
+          ) : (
+            <LockIcon className="size-3.5" />
+          )}
           {secret ? "Open" : "Hide"}
         </DropdownMenuItem>
 
@@ -71,7 +75,7 @@ export function NoteDropdown({
             onDelete?.();
           }}
         >
-          <IconTrash size={14} />
+          <TrashIcon className="size-3.5" />
           Delete
         </DropdownMenuItem>
       </DropdownMenuContent>

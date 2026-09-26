@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { NavLink, useMatch } from "react-router-dom";
 import { useState } from "react";
 import {
   IconFolderFilled,
@@ -9,11 +9,12 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { request } from "@/lib/api-client";
-import type { IApi } from "@/lib/types";
+import type { Counts, IApi } from "@/lib/types";
 import { urls } from "@/lib/urls";
 import { cn } from "@/lib/utils";
 import { useApi } from "@/hooks/use-api";
 import { query } from "@/lib/query";
+import { FolderIcon } from "@/components/icons";
 
 type Props = {
   sidebar: boolean;
@@ -24,6 +25,11 @@ export default function FoldersWrapper({ sidebar }: Props) {
   const { data } = useApi<IApi<any[]>>({
     url: urls.Folder,
     queryKey: ["folders"],
+  });
+
+  const { data: counts } = useApi<IApi<Counts>>({
+    url: urls.NotesCounts,
+    queryKey: ["notes", "counts"],
   });
 
   const removeFolder = async (id: string) => {
@@ -66,13 +72,14 @@ export default function FoldersWrapper({ sidebar }: Props) {
   return (
     <>
       <div className="flex flex-col gap-0.5 mt-5">
-        <div className="text-xs text-ink-3 px-2 font-medium">Folders</div>
+        <div className="text-sm text-ink-3 px-2 font-medium">Folders</div>
         <div className="h-fit max-h-96 overflow-y-auto">
           {data?.data?.map((data) => {
             return (
               <ListItem
                 key={data.id}
                 data={data}
+                count={counts?.data?.folders?.[data.id] ?? 0}
                 open={sidebar}
                 onRemove={removeFolder}
                 onEdit={handleEditFolder}
@@ -88,14 +95,16 @@ export default function FoldersWrapper({ sidebar }: Props) {
 
 type ListProps = {
   data: any;
+  count: number;
   open: boolean;
   onRemove: (id: string) => void;
   onEdit: (id: string, name: string) => void;
 };
 
-function ListItem({ data, open, onRemove, onEdit }: ListProps) {
+function ListItem({ data, count, open, onRemove, onEdit }: ListProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(data.name);
+  const isActive = !!useMatch({ path: `/folder/${data.id}`, end: true });
 
   const handleEdit = () => {
     if (editName.trim()) {
@@ -107,31 +116,30 @@ function ListItem({ data, open, onRemove, onEdit }: ListProps) {
   return (
     <div
       className={cn(
-        "flex items-center h-9 px-2 rounded-md text-sm font-medium text-ink-2 transition-[background,color] duration-150 group",
-        open ? "gap-2" : "justify-center gap-0 px-0",
-        // isActive
-        //   ? "bg-gray-200 dark:bg-[#18191D] text-ink font-semibold"
-        //   : "hover:bg-surface-2 hover:text-ink",
+        "flex items-center h-8 px-2 rounded-full text-sm font-medium transition-[background,color] duration-150 group",
+        open ? "gap-2" : "justify-center gap-0",
+        isActive ? "text-ink font-semibold bg-line/60" : "text-ink-3",
+        isEditing && "bg-line/90",
       )}
     >
       {!isEditing ? (
-        <Link
+        <NavLink
           to={`/folder/${data.id}`}
           className="flex items-center gap-2 flex-1 min-w-0 h-full"
         >
-          <div className="w-5 h-5 flex justify-center items-center">
-            <IconFolderFilled size={16} className="shrink-0" />
+          <div className="w-4.5 h-4.5 flex-none flex justify-center items-center">
+            <FolderIcon />
           </div>
           {open && (
-            <span className="flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
+            <span className="min-w-0 whitespace-nowrap overflow-hidden text-ellipsis">
               {data.name}
             </span>
           )}
-        </Link>
+        </NavLink>
       ) : (
         <>
-          <div className="w-5 h-5 flex justify-center items-center">
-            <IconFolderFilled size={16} className="shrink-0" />
+          <div className="w-4.5 h-4.5 flex justify-center items-center">
+            <FolderIcon />
           </div>
           <input
             autoFocus
@@ -149,62 +157,57 @@ function ListItem({ data, open, onRemove, onEdit }: ListProps) {
       )}
 
       {open && (
-        <div className="flex-none flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-120 ml-auto">
-          {isEditing ? (
-            <>
-              <button
-                type="button"
-                className="w-5 h-5 grid place-items-center rounded-[5px] text-ink-3 hover:bg-surface-hi hover:text-ink cursor-pointer transition-[color,background] duration-120"
-                title="Save"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleEdit();
-                }}
-              >
-                <IconCheck size={14} />
-              </button>
-              <button
-                type="button"
-                className="w-5 h-5 grid place-items-center rounded-[5px] text-ink-3 hover:bg-surface-hi hover:text-ink cursor-pointer transition-[color,background] duration-120"
-                title="Cancel"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsEditing(false);
-                  setEditName(data.name);
-                }}
-              >
-                <IconX size={14} />
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                type="button"
-                className="w-5 h-5 grid place-items-center rounded-[5px] text-ink-3 hover:bg-surface-hi hover:text-ink cursor-pointer transition-[color,background] duration-120"
-                title="Edit"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  setIsEditing(true);
-                }}
-              >
-                <IconPencil size={14} />
-              </button>
-              <button
-                type="button"
-                className="w-5 h-5 grid place-items-center rounded-[5px] text-[oklch(0.68_0.17_25)] hover:bg-[color-mix(in_srgb,oklch(0.68_0.17_25)_14%,transparent)] cursor-pointer transition-[color,background] duration-120"
-                title="Remove"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  onRemove(data.id);
-                }}
-              >
-                <IconX size={14} />
-              </button>
-            </>
+        <>
+          <div className="flex-none flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-120 ml-auto">
+            {isEditing ? (
+              <>
+                <button
+                  type="button"
+                  className="w-5 h-5 grid place-items-center rounded-[4px] text-ink-3 hover:bg-surface-hi hover:text-ink cursor-pointer transition-[color,background] duration-120"
+                  title="Save"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEdit();
+                  }}
+                >
+                  <IconCheck size={14} />
+                </button>
+                <button
+                  type="button"
+                  className="w-5 h-5 grid place-items-center rounded-[4px] text-ink-3 hover:bg-surface-hi hover:text-ink cursor-pointer duration-120"
+                  title="Cancel"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsEditing(false);
+                    setEditName(data.name);
+                  }}
+                >
+                  <IconX size={14} />
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  className="w-5 h-5 grid place-items-center rounded-[4px] text-ink-3 hover:bg-surface-hi hover:text-ink cursor-pointer transition-[color,background] duration-120"
+                  title="Edit"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setIsEditing(true);
+                  }}
+                >
+                  <IconPencil size={14} />
+                </button>
+              </>
+            )}
+          </div>
+          {open && count > 0 && (
+            <span className="text-xs font-normal text-ink-3 tabular-num mr-2">
+              {count}
+            </span>
           )}
-        </div>
+        </>
       )}
     </div>
   );
@@ -236,8 +239,8 @@ function NewFolder() {
     setNewName("");
   };
   return (
-    <div className="flex items-center gap-2 h-9 px-2 rounded-md text-sm cursor-default group mt-1">
-      <div className="w-5 h-5 flex justify-center items-center">
+    <div className="flex items-center gap-2 h-8 px-2 rounded-md text-sm cursor-default group">
+      <div className="w-4.5 h-4.5 flex justify-center items-center">
         <IconPlus size={16} className="shrink-0 text-ink-2" />
       </div>
       <input

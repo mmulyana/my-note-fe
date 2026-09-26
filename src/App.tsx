@@ -10,7 +10,6 @@ import TodosPage from "@/pages/todos-page";
 import LoginPage from "@/pages/login-page";
 import HomePage from "@/pages/home-page";
 import LabelPage from "@/pages/label-page";
-import LabelsPage from "@/pages/labels-page";
 import NotePage from "@/pages/note-page";
 import FolderPage from "./pages/folder-page";
 import FoldersPage from "./pages/folders-page";
@@ -30,7 +29,6 @@ const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
           { index: true, element: <HomePage /> },
-          { path: "labels", element: <LabelsPage /> },
           { path: "label/:name", element: <LabelPage /> },
           { path: "folders", element: <FoldersPage /> },
           { path: "folder/:id", element: <FolderPage /> },

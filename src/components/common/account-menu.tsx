@@ -1,16 +1,25 @@
 import { useEffect, useRef, useState } from "react";
 import { useAtomValue } from "jotai";
-import { IconLogout, IconUserCircle } from "@tabler/icons-react";
+import {
+  IconLogout,
+  IconMessageReport,
+  IconSparkles,
+  IconUserCircle,
+} from "@tabler/icons-react";
 import { useAuth } from "@/hooks/use-auth";
 import { profileAtom } from "@/store/profile";
 import { assetUrl } from "@/lib/urls";
 import { ProfileModal } from "@/components/common/profile-modal";
+import { AiUsageModal } from "@/components/common/ai-usage-modal";
+import { FeedbackModal } from "@/components/common/feedback-modal";
 
 export function AccountMenu() {
   const { logout } = useAuth();
   const profile = useAtomValue(profileAtom);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [usageOpen, setUsageOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const initial = (profile?.email?.[0] ?? "?").toUpperCase();
@@ -30,7 +39,7 @@ export function AccountMenu() {
   return (
     <div className="relative ml-1" ref={menuRef}>
       <button
-        className="grid h-8 w-8 place-items-center overflow-hidden rounded-full border border-(--line) text-sm font-semibold text-(--ink-2) cursor-pointer transition-colors hover:text-ink active:scale-[0.94]"
+        className="grid h-8 w-8 place-items-center overflow-hidden rounded-full border border-line text-sm font-semibold text-ink-2 cursor-pointer transition-colors hover:text-ink active:scale-[0.94]"
         title={profile?.username || profile?.email || "Account"}
         onClick={() => setMenuOpen((o) => !o)}
       >
@@ -41,7 +50,7 @@ export function AccountMenu() {
         )}
       </button>
       {menuOpen && (
-        <div className="absolute right-0 top-full z-40 mt-1.5 min-w-40 overflow-hidden rounded-[10px] border border-(--line-2) py-1 shadow-card-lg bg-(--surface)">
+        <div className="absolute right-0 top-full z-40 mt-1.5 min-w-40 overflow-hidden rounded-[8px] border border-line-2 py-1 shadow-card-lg bg-surface">
           <button
             className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] text-ink-2 transition-colors hover:text-ink"
             onClick={() => {
@@ -56,6 +65,26 @@ export function AccountMenu() {
             className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] text-ink-2 transition-colors hover:text-ink"
             onClick={() => {
               setMenuOpen(false);
+              setUsageOpen(true);
+            }}
+          >
+            <IconSparkles size={16} />
+            AI Usage
+          </button>
+          <button
+            className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] text-ink-2 transition-colors hover:text-ink"
+            onClick={() => {
+              setMenuOpen(false);
+              setFeedbackOpen(true);
+            }}
+          >
+            <IconMessageReport size={16} />
+            Send Feedback
+          </button>
+          <button
+            className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] text-ink-2 transition-colors hover:text-ink"
+            onClick={() => {
+              setMenuOpen(false);
               logout();
             }}
           >
@@ -65,6 +94,8 @@ export function AccountMenu() {
         </div>
       )}
       <ProfileModal open={profileOpen} onOpenChange={setProfileOpen} />
+      <AiUsageModal open={usageOpen} onOpenChange={setUsageOpen} />
+      <FeedbackModal open={feedbackOpen} onOpenChange={setFeedbackOpen} />
     </div>
   );
 }

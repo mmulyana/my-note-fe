@@ -1,11 +1,21 @@
+export type NoteTodoItem = {
+  id: string;
+  text: string;
+  checked: boolean;
+  deadline: string | null;
+  today: string | null;
+  priority: TodoPriority;
+};
+
 export type Notes = {
   id: string;
   title: string;
   preview: string;
   todoSummary: { total: number; done: number };
+  todos?: NoteTodoItem[];
   labels: { id: string; name: string }[];
   updatedAt: string;
-  folder?: { id: string, name: string, color: string, secret: boolean } | null
+  folder?: { id: string; name: string; color: string; secret: boolean } | null;
   secret?: boolean;
 };
 
@@ -15,6 +25,7 @@ export type Folder = {
   color?: string;
   secret?: boolean;
   pinned?: boolean;
+  isolated?: boolean;
 };
 
 export type FolderNotePreview = {
@@ -31,6 +42,14 @@ export type FolderWithNotes = Folder & {
 
 export type GridView = "grid-view" | "rows-view";
 export type Theme = "dark" | "light";
+
+export type Counts = {
+  notes: number;
+  todos: number;
+  labels: number;
+  archive: number;
+  folders: Record<string, number>;
+};
 
 export interface IApi<T = void> {
   data: T;
@@ -59,7 +78,6 @@ export interface LogoutRequest {
   refreshToken: string;
 }
 
-
 export interface ProfileResponse {
   id: string;
   email: string;
@@ -68,15 +86,15 @@ export interface ProfileResponse {
 }
 
 export interface Todo {
-  id: string
-  noteId: string
-  text: string
-  checked: boolean
-  deadline: string | null // "2026-06-26";
-  today: string | null
-  priority: TodoPriority
-  createdAt: string
-  updatedAt: string
+  id: string;
+  noteId: string;
+  text: string;
+  checked: boolean;
+  deadline: string | null; // "2026-06-26";
+  today: string | null;
+  priority: TodoPriority;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface TodoDateGroup {
@@ -89,7 +107,7 @@ export type NoteListFields = {
   todoSummary: { total: number; done: number };
 };
 
-export type TodoPriority = "low" | "medium" | "high";
+export type TodoPriority = "" | "low" | "medium" | "high";
 
 export interface TodoPayload {
   id: string;
@@ -161,20 +179,23 @@ export interface DocumentPayload {
   todoDiff?: TodoDiff;
   links: LinkPayload[];
   linkDiff?: LinkDiff;
+  labels: string[];
 }
 
 export interface DocItem {
   id: string;
+  title?: string;
   content: string;
   preview: string;
   todoSummary: { total: number; done: number };
+  todos?: NoteTodoItem[];
   labels: { id: string; name: string }[];
   folderId?: string | null;
-  folder?: { id: string, name: string, color: string, secret: boolean } | null
+  folder?: { id: string; name: string; color: string; secret: boolean } | null;
   updatedAt: number;
   secret?: boolean;
-  pinned?: boolean
-  archived?: boolean
+  pinned?: boolean;
+  archived?: boolean;
 }
 
 export type FeedbackType = "report" | "feature_request" | "feedback";
@@ -203,8 +224,8 @@ export interface NoteDetail {
   folderId?: string | null;
   createdAt: string;
   updatedAt: string;
-  folder?: { id: string, name: string, color: string, secret: boolean } | null
-  secret?: boolean
-  pinned?: boolean
-  archived?: boolean
+  folder?: { id: string; name: string; color: string; secret: boolean } | null;
+  secret?: boolean;
+  pinned?: boolean;
+  archived?: boolean;
 }
