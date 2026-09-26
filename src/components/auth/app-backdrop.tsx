@@ -18,19 +18,13 @@ export function AppBackdrop() {
           </div>
         </div>
       </div>
-      <div className="absolute inset-0 bg-(--bg)/45" />
-      <div className="absolute inset-0 bg-[radial-gradient(115%_85%_at_50%_45%,transparent_0%,var(--bg)_100%)] opacity-70" />
+      <div className="absolute inset-0 bg-bg/45" />
+      <div className="absolute inset-0 bg-radial-[115%_85%_at_50%_45%] from-transparent from-0% to-bg to-100% opacity-70" />
     </div>
   );
 }
 
-function Bar({
-  w,
-  className,
-}: {
-  w: string;
-  className?: string;
-}) {
+function Bar({ w, className }: { w: string; className?: string }) {
   return <div className={cn("h-2.5 rounded-full bg-ink/10", w, className)} />;
 }
 
@@ -99,7 +93,7 @@ interface MockCardProps {
 
 function MockCard({ lines, title, folder, footer }: MockCardProps) {
   return (
-    <article className="flex flex-col overflow-hidden rounded-[14px] border border-line bg-surface">
+    <article className="flex flex-col overflow-hidden rounded-[12px] border border-line bg-surface">
       <div className="flex items-center justify-between px-3 pt-3.5">
         {folder ? <Bar w="w-12" className="h-2" /> : <span />}
         <Bar w="w-14" className="h-2" />

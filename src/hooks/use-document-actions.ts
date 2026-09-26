@@ -7,14 +7,13 @@ import {
   editingDocAtom,
   hasChangedAtom,
   isNewNoteAtom,
-  editingLabelIdsAtom,
   editingFolderIdAtom,
 } from "@/store/document";
 import type { DocumentPayload, NoteDetail, NoteFlags } from "@/lib/types";
 import { newId, deriveListFields } from "@/lib/utils";
 import { request } from "@/lib/api-client";
-import { useIsMobile } from "@/hooks/use-is-mobile";
 import type { IApi } from "@/lib/types";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import { urls } from "@/lib/urls";
 
 interface CreateNoteResponse {
@@ -45,7 +44,6 @@ export function useDocumentActions() {
     store.set(editingDocAtom, null);
     store.set(hasChangedAtom, false);
     store.set(isNewNoteAtom, false);
-    store.set(editingLabelIdsAtom, []);
     store.set(editingFolderIdAtom, null);
   }, [store]);
 
@@ -76,10 +74,6 @@ export function useDocumentActions() {
       try {
         const detail = await request<IApi<NoteDetail>>(urls.Note(id));
         store.set(hasChangedAtom, false);
-        store.set(
-          editingLabelIdsAtom,
-          (detail.data.labels ?? []).map((c) => c.id),
-        );
         store.set(editingFolderIdAtom, detail.data.folderId ?? null);
         store.set(editingDocAtom, {
           id: detail.data.id,
@@ -120,7 +114,6 @@ export function useDocumentActions() {
     async (
       payload: DocumentPayload,
       opts: {
-        overrideLabelIds?: string[];
         overrideFolderId?: string | null;
         flags?: NoteFlags;
       } = {},
@@ -130,9 +123,8 @@ export function useDocumentActions() {
 
       const isNewNote = store.get(isNewNoteAtom);
       const hasChanged = store.get(hasChangedAtom);
-      const { overrideLabelIds, overrideFolderId, flags } = opts;
-      const isMetadataOnlyChange =
-        overrideLabelIds !== undefined || overrideFolderId !== undefined;
+      const { overrideFolderId, flags } = opts;
+      const isMetadataOnlyChange = overrideFolderId !== undefined;
       if (isNewNote && !hasChanged && isMetadataOnlyChange) return;
       store.set(hasChangedAtom, true);
 
@@ -140,7 +132,6 @@ export function useDocumentActions() {
         store.set(editingDocAtom, (prev) => (prev ? { ...prev, ...flags } : prev));
       }
 
-      const ids = overrideLabelIds ?? store.get(editingLabelIdsAtom);
       const fId =
         overrideFolderId !== undefined
           ? overrideFolderId
@@ -185,7 +176,7 @@ export function useDocumentActions() {
         preview: payload.preview,
         todoDiff,
         linkDiff,
-        labelIds: ids,
+        labels: payload.labels,
         folderId: fId,
         ...flags,
       };
@@ -200,6 +191,7 @@ export function useDocumentActions() {
         }
         await request(urls.Note(editingId), { method: "PATCH", body });
         queryClient.invalidateQueries({ queryKey: ["notes"] });
+        queryClient.invalidateQueries({ queryKey: ["labels"] });
       } catch (err) {
         console.error("Save failed:", err);
       }
@@ -208,11 +200,8 @@ export function useDocumentActions() {
   );
 
   const autoSave = useCallback(
-    (
-      payload: DocumentPayload,
-      overrideLabelIds?: string[],
-      overrideFolderId?: string | null,
-    ) => persist(payload, { overrideLabelIds, overrideFolderId }),
+    (payload: DocumentPayload, overrideFolderId?: string | null) =>
+      persist(payload, { overrideFolderId }),
     [persist],
   );
 
@@ -222,7 +211,6 @@ export function useDocumentActions() {
       const id = store.get(editingIdAtom);
       const changed = store.get(hasChangedAtom);
       const wasNew = store.get(isNewNoteAtom);
-      const labelIds = store.get(editingLabelIdsAtom);
       const folderId = store.get(editingFolderIdAtom);
       resetEditing();
 
@@ -248,7 +236,6 @@ export function useDocumentActions() {
             body: {
               content: finalContent,
               preview: deriveListFields(finalContent).preview,
-              labelIds,
               folderId,
             },
           });

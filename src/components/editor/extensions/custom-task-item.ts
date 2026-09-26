@@ -31,14 +31,11 @@ export const CustomTaskItem = TaskItem.extend({
       },
 
       priority: {
-        default: "low",
-        parseHTML: (el) => el.getAttribute("data-priority") || "low",
+        default: "",
+        parseHTML: (el) => el.getAttribute("data-priority") || "",
         renderHTML: (attrs) =>
-          attrs.priority && attrs.priority !== "low"
-            ? { "data-priority": attrs.priority }
-            : {},
+          attrs.priority ? { "data-priority": attrs.priority } : {},
       },
-
     };
   },
 

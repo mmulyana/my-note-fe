@@ -5,6 +5,7 @@ import {
   deriveListFields,
   diffLinks,
   diffTodos,
+  extractLabels,
   extractLinks,
   extractTodos,
 } from "@/lib/utils";
@@ -15,7 +16,6 @@ interface UseAutoSaveOptions {
   editor: Editor | null;
   onSave: (
     payload: DocumentPayload,
-    overrideLabelIds?: string[],
     overrideFolderId?: string | null,
   ) => Promise<void> | void;
   delay?: number;
@@ -52,19 +52,20 @@ export function useAutoSave({ editor, onSave, delay = 1500, startEmpty = false }
     const links = extractLinks(json);
     const linkDiff = diffLinks(linkBaselineRef.current ?? [], links);
     linkBaselineRef.current = links;
+    const labels = extractLabels(json);
     const { preview } = deriveListFields(content);
-    return { content, preview, todos, todoDiff, links, linkDiff };
+    return { content, preview, todos, todoDiff, links, linkDiff, labels };
   }, [editor]);
 
-  // note: used for non-editor changes (e.g. label/folder picks)
-  const triggerSave = useCallback(async (overrideLabelIds?: string[], overrideFolderId?: string | null) => {
+  // note: used for non-editor changes (e.g. folder picks)
+  const triggerSave = useCallback(async (overrideFolderId?: string | null) => {
     if (!editor) return;
     const payload = buildPayload();
     if (!payload) return;
     if (timerRef.current) clearTimeout(timerRef.current);
     dirtyRef.current = false;
     setStatus("saving");
-    await onSaveRef.current(payload, overrideLabelIds, overrideFolderId);
+    await onSaveRef.current(payload, overrideFolderId);
     setStatus(dirtyRef.current ? "dirty" : "saved");
     setLastSavedAt(new Date());
   }, [editor, buildPayload]);

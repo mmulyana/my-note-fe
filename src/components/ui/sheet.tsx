@@ -20,7 +20,7 @@ function SheetTitle({
   return (
     <DialogPrimitive.Title
       data-slot="sheet-title"
-      className={cn("text-[15px] font-semibold text-(--ink)", className)}
+      className={cn("text-[15px] font-semibold text-ink", className)}
       {...props}
     />
   );
@@ -30,12 +30,17 @@ const SIDES = {
   right: {
     wrapper:
       "inset-y-0 right-0 h-full w-[calc(100%-2rem)] max-w-sm p-2 data-open:slide-in-from-right data-closed:slide-out-to-right",
-    panel: "rounded-2xl border border-(--line-2) shadow-(--shadow-lg)",
+    panel: "rounded-2xl border border-line-2 shadow-card-lg",
+  },
+  left: {
+    wrapper:
+      "inset-y-0 left-0 h-full w-[calc(100%-3rem)] max-w-72 data-open:slide-in-from-left data-closed:slide-out-to-left",
+    panel: "border-r border-line shadow-card-lg",
   },
   bottom: {
     wrapper:
       "inset-x-0 bottom-0 min-h-[45vh] max-h-[85vh] w-full data-open:slide-in-from-bottom data-closed:slide-out-to-bottom",
-    panel: "rounded-t-2xl border-t border-(--line-2) shadow-(--shadow-lg)",
+    panel: "rounded-t-2xl border-t border-line-2 shadow-card-lg",
   },
 } as const;
 
@@ -66,7 +71,7 @@ function SheetContent({
         <div
           data-slot="sheet-panel"
           className={cn(
-            "flex min-h-0 flex-1 flex-col overflow-hidden bg-(--surface)",
+            "flex min-h-0 flex-1 flex-col overflow-hidden bg-surface",
             panel,
             className,
           )}

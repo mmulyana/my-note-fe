@@ -8,8 +8,6 @@ import {
   type LinkCardState,
 } from "./extensions/link-card";
 
-// Presentational only. The preview fetch lives in the extension, so nothing
-// here can be cancelled by a re-render and drop a resolved result.
 export function LinkCardView({ node, selected }: ReactNodeViewProps) {
   const a = node.attrs as LinkCardAttrs;
   const state: LinkCardState = a.state ?? "ready";
@@ -55,7 +53,11 @@ export function LinkCardView({ node, selected }: ReactNodeViewProps) {
                 onError={() => setFaviconBroken(true)}
               />
             ) : (
-              <IconLink className="rich-link-card-favicon" size={14} stroke={1.8} />
+              <IconLink
+                className="rich-link-card-favicon"
+                size={14}
+                stroke={1.8}
+              />
             )}
             <span className="rich-link-card-site">{site}</span>
           </span>

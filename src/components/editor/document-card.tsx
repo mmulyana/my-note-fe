@@ -1,10 +1,11 @@
 import {
-  IconFolderFilled,
+  IconArchive,
   IconTagFilled,
   IconPinFilled,
   IconLock,
   IconPlus,
 } from "@tabler/icons-react";
+import { FolderIcon } from "@/components/icons";
 import { TodoProgress } from "@/components/editor/todo-progress";
 import { useDocumentActions } from "@/hooks/use-document-actions";
 import type { DocItem } from "@/lib/types";
@@ -26,8 +27,8 @@ export function DocumentCard({ doc }: DocumentCardProps) {
   return (
     <article
       className={cn(
-        "group relative flex flex-col cursor-pointer rounded-[14px] border border-line bg-surface text-ink overflow-hidden outline-none transition-[box-shadow,border-color,transform] duration-150 hover:border-line-2 focus-visible:shadow-[0_0_0_2px_var(--accent)]",
-        !isSecret && "hover:shadow-(--shadow)",
+        "group relative flex flex-col cursor-pointer rounded-[12px] border border-line bg-surface text-ink overflow-hidden outline-none transition-[box-shadow,transform] duration-150 hover:border-line-2 focus-visible:ring-2 focus-visible:ring-brand",
+        !isSecret && "hover:shadow-card",
       )}
       tabIndex={0}
       onClick={handleOpen}
@@ -43,14 +44,20 @@ export function DocumentCard({ doc }: DocumentCardProps) {
         <div>
           {doc.folder && (
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-nowrap inline-flex items-center gap-1 rounded-[10px] text-xs text-ink-2">
-                <IconFolderFilled size={12} />
+              <span className="text-nowrap inline-flex items-center gap-1 rounded-[8px] text-xs text-ink-2">
+                <FolderIcon className="size-3" />
                 {doc.folder.name}
               </span>
             </div>
           )}
         </div>
         <div className="flex items-center gap-1">
+          {doc.archived && (
+            <span className="inline-flex items-center gap-1 rounded-[6px] border border-line px-1.5 py-px text-[10px] font-medium uppercase tracking-[0.06em] text-ink-3">
+              <IconArchive size={10} />
+              Archived
+            </span>
+          )}
           {doc.pinned && (
             <IconPinFilled size={12} className="shrink-0 text-ink-2/70" />
           )}
@@ -83,27 +90,6 @@ export function DocumentCard({ doc }: DocumentCardProps) {
         <div className="relative shrink-0 gap-2 px-3 pb-2.5 pt-1.5 text-xs text-ink-3 bg-linear-to-b from-transparent via-surface via-60% to-surface">
           <div className="flex gap-1 items-center flex-wrap">
             <TodoProgress done={done} total={total} />
-            {doc.labels.length > 0 && (
-              <div className="flex gap-1 items-center text-sm">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-ink-2 border border-line">
-                    <IconTagFilled size={12} />
-                    {doc.labels?.[0].name}
-                  </span>
-                </div>
-                {doc.labels.length > 1 && (
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[10px] text-xs text-ink-2 border border-line">
-                      <IconTagFilled size={12} />
-                      <span className="flex items-center">
-                        <IconPlus size={9} />
-                        {doc.labels?.length - 1}
-                      </span>
-                    </span>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         </div>
       )}

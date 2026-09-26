@@ -51,8 +51,8 @@ export function ImageSettingsPopup({
               className={cn(
                 "flex-1 h-7 rounded-md text-[11px] font-medium border transition-colors",
                 widthPct === pct
-                  ? "bg-(--surface-hi) text-(--ink) border-(--line-2)"
-                  : "text-(--ink-3) border-(--line) hover:text-(--ink)",
+                  ? "bg-surface-hi text-ink border-line-2"
+                  : "text-ink-3 border-line hover:text-ink",
               )}
               onClick={() => onChange({ width: `${pct}%` })}
             >
@@ -64,8 +64,8 @@ export function ImageSettingsPopup({
             className={cn(
               "flex-1 h-7 rounded-md text-[11px] font-medium border transition-colors",
               widthPct === null
-                ? "bg-(--surface-hi) text-(--ink) border-(--line-2)"
-                : "text-(--ink-3) border-(--line) hover:text-(--ink)",
+                ? "bg-surface-hi text-ink border-line-2"
+                : "text-ink-3 border-line hover:text-ink",
             )}
             onClick={() => onChange({ width: null })}
           >
@@ -92,8 +92,8 @@ export function ImageSettingsPopup({
               className={cn(
                 "flex-1 h-7 grid place-items-center rounded-md border transition-colors",
                 attrs.align === value
-                  ? "bg-(--surface-hi) text-(--ink) border-(--line-2)"
-                  : "text-(--ink-3) border-(--line) hover:text-(--ink)",
+                  ? "bg-surface-hi text-ink border-line-2"
+                  : "text-ink-3 border-line hover:text-ink",
               )}
               title={value}
               onClick={() => onChange({ align: value })}
@@ -124,7 +124,7 @@ export function ImageSettingsPopup({
             onChange={(e) =>
               onChange({ objectFit: e.target.value as ImageObjectFit })
             }
-            className="text-[12px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[7px] px-2 py-1.5 outline-none focus:border-accent capitalize"
+            className="text-[12px] font-[inherit] text-ink bg-surface-2 border border-line rounded-[6px] px-2 py-1.5 outline-none focus:border-accent capitalize"
           >
             {OBJECT_FITS.map((v) => (
               <option key={v} value={v}>
@@ -133,7 +133,7 @@ export function ImageSettingsPopup({
             ))}
           </select>
         ) : (
-          <p className="text-[11px] text-(--ink-3)">
+          <p className="text-[11px] text-ink-3">
             Set a height first to see the Object Fit effect.
           </p>
         )}
@@ -164,9 +164,9 @@ function NumberField({
         onChange={(e) =>
           onChange(e.target.value === "" ? null : Number(e.target.value))
         }
-        className="text-[12px] font-[inherit] text-(--ink) bg-(--surface-2) border border-(--line) rounded-[7px] px-2 py-1.5 outline-none focus:border-accent flex-1 min-w-0"
+        className="text-[12px] font-[inherit] text-ink bg-surface-2 border border-line rounded-[6px] px-2 py-1.5 outline-none focus:border-accent flex-1 min-w-0"
       />
-      <span className="text-[11px] text-(--ink-3) w-5">{unit}</span>
+      <span className="text-[11px] text-ink-3 w-5">{unit}</span>
     </div>
   );
 }
@@ -174,7 +174,7 @@ function NumberField({
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-[10px] uppercase tracking-[0.08em] text-(--ink-3)">
+      <span className="text-[10px] uppercase tracking-[0.08em] text-ink-3">
         {label}
       </span>
       {children}

@@ -72,7 +72,7 @@ export function ImageView({ node, updateAttributes }: ReactNodeViewProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          className="w-56 bg-(--surface) border-(--line-2) rounded-xl shadow-(--shadow-lg) p-3"
+          className="w-56 bg-surface border-line-2 rounded-xl shadow-card-lg p-3"
           onCloseAutoFocus={(e) => e.preventDefault()}
           onClick={(e) => e.stopPropagation()}
         >

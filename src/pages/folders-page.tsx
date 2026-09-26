@@ -18,9 +18,9 @@ import { cn } from "@/lib/utils";
 type Folder = { id: string; name: string };
 
 const ICON_BTN =
-  "w-6 h-6 grid place-items-center rounded-[6px] text-ink-3 hover:bg-surface-hi hover:text-ink cursor-pointer transition-[color,background] duration-120";
+  "w-6 h-6 grid place-items-center rounded-[5px] text-ink-3 hover:bg-surface-hi hover:text-ink cursor-pointer transition-[color,background] duration-120";
 const ICON_BTN_DANGER =
-  "w-6 h-6 grid place-items-center rounded-[6px] text-[oklch(0.68_0.17_25)] hover:bg-[color-mix(in_srgb,oklch(0.68_0.17_25)_14%,transparent)] cursor-pointer transition-[color,background] duration-120";
+  "w-6 h-6 grid place-items-center rounded-[5px] text-[oklch(0.68_0.17_25)] hover:bg-[color-mix(in_srgb,oklch(0.68_0.17_25)_14%,transparent)] cursor-pointer transition-[color,background] duration-120";
 
 export default function FoldersPage() {
   const queryClient = useQueryClient();
@@ -67,7 +67,7 @@ export default function FoldersPage() {
         </span>
       </div>
 
-      <div className="overflow-hidden rounded-[14px] border border-line bg-surface">
+      <div className="overflow-hidden rounded-[12px] border border-line bg-surface">
         <NewFolder />
         {folders.length === 0 ? (
           <div className="px-3 py-10 text-center text-[13px] text-ink-3">
@@ -128,7 +128,10 @@ function FolderRow({
           className="min-w-0 flex-1 border-0 bg-transparent p-0 font-[inherit] text-sm text-ink outline-none"
         />
       ) : (
-        <Link to={`/folder/${folder.id}`} className="min-w-0 flex-1 truncate hover:text-ink">
+        <Link
+          to={`/folder/${folder.id}`}
+          className="min-w-0 flex-1 truncate hover:text-ink"
+        >
           {folder.name}
         </Link>
       )}
@@ -196,8 +199,10 @@ function NewFolder() {
     url: urls.Folder,
     method: "POST",
     onSuccess: (res) => {
-      queryClient.setQueryData(["folders"], (prev: IApi<Folder[]> | undefined) =>
-        prev ? { ...prev, data: [...(prev.data ?? []), res.data] } : res,
+      queryClient.setQueryData(
+        ["folders"],
+        (prev: IApi<Folder[]> | undefined) =>
+          prev ? { ...prev, data: [...(prev.data ?? []), res.data] } : res,
       );
     },
   });

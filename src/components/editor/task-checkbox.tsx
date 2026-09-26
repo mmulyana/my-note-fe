@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { isBefore, isValid, parseISO, startOfDay } from "date-fns";
+import { format, isValid, parseISO } from "date-fns";
 import { IconDots } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import {
@@ -32,10 +32,10 @@ export function TaskCheckbox({ checked, onChange }: TaskCheckboxProps) {
       />
       <span
         className={cn(
-          "flex items-center justify-center w-touch-checkbox h-touch-checkbox rounded-(--check-radius) border-[1.5px] transition-[background-color,border-color] duration-200",
+          "flex items-center justify-center w-touch-checkbox h-touch-checkbox rounded-check border-[1.5px] transition-[background-color,border-color] duration-200",
           checked
-            ? "bg-(--check-on-bg) border-(--check-on-border)"
-            : "border-(--check-off-border)",
+            ? "bg-check-on border-check-on-border"
+            : "border-check-off-border",
         )}
       >
         <svg
@@ -65,10 +65,6 @@ export function TaskCheckbox({ checked, onChange }: TaskCheckboxProps) {
   );
 }
 
-const chipBase =
-  "inline-flex items-center gap-[3px] h-[18px] px-1.5 text-[10.5px] font-medium leading-none rounded-md whitespace-nowrap border border-line text-ink-3";
-const chipHigh =
-  "text-[#e06c75] border-[color-mix(in_srgb,#e06c75_45%,transparent)]";
 interface TaskMetaChange {
   priority?: TodoPriority;
   deadline?: string | null;
@@ -94,46 +90,15 @@ export function TaskMeta({
 }: TaskMetaProps) {
   const [open, setOpen] = useState(false);
 
-  const parsed = deadline ? parseISO(deadline) : null;
-  const valid = parsed != null && isValid(parsed);
-  const overdue = valid && !checked && isBefore(parsed, startOfDay(new Date()));
-
   return (
     <span className="flex-none inline-flex items-center gap-1">
-      {priority === "medium" && (
-        <svg
-          width="11"
-          height="11"
-          viewBox="0 0 11 11"
-          fill="currentColor"
-          className="text-yellow-400"
-        >
-          <rect x="0" y="5" width="3" height="6" rx="1.5" />
-          <rect x="4.5" y="2" width="3" height="9" rx="1.5" />
-        </svg>
-      )}
-      {priority === "high" && (
-        <svg
-          width="11"
-          height="11"
-          viewBox="0 0 11 11"
-          fill="currentColor"
-          className="text-red-500"
-        >
-          <rect x="0" y="5" width="3" height="6" rx="1.5" />
-          <rect x="4" y="2.5" width="3" height="8.5" rx="1.5" />
-          <rect x="8" y="0" width="3" height="11" rx="1.5" />
-        </svg>
-      )}
-      {deadline && (
-        <span className={cn(chipBase, overdue && chipHigh)}>{deadline}</span>
-      )}
+      <TaskDeadline deadline={deadline} checked={checked} />
       {showActions && (
         <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="grid place-items-center w-5.5 h-5.5 flex-none border border-line rounded-md text-ink-3 text-[13px] cursor-pointer transition-[background,color] duration-140 hover:text-(--ink) hover:bg-surface-2"
+              className="grid place-items-center w-5.5 h-5.5 flex-none border border-line rounded-md text-ink-3 text-[13px] cursor-pointer transition-[background,color] duration-140 hover:text-ink hover:bg-surface-2"
               title="Task details"
             >
               <IconDots size={14} />
@@ -141,7 +106,7 @@ export function TaskMeta({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-60 bg-surface border-line-2 rounded-xl shadow-(--shadow-lg) p-3"
+            className="w-60 bg-surface border-line-2 rounded-xl shadow-card-lg p-3"
             onCloseAutoFocus={(e) => e.preventDefault()}
           >
             <TaskMetaPopup
@@ -165,6 +130,83 @@ export function TaskMeta({
           </DropdownMenuContent>
         </DropdownMenu>
       )}
+    </span>
+  );
+}
+
+const DEFAULT_PRIORITY_COLOR = "text-ink-3";
+
+const PRIORITY_COLORS: Record<string, string> = {
+  high: "text-red-500",
+  medium: "text-yellow-400",
+  low: DEFAULT_PRIORITY_COLOR,
+};
+
+const DEFAULT_PRIORITY_BARS = 1;
+
+const PRIORITY_BARS: Record<string, number> = {
+  high: 3,
+  medium: 2,
+  low: DEFAULT_PRIORITY_BARS,
+};
+
+export function TaskPriority({ priority }: { priority: TodoPriority }) {
+  if (!priority) return null;
+
+  const activeBars = PRIORITY_BARS[priority] ?? DEFAULT_PRIORITY_BARS;
+  const activeColor = PRIORITY_COLORS[priority] ?? DEFAULT_PRIORITY_COLOR;
+
+  return (
+    <svg
+      width="11"
+      height="11"
+      viewBox="0 0 11 11"
+      fill="currentColor"
+      className="flex-none self-center"
+      aria-label={`${priority} priority`}
+    >
+      <rect
+        x="0"
+        y="5"
+        width="3"
+        height="6"
+        rx="1.5"
+        className={activeBars >= 1 ? activeColor : "text-ink-3/30"}
+      />
+      <rect
+        x="4"
+        y="2.5"
+        width="3"
+        height="8.5"
+        rx="1.5"
+        className={activeBars >= 2 ? activeColor : "text-ink-3/30"}
+      />
+      <rect
+        x="8"
+        y="0"
+        width="3"
+        height="11"
+        rx="1.5"
+        className={activeBars >= 3 ? activeColor : "text-ink-3/30"}
+      />
+    </svg>
+  );
+}
+
+export function TaskDeadline({
+  deadline,
+}: {
+  deadline: string | null;
+  checked: boolean;
+}) {
+  if (!deadline) return null;
+
+  const parsed = parseISO(deadline);
+  const valid = isValid(parsed);
+
+  return (
+    <span className="inline-flex h-[18px] items-center rounded-[4px] bg-ink/5 px-1.5 text-[10.5px] font-medium whitespace-nowrap text-[#e06c75]">
+      {valid ? format(parsed, "d MMM") : deadline}
     </span>
   );
 }
