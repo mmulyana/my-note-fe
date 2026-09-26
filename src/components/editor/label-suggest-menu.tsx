@@ -177,6 +177,11 @@ export function LabelSuggestMenu({
           <span className="truncate">
             {item.create ? `Create "${item.name}"` : item.name}
           </span>
+          {index === active && (
+            <kbd className="ml-auto flex-none rounded-[5px] border border-line px-1.5 py-px font-sans text-[10px] font-medium text-ink-3 bg-surface">
+              Tab
+            </kbd>
+          )}
         </button>
       ))}
     </div>,

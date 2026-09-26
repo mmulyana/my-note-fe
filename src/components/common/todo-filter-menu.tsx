@@ -138,7 +138,7 @@ export function TodoFilterSortGroup({
   onSortChange: (sort: TodoSort) => void;
 }) {
   return (
-    <ButtonGroup className="mr-1 rounded-[8px] border border-line-2 bg-surface">
+    <ButtonGroup className="mr-1 rounded-full border border-line-2 bg-surface">
       <TodoFilterMenu filters={filters} onChange={onFiltersChange} />
       <ButtonGroupSeparator className="bg-line-2 data-vertical:h-4 data-vertical:self-center" />
       <TodoSortMenu sort={sort} onChange={onSortChange} />
@@ -191,7 +191,7 @@ function TodoFilterMenu({
         title="Filter"
         aria-label="Filter"
         onClick={() => (open ? close() : setOpen(true))}
-        className={cn(triggerClass, "rounded-l-[7px]", activeCount > 0 && triggerActiveClass)}
+        className={cn(triggerClass, "rounded-l-full", activeCount > 0 && triggerActiveClass)}
       >
         <IconFilter size={18} />
         {activeCount > 0 && (
@@ -312,7 +312,7 @@ function TodoSortMenu({
         title="Sort"
         aria-label="Sort"
         onClick={() => setOpen(!open)}
-        className={cn(triggerClass, "rounded-r-[7px]", sort.key && triggerActiveClass)}
+        className={cn(triggerClass, "rounded-r-full", sort.key && triggerActiveClass)}
       >
         <IconArrowsSort size={18} />
         {sort.key && (

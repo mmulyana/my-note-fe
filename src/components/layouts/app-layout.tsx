@@ -1,20 +1,23 @@
-import { Outlet, useLocation } from "react-router-dom";
-import EditorWrapper from "@/components/editor/wrapper";
-import { Sidebar } from "@/components/common/sidebar";
+import { Outlet } from "react-router-dom";
+import { useAtomValue } from "jotai";
 import { NewNoteFab } from "@/components/common/new-note-fab";
+import { NoteModal } from "@/components/editor/note-modal";
+import { Sidebar } from "@/components/common/sidebar";
+import { EditorSession } from "@/components/editor";
 import { Topbar } from "@/components/common/topbar";
 import { useIsMobile } from "@/hooks/use-is-mobile";
+import { editingDocAtom } from "@/store/document";
 
 export default function AppLayout() {
   const isMobile = useIsMobile();
-  const { pathname } = useLocation();
-  const showModal = !isMobile && !pathname.startsWith("/note/");
+  const editingDoc = useAtomValue(editingDocAtom);
 
   return (
     <div className="h-full flex flex-row bg-[--bg]">
       <Sidebar />
       <MainContent />
-      {showModal && <EditorWrapper mode="modal" />}
+      {editingDoc && <EditorSession key={editingDoc.id} doc={editingDoc} />}
+      {!isMobile && <NoteModal />}
       <NewNoteFab />
     </div>
   );
