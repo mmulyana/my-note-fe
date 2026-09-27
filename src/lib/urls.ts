@@ -11,6 +11,8 @@ export const urls = {
   LinkPreview: (url: string) => `/links/preview?url=${encodeURIComponent(url)}`,
   Login: "/auth/login",
   Register: "/auth/register",
+  Guest: "/auth/guest",
+  UpgradeGuest: "/auth/guest/upgrade",
   RefreshToken: "/auth/refresh",
   Logout: "/auth/logout",
   Me: "/auth/me",

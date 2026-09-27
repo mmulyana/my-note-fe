@@ -95,7 +95,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
     updateProfile(body, {
       onSuccess: () => {
         setProfile({
-          email: profile?.email ?? "",
+          ...profile,
           username: trimmed || null,
           photo,
         });

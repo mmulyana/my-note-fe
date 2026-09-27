@@ -78,7 +78,7 @@ function SidebarNav({ sidebar, onToggle, onNavigate }: SidebarNavProps) {
   return (
     <div
       className={cn(
-        "h-full",
+        "h-full max-lg:pt-2",
         onToggle && "flex-none",
         onToggle && (sidebar ? "w-64" : "w-fit"),
         !onToggle && "min-h-0 w-full",

@@ -2,9 +2,10 @@ import { atom } from "jotai";
 
 export interface Profile {
   id?: string;
-  email: string;
+  email?: string | null;
   username?: string | null;
   photo?: string | null;
+  isGuest?: boolean;
 }
 
 const STORAGE_KEY = "mynote-profile";

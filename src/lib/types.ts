@@ -61,7 +61,8 @@ export interface AuthData {
   accessToken: string;
   refreshToken?: string;
   expiresAt: number;
-  email: string;
+  email?: string;
+  isGuest?: boolean;
 }
 
 export interface RefreshTokenRequest {
@@ -81,9 +82,10 @@ export interface LogoutRequest {
 
 export interface ProfileResponse {
   id: string;
-  email: string;
+  email: string | null;
   username: string | null;
   photo: string | null;
+  isGuest: boolean;
 }
 
 export interface Todo {

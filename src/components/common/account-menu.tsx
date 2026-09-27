@@ -7,6 +7,7 @@ import {
   IconMoon,
   IconSun,
   IconUserCircle,
+  IconUserPlus,
 } from "@tabler/icons-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/hooks/use-theme";
@@ -15,9 +16,19 @@ import { assetUrl } from "@/lib/urls";
 import type { Theme } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { SparklesIcon } from "@/components/icons";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { ProfileModal } from "@/components/common/profile-modal";
 import { AiUsageModal } from "@/components/common/ai-usage-modal";
 import { FeedbackModal } from "@/components/common/feedback-modal";
+import { UpgradeGuestModal } from "@/components/common/upgrade-guest-modal";
 
 const ITEM =
   "flex w-full items-center gap-2.5 px-3 py-2 max-md:py-3 text-left text-[13px] max-md:text-sm text-ink-2 transition-colors hover:text-ink cursor-pointer";
@@ -67,12 +78,18 @@ export function AccountMenu() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [usageOpen, setUsageOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [confirmLogout, setConfirmLogout] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const email = profile?.email ?? "";
   const initial = (email[0] ?? "?").toUpperCase();
   const avatarUrl = assetUrl(profile?.photo);
-  const displayName = profile?.username || email.split("@")[0] || "Account";
+  const isGuest = !!profile?.isGuest;
+  const displayName =
+    profile?.username ||
+    email.split("@")[0] ||
+    (isGuest ? "Guest" : "Account");
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -90,10 +107,19 @@ export function AccountMenu() {
     open(true);
   };
 
+  const handleLogoutClick = () => {
+    setMenuOpen(false);
+    if (isGuest) {
+      setConfirmLogout(true);
+      return;
+    }
+    logout();
+  };
+
   return (
-    <div className="relative ml-1" ref={menuRef}>
+    <div className="relative h-10" ref={menuRef}>
       <button
-        className="cursor-pointer rounded-full transition-colors hover:text-ink active:scale-[0.94]"
+        className="cursor-pointer rounded-full transition-colors hover:text-ink active:scale-[0.94] p-0 h-fit"
         title={profile?.username || email || "Account"}
         onClick={() => setMenuOpen((o) => !o)}
       >
@@ -120,6 +146,12 @@ export function AccountMenu() {
           <Divider />
 
           <div className="py-1">
+            {isGuest && (
+              <button className={ITEM} onClick={openFrom(setUpgradeOpen)}>
+                <IconUserPlus className={ICON} />
+                Save account
+              </button>
+            )}
             <button className={ITEM} onClick={openFrom(setProfileOpen)}>
               <IconUserCircle className={ICON} />
               Profile
@@ -137,13 +169,7 @@ export function AccountMenu() {
           <Divider />
 
           <div className="py-1">
-            <button
-              className={ITEM}
-              onClick={() => {
-                setMenuOpen(false);
-                logout();
-              }}
-            >
+            <button className={ITEM} onClick={handleLogoutClick}>
               <IconLogout className={ICON} />
               Logout
             </button>
@@ -176,6 +202,34 @@ export function AccountMenu() {
       <ProfileModal open={profileOpen} onOpenChange={setProfileOpen} />
       <AiUsageModal open={usageOpen} onOpenChange={setUsageOpen} />
       <FeedbackModal open={feedbackOpen} onOpenChange={setFeedbackOpen} />
+      <UpgradeGuestModal open={upgradeOpen} onOpenChange={setUpgradeOpen} />
+
+      <Dialog open={confirmLogout} onOpenChange={setConfirmLogout}>
+        <DialogContent showClose={false}>
+          <DialogHeader>
+            <DialogTitle>Logout as guest?</DialogTitle>
+            <DialogDescription>
+              You're using a guest account with no email or password. Logging
+              out deletes access to it and your notes cannot be recovered.
+              Save your account first if you want to keep them.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setConfirmLogout(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                setConfirmLogout(false);
+                logout();
+              }}
+            >
+              Logout
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
