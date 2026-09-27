@@ -8,6 +8,7 @@ import {
   TextField,
 } from "@/components/auth/auth-fields";
 import { AuthShell } from "@/components/auth/auth-shell";
+import { GuestButton } from "@/components/auth/guest-button";
 import { authTokenAtom } from "@/store/auth";
 import { profileAtom } from "@/store/profile";
 import { useApi } from "@/hooks/use-api";
@@ -73,6 +74,7 @@ export default function LoginPage() {
         <FormError message={error?.message} />
         <SubmitButton pending={isPending}>Sign in</SubmitButton>
       </form>
+      <GuestButton />
     </AuthShell>
   );
 }

@@ -78,7 +78,7 @@ export default function NotePage() {
   const sideMeta = (
     <>
       <div>
-        <p className="mb-1 px-1.5 text-[10px] font-medium uppercase tracking-[0.08em] text-ink-3">
+        <p className="mb-1 px-1.5 max-lg:px-0 text-[10px] font-medium uppercase tracking-[0.08em] text-ink-3">
           Folder
         </p>
         <FolderPicker
@@ -155,7 +155,7 @@ export default function NotePage() {
           </div>,
           actionsSlot,
         )}
-      <div className="note-page">
+      <div className="note-page pt-2.5">
         <div className="relative mx-auto w-full max-w-180">
           <aside className="absolute top-0 left-full ml-3 hidden h-full w-40 min-[1120px]:block">
             <div className="sticky top-2">{sideMeta}</div>

@@ -26,9 +26,9 @@ export function Topbar() {
             type="button"
             onClick={() => setMobileSidebarOpen(true)}
             aria-label="Open menu"
-            className="inline-flex h-8 w-8 flex-none items-center justify-center rounded-[8px] text-ink-2 transition-[color,transform] duration-150 hover:text-ink active:scale-[0.94] cursor-pointer"
+            className="inline-flex h-8 w-8 max-lg:h-10 max-lg:w-10 flex-none items-center justify-center text-ink-2 transition-[color,transform] duration-150 hover:text-ink active:scale-[0.94] cursor-pointer -ml-2"
           >
-            <IconMenu2 size={20} />
+            <IconMenu2 size={16} />
           </button>
         )}
         {usesTitleSlot ? (

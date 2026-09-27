@@ -75,7 +75,7 @@ export function FolderPicker({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="inline-flex items-center h-7 justify-center gap-1 rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi hover:text-ink focus-visible:bg-surface-hi focus-visible:text-ink data-[state=open]:bg-surface-hi data-[state=open]:text-ink outline-none disabled:opacity-40 disabled:pointer-events-none px-1.5 text-xs hover:cursor-pointer"
+        className="inline-flex items-center h-7 justify-center gap-1 rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi hover:text-ink focus-visible:bg-surface-hi focus-visible:text-ink data-[state=open]:bg-surface-hi data-[state=open]:text-ink outline-none disabled:opacity-40 disabled:pointer-events-none px-1.5 text-xs hover:cursor-pointer max-lg:px-0"
         onClick={(e) => e.stopPropagation()}
       >
         <FolderIcon className="size-4 shrink-0" />
