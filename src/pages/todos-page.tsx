@@ -2,21 +2,30 @@ import { createPortal } from "react-dom";
 import { useAtomValue } from "jotai";
 import { IconListCheck } from "@tabler/icons-react";
 import { useApi } from "@/hooks/use-api";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import type { IApi, Notes } from "@/lib/types";
-import { buildQuery, toDocItem } from "@/lib/utils";
+import { buildQuery, cn, toDocItem } from "@/lib/utils";
 import { urls } from "@/lib/urls";
 import { topbarActionsSlotAtom } from "@/store/topbar";
 import {
+  DEFAULT_TODO_COLUMNS,
   DEFAULT_TODO_FILTERS,
   DEFAULT_TODO_SORT,
   activeFilterCount,
   todoFilterParams,
+  type TodoColumns,
   type TodoFilters,
   type TodoSort,
 } from "@/lib/todo-filter";
 import { TodoFilterSortGroup } from "@/components/common/todo-filter-menu";
 import { TodoNoteCard } from "@/components/editor/todo-note-card";
+
+const COLUMN_GRID_CLASS: Record<TodoColumns, string> = {
+  1: "grid-cols-1",
+  2: "grid-cols-2",
+  3: "grid-cols-3",
+};
 
 export default function TodosPage() {
   const actionsSlot = useAtomValue(topbarActionsSlotAtom);
@@ -28,6 +37,12 @@ export default function TodosPage() {
     "todos-sort",
     DEFAULT_TODO_SORT,
   );
+  const [columns, setColumns] = useLocalStorage<TodoColumns>(
+    "todos-columns",
+    DEFAULT_TODO_COLUMNS,
+  );
+  const isMobile = useIsMobile();
+  const effectiveColumns = isMobile ? 1 : columns;
 
   const params = todoFilterParams(filters, sort);
   const { data } = useApi<IApi<Notes[]>>({
@@ -48,11 +63,22 @@ export default function TodosPage() {
             onFiltersChange={setFilters}
             sort={sort}
             onSortChange={setSort}
+            columns={columns}
+            onColumnsChange={setColumns}
+            showColumns={!isMobile}
           />,
           actionsSlot,
         )}
       {docs.length > 0 ? (
-        <div className="masonry grid-view todo-grid pb-4">
+        <div
+          className={cn(
+            "grid gap-2 sm:gap-4 pb-4 [&>*]:w-full",
+            COLUMN_GRID_CLASS[effectiveColumns],
+            effectiveColumns === 1
+              ? "justify-items-center pr-[var(--app-sidebar-width,16rem)] [&>*]:max-w-160 [&>*]:h-fit md:[&>*]:max-h-100"
+              : "[&>*]:h-fit md:[&>*]:h-100",
+          )}
+        >
           {docs.map((d) => (
             <TodoNoteCard key={d.id} doc={d} />
           ))}

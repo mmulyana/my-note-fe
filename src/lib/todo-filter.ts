@@ -15,6 +15,8 @@ export type TodoSort = {
   order: SortOrder;
 };
 
+export type TodoColumns = 1 | 2 | 3;
+
 export const DEFAULT_TODO_FILTERS: TodoFilters = {
   folderIds: [],
   noFolder: false,
@@ -23,6 +25,8 @@ export const DEFAULT_TODO_FILTERS: TodoFilters = {
 };
 
 export const DEFAULT_TODO_SORT: TodoSort = { key: null, order: "desc" };
+
+export const DEFAULT_TODO_COLUMNS: TodoColumns = 1;
 
 export const STATUS_OPTIONS: { value: TodoStatusFilter; label: string }[] = [
   { value: "overdue", label: "Overdue" },

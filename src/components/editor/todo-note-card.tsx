@@ -118,7 +118,7 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
             className="flex items-start gap-2 py-1"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex h-[22px] flex-none items-center gap-2">
+            <div className="flex h-4.5 flex-none items-center gap-2">
               <TaskCheckbox
                 checked={item.checked}
                 onChange={(checked) => toggle({ id: item.id, checked })}

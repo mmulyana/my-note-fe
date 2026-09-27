@@ -5,6 +5,7 @@ import {
   IconChevronLeft,
   IconChevronRight,
   IconFilter,
+  IconLayoutColumns,
   IconX,
 } from "@tabler/icons-react";
 import {
@@ -24,6 +25,7 @@ import {
   activeFilterCount,
   folderFilterCount,
   type SortOrder,
+  type TodoColumns,
   type TodoFilters,
   type TodoSort,
   type TodoSortKey,
@@ -131,18 +133,80 @@ export function TodoFilterSortGroup({
   onFiltersChange,
   sort,
   onSortChange,
+  columns,
+  onColumnsChange,
+  showColumns = true,
 }: {
   filters: TodoFilters;
   onFiltersChange: (filters: TodoFilters) => void;
   sort: TodoSort;
   onSortChange: (sort: TodoSort) => void;
+  columns: TodoColumns;
+  onColumnsChange: (columns: TodoColumns) => void;
+  showColumns?: boolean;
 }) {
   return (
     <ButtonGroup className="mr-1 rounded-full border border-line-2 bg-surface">
+      {showColumns && (
+        <>
+          <TodoColumnsMenu columns={columns} onChange={onColumnsChange} />
+          <ButtonGroupSeparator className="bg-line-2 data-vertical:h-4 data-vertical:self-center" />
+        </>
+      )}
       <TodoFilterMenu filters={filters} onChange={onFiltersChange} />
       <ButtonGroupSeparator className="bg-line-2 data-vertical:h-4 data-vertical:self-center" />
       <TodoSortMenu sort={sort} onChange={onSortChange} />
     </ButtonGroup>
+  );
+}
+
+const COLUMN_OPTIONS: { value: TodoColumns; label: string }[] = [
+  { value: 1, label: "1 column" },
+  { value: 2, label: "2 columns" },
+  { value: 3, label: "3 columns" },
+];
+
+function TodoColumnsMenu({
+  columns,
+  onChange,
+}: {
+  columns: TodoColumns;
+  onChange: (columns: TodoColumns) => void;
+}) {
+  const { open, setOpen, ref } = usePopover();
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        title="View"
+        aria-label="View"
+        onClick={() => setOpen(!open)}
+        className={cn(triggerClass, "rounded-l-full", columns !== 1 && triggerActiveClass)}
+      >
+        <IconLayoutColumns size={18} />
+      </button>
+      {open && (
+        <div className={cn(panelClass, "w-45")}>
+          <div className="p-1.5">
+            <div className="px-2.5 pb-1 pt-1.5 text-[11px] font-medium uppercase tracking-wide text-ink-3">
+              View
+            </div>
+            {COLUMN_OPTIONS.map((o) => (
+              <OptionRow
+                key={o.value}
+                label={o.label}
+                checked={columns === o.value}
+                onClick={() => {
+                  onChange(o.value);
+                  setOpen(false);
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
