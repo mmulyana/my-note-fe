@@ -21,6 +21,7 @@ export const urls = {
   FolderById: (id: string) => `/folders/${id}`,
   Uploads: "/uploads",
   Profile: "/me",
+  ChangePassword: "/me/password",
   Feedback: "/feedback",
   AiStream: "/ai/stream",
   AiUsage: "/ai/usage",
