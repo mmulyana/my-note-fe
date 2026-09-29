@@ -55,7 +55,7 @@ function Avatar({
   return (
     <span
       className={cn(
-        "grid flex-none place-items-center overflow-hidden rounded-full border border-line font-semibold text-ink-2",
+        "grid flex-none place-items-center overflow-hidden rounded-full border border-line font-semibold text-ink-2 bg-surface",
         className,
       )}
     >

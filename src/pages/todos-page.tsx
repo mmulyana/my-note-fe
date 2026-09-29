@@ -1,31 +1,26 @@
+import { useMemo } from "react";
 import { createPortal } from "react-dom";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { IconListCheck } from "@tabler/icons-react";
 import { useApi } from "@/hooks/use-api";
+import { useColumnCount } from "@/hooks/use-column-count";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import type { IApi, Notes } from "@/lib/types";
 import { buildQuery, cn, toDocItem } from "@/lib/utils";
 import { urls } from "@/lib/urls";
 import { topbarActionsSlotAtom } from "@/store/topbar";
+import { todosViewAtom } from "@/store/home-view";
 import {
-  DEFAULT_TODO_COLUMNS,
   DEFAULT_TODO_FILTERS,
   DEFAULT_TODO_SORT,
   activeFilterCount,
   todoFilterParams,
-  type TodoColumns,
   type TodoFilters,
   type TodoSort,
 } from "@/lib/todo-filter";
 import { TodoFilterSortGroup } from "@/components/common/todo-filter-menu";
 import { TodoNoteCard } from "@/components/editor/todo-note-card";
-
-const COLUMN_GRID_CLASS: Record<TodoColumns, string> = {
-  1: "grid-cols-1",
-  2: "grid-cols-2",
-  3: "grid-cols-3",
-};
 
 export default function TodosPage() {
   const actionsSlot = useAtomValue(topbarActionsSlotAtom);
@@ -37,12 +32,11 @@ export default function TodosPage() {
     "todos-sort",
     DEFAULT_TODO_SORT,
   );
-  const [columns, setColumns] = useLocalStorage<TodoColumns>(
-    "todos-columns",
-    DEFAULT_TODO_COLUMNS,
-  );
+  const [view, setView] = useAtom(todosViewAtom);
   const isMobile = useIsMobile();
-  const effectiveColumns = isMobile ? 1 : columns;
+  const responsiveColumns = useColumnCount();
+  // note: the column count follows the viewport like the home page; todo cards stay single-column on mobile
+  const effectiveColumns = isMobile ? 1 : responsiveColumns;
 
   const params = todoFilterParams(filters, sort);
   const { data } = useApi<IApi<Notes[]>>({
@@ -54,29 +48,49 @@ export default function TodosPage() {
   const docs = (data?.data ?? []).map(toDocItem);
   const hasFilters = activeFilterCount(filters) > 0;
 
+  // note: masonry only differs from the grid with 2+ columns; round-robin keeps the reading order left-to-right
+  const masonryColumns = useMemo(() => {
+    const buckets: (typeof docs)[] = Array.from(
+      { length: effectiveColumns },
+      () => [],
+    );
+    docs.forEach((d, i) => buckets[i % effectiveColumns].push(d));
+    return buckets;
+  }, [docs, effectiveColumns]);
+
   return (
     <>
       {actionsSlot &&
         createPortal(
           <TodoFilterSortGroup
+            view={isMobile ? undefined : view}
+            onViewChange={setView}
             filters={filters}
             onFiltersChange={setFilters}
             sort={sort}
             onSortChange={setSort}
-            columns={columns}
-            onColumnsChange={setColumns}
-            showColumns={!isMobile}
           />,
           actionsSlot,
         )}
-      {docs.length > 0 ? (
+      {docs.length > 0 && view === "masonry" && effectiveColumns > 1 ? (
+        <div className="flex items-start gap-2 pb-4">
+          {masonryColumns.map((bucket, i) => (
+            <div
+              key={i}
+              className="flex min-w-0 flex-1 flex-col gap-2 [&>*]:h-fit md:[&>*]:max-h-100"
+            >
+              {bucket.map((d) => (
+                <TodoNoteCard key={d.id} doc={d} />
+              ))}
+            </div>
+          ))}
+        </div>
+      ) : docs.length > 0 ? (
         <div
           className={cn(
-            "grid gap-2 sm:gap-4 pb-4 [&>*]:w-full",
-            COLUMN_GRID_CLASS[effectiveColumns],
             effectiveColumns === 1
-              ? "justify-items-center pr-[var(--app-sidebar-width,16rem)] [&>*]:max-w-160 [&>*]:h-fit md:[&>*]:max-h-100"
-              : "[&>*]:h-fit md:[&>*]:h-100",
+              ? "grid gap-2 pb-4 [&>*]:h-fit"
+              : "masonry grid-view pb-4",
           )}
         >
           {docs.map((d) => (

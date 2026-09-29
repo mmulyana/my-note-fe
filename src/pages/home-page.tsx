@@ -1,5 +1,5 @@
 import { GroupWithNotes } from "@/components/editor/group-with-notes";
-import { DocumentCard } from "@/components/editor/document-card";
+import { NotesBoard, type ReorderMove } from "@/components/editor/notes-board";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { IconFileText, IconSearch } from "@tabler/icons-react";
 import type { DocItem, IApi, Notes } from "@/lib/types";
@@ -9,6 +9,9 @@ import { useApi } from "@/hooks/use-api";
 import { useInfiniteApi } from "@/hooks/use-infinite-api";
 import { InfiniteSentinel } from "@/components/common/infinite-sentinel";
 import { useAtomValue } from "jotai";
+import { useQueryClient } from "@tanstack/react-query";
+import { request } from "@/lib/api-client";
+import { homeArrangeAtom, homeViewAtom } from "@/store/home-view";
 import { urls } from "@/lib/urls";
 
 export default function DocumentEditorPage() {
@@ -39,22 +42,38 @@ export default function DocumentEditorPage() {
     gcTime: 0,
   });
 
+  const view = useAtomValue(homeViewAtom);
+  const arrangeMode = useAtomValue(homeArrangeAtom);
+  const queryClient = useQueryClient();
   const docs: DocItem[] = [
     ...(pinnedData?.data ?? []).map((n) => ({ ...toDocItem(n), pinned: true })),
     ...notes.map(toDocItem),
   ];
   const searching = debouncedSearch.length > 0;
+  const arranging = arrangeMode && !searching;
+
+  const handleReorder = async ({ id, prevId, nextId }: ReorderMove) => {
+    try {
+      await request(urls.NotePosition(id), {
+        method: "PATCH",
+        body: { prevId, nextId },
+      });
+    } finally {
+      await queryClient.invalidateQueries({ queryKey: ["notes"] });
+    }
+  };
 
   return (
-    <>
+    <div className="w-full">
       {!searching && <GroupWithNotes />}
       {docs.length > 0 ? (
         <>
-          <div className="masonry grid-view pb-4">
-            {docs.map((d) => (
-              <DocumentCard key={d.id} doc={d} />
-            ))}
-          </div>
+          <NotesBoard
+            docs={docs}
+            view={view}
+            arranging={arranging}
+            onReorder={handleReorder}
+          />
           <InfiniteSentinel
             hasNextPage={hasNextPage}
             isFetching={isFetching}
@@ -76,6 +95,6 @@ export default function DocumentEditorPage() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

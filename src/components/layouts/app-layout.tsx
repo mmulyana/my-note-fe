@@ -26,8 +26,9 @@ export default function AppLayout() {
 function MainContent() {
   return (
     <div className="relative flex flex-1 flex-col min-w-0 overflow-hidden">
-      <Topbar />
-      <main className="main-layout relative flex-1 px-2 md:px-0 md:pr-4 pt-15 pb-20 md:pb-1 overflow-y-auto min-w-0 transition-[padding-right] duration-200 ease-[ease]">
+      {/* note: the sticky Topbar lives inside the scroller so it shares the content's padding and scrollbar */}
+      <main className="main-layout relative flex-1 px-4 pb-20 md:pb-1 overflow-y-auto min-w-0">
+        <Topbar />
         <Outlet />
       </main>
     </div>

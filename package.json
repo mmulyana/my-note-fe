@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@cloudinary/url-gen": "^1.22.0",
+    "@dnd-kit/abstract": "^0.4.0",
+    "@dnd-kit/helpers": "^0.4.0",
+    "@dnd-kit/react": "^0.4.0",
     "@fontsource-variable/inter": "^5.2.8",
     "@tabler/icons-react": "^3.44.0",
     "@tailwindcss/vite": "^4.3.0",

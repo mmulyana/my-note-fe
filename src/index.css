@@ -226,7 +226,6 @@ textarea {
 }
 @media (min-width: 640px) {
     .masonry.grid-view {
-        --masonry-gap: 16px;
         --columns: 2;
     }
 }
@@ -940,7 +939,7 @@ textarea {
 }
 
 .main-layout {
-    scrollbar-gutter: stable both-edges;
+    scrollbar-gutter: stable;
 }
 
 @theme inline {
@@ -1053,4 +1052,17 @@ textarea {
     html {
         @apply font-sans;
     }
+}
+
+/* note: dnd-kit drop preview - an empty dashed card where the dragged note will land */
+[data-dnd-placeholder] {
+    /* note: dnd-kit hides the placeholder by default (visibility: hidden); show it as the drop preview */
+    visibility: visible !important;
+    border-radius: 12px;
+    border: 2px dashed var(--line-2);
+    background: var(--surface);
+    opacity: 0.5;
+}
+[data-dnd-placeholder] > * {
+    visibility: hidden;
 }

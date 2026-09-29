@@ -5,7 +5,6 @@ import {
   IconChevronLeft,
   IconChevronRight,
   IconFilter,
-  IconLayoutColumns,
   IconX,
 } from "@tabler/icons-react";
 import {
@@ -16,6 +15,8 @@ import { useApi } from "@/hooks/use-api";
 import type { Folder, IApi } from "@/lib/types";
 import { urls } from "@/lib/urls";
 import { cn } from "@/lib/utils";
+import type { HomeView } from "@/store/home-view";
+import { ViewButtons } from "./view-buttons";
 import {
   DEFAULT_TODO_FILTERS,
   DEFAULT_TODO_SORT,
@@ -25,7 +26,6 @@ import {
   activeFilterCount,
   folderFilterCount,
   type SortOrder,
-  type TodoColumns,
   type TodoFilters,
   type TodoSort,
   type TodoSortKey,
@@ -37,18 +37,18 @@ const ORDER_LABELS: Record<TodoSortKey, Record<SortOrder, string>> = {
   updated: { desc: "Newest first", asc: "Oldest first" },
 };
 
-const triggerClass =
+export const triggerClass =
   "relative inline-flex h-8 w-9 items-center justify-center text-ink-3 transition-[color,background-color] duration-150 hover:bg-surface-2 hover:text-ink cursor-pointer";
 
-const triggerActiveClass = "text-ink";
+export const triggerActiveClass = "text-ink";
 
 const markerClass =
   "absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-amber-400 ring-2 ring-surface";
 
-const panelClass =
+export const panelClass =
   "absolute right-0 top-full z-40 mt-1.5 overflow-hidden rounded-[12px] border border-line-2 bg-surface shadow-card-lg";
 
-function usePopover() {
+export function usePopover() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -81,7 +81,7 @@ function Badge({ children }: { children: ReactNode }) {
   );
 }
 
-function OptionRow({
+export function OptionRow({
   label,
   checked,
   onClick,
@@ -123,33 +123,33 @@ function ClearButton({
 }
 
 function toggle<T>(list: T[], value: T) {
-  return list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
+  return list.includes(value)
+    ? list.filter((v) => v !== value)
+    : [...list, value];
 }
 
 type FilterView = "root" | "folder" | "status" | "priority";
 
 export function TodoFilterSortGroup({
+  view,
+  onViewChange,
   filters,
   onFiltersChange,
   sort,
   onSortChange,
-  columns,
-  onColumnsChange,
-  showColumns = true,
 }: {
+  view?: HomeView;
+  onViewChange?: (view: HomeView) => void;
   filters: TodoFilters;
   onFiltersChange: (filters: TodoFilters) => void;
   sort: TodoSort;
   onSortChange: (sort: TodoSort) => void;
-  columns: TodoColumns;
-  onColumnsChange: (columns: TodoColumns) => void;
-  showColumns?: boolean;
 }) {
   return (
     <ButtonGroup className="mr-1 rounded-full border border-line-2 bg-surface">
-      {showColumns && (
+      {view && onViewChange && (
         <>
-          <TodoColumnsMenu columns={columns} onChange={onColumnsChange} />
+          <ViewButtons view={view} onViewChange={onViewChange} />
           <ButtonGroupSeparator className="bg-line-2 data-vertical:h-4 data-vertical:self-center" />
         </>
       )}
@@ -157,56 +157,6 @@ export function TodoFilterSortGroup({
       <ButtonGroupSeparator className="bg-line-2 data-vertical:h-4 data-vertical:self-center" />
       <TodoSortMenu sort={sort} onChange={onSortChange} />
     </ButtonGroup>
-  );
-}
-
-const COLUMN_OPTIONS: { value: TodoColumns; label: string }[] = [
-  { value: 1, label: "1 column" },
-  { value: 2, label: "2 columns" },
-  { value: 3, label: "3 columns" },
-];
-
-function TodoColumnsMenu({
-  columns,
-  onChange,
-}: {
-  columns: TodoColumns;
-  onChange: (columns: TodoColumns) => void;
-}) {
-  const { open, setOpen, ref } = usePopover();
-
-  return (
-    <div className="relative" ref={ref}>
-      <button
-        type="button"
-        title="View"
-        aria-label="View"
-        onClick={() => setOpen(!open)}
-        className={cn(triggerClass, "rounded-l-full", columns !== 1 && triggerActiveClass)}
-      >
-        <IconLayoutColumns size={18} />
-      </button>
-      {open && (
-        <div className={cn(panelClass, "w-45")}>
-          <div className="p-1.5">
-            <div className="px-2.5 pb-1 pt-1.5 text-[11px] font-medium uppercase tracking-wide text-ink-3">
-              View
-            </div>
-            {COLUMN_OPTIONS.map((o) => (
-              <OptionRow
-                key={o.value}
-                label={o.label}
-                checked={columns === o.value}
-                onClick={() => {
-                  onChange(o.value);
-                  setOpen(false);
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
   );
 }
 
@@ -255,12 +205,14 @@ function TodoFilterMenu({
         title="Filter"
         aria-label="Filter"
         onClick={() => (open ? close() : setOpen(true))}
-        className={cn(triggerClass, "rounded-l-full", activeCount > 0 && triggerActiveClass)}
+        className={cn(
+          triggerClass,
+          "rounded-l-full",
+          activeCount > 0 && triggerActiveClass,
+        )}
       >
         <IconFilter size={18} />
-        {activeCount > 0 && (
-          <span className={markerClass} />
-        )}
+        {activeCount > 0 && <span className={markerClass} />}
       </button>
       {open && (
         <div className={cn(panelClass, "w-[260px]")}>
@@ -275,7 +227,12 @@ function TodoFilterMenu({
                 <IconChevronLeft size={16} />
               </button>
             )}
-            <span className={cn("flex-1 text-[13px] font-medium text-ink", view === "root" && "pl-1.5")}>
+            <span
+              className={cn(
+                "flex-1 text-[13px] font-medium text-ink",
+                view === "root" && "pl-1.5",
+              )}
+            >
               {title}
             </span>
             <button
@@ -308,7 +265,9 @@ function TodoFilterMenu({
                 <OptionRow
                   label="No folder"
                   checked={filters.noFolder}
-                  onClick={() => onChange({ ...filters, noFolder: !filters.noFolder })}
+                  onClick={() =>
+                    onChange({ ...filters, noFolder: !filters.noFolder })
+                  }
                 />
                 {folders.map((f) => (
                   <OptionRow
@@ -316,7 +275,10 @@ function TodoFilterMenu({
                     label={f.name}
                     checked={filters.folderIds.includes(f.id)}
                     onClick={() =>
-                      onChange({ ...filters, folderIds: toggle(filters.folderIds, f.id) })
+                      onChange({
+                        ...filters,
+                        folderIds: toggle(filters.folderIds, f.id),
+                      })
                     }
                   />
                 ))}
@@ -330,7 +292,10 @@ function TodoFilterMenu({
                   label={o.label}
                   checked={filters.status === o.value}
                   onClick={() =>
-                    onChange({ ...filters, status: filters.status === o.value ? null : o.value })
+                    onChange({
+                      ...filters,
+                      status: filters.status === o.value ? null : o.value,
+                    })
                   }
                 />
               ))}
@@ -342,7 +307,10 @@ function TodoFilterMenu({
                   label={o.label}
                   checked={filters.priorities.includes(o.value)}
                   onClick={() =>
-                    onChange({ ...filters, priorities: toggle(filters.priorities, o.value) })
+                    onChange({
+                      ...filters,
+                      priorities: toggle(filters.priorities, o.value),
+                    })
                   }
                 />
               ))}
@@ -376,12 +344,14 @@ function TodoSortMenu({
         title="Sort"
         aria-label="Sort"
         onClick={() => setOpen(!open)}
-        className={cn(triggerClass, "rounded-r-full", sort.key && triggerActiveClass)}
+        className={cn(
+          triggerClass,
+          "rounded-r-full",
+          sort.key && triggerActiveClass,
+        )}
       >
         <IconArrowsSort size={18} />
-        {sort.key && (
-          <span className={markerClass} />
-        )}
+        {sort.key && <span className={markerClass} />}
       </button>
       {open && (
         <div className={cn(panelClass, "w-[220px]")}>
@@ -395,7 +365,11 @@ function TodoSortMenu({
                 label={o.label}
                 checked={sort.key === o.value}
                 onClick={() =>
-                  onChange(sort.key === o.value ? { ...sort, key: null } : { ...sort, key: o.value })
+                  onChange(
+                    sort.key === o.value
+                      ? { ...sort, key: null }
+                      : { ...sort, key: o.value },
+                  )
                 }
               />
             ))}

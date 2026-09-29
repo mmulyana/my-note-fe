@@ -2,6 +2,8 @@ export const urls = {
   Notes: "/notes",
   NotesCounts: "/notes/counts",
   Note: (id: string) => `/notes/${id}`,
+  NotePosition: (id: string) => `/notes/${id}/position`,
+  NoteFlags: (id: string) => `/notes/${id}/flags`,
   Todos: "/todos",
   TodosGroupedByDate: (from: string, to: string, tz: string) =>
     `/todos/group/created?from=${from}&to=${to}&tz=${encodeURIComponent(tz)}`,
