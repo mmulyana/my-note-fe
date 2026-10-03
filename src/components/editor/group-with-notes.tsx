@@ -111,7 +111,7 @@ function NoteChip({
     >
       <div
         className={cn(
-          "text-[11px] sm:text-xs lg:text-sm font-medium leading-snug line-clamp-2 text-ink-2",
+          "text-sm font-medium leading-snug line-clamp-2 text-ink-2",
           dimmed && "text-ink-3",
         )}
       >
@@ -122,7 +122,7 @@ function NoteChip({
           <div
             key={w}
             className={cn(
-              "h-1 sm:h-1.5 rounded-full",
+              "h-1.5 rounded-full",
               dimmed ? "bg-line" : "bg-line-2",
               w,
             )}
