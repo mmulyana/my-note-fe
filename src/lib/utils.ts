@@ -7,6 +7,8 @@ import type {
   FolderWithNotes,
   NoteListFields,
   Notes,
+  AttachmentDiff,
+  AttachmentPayload,
   LinkDiff,
   LinkField,
   LinkPayload,
@@ -38,6 +40,8 @@ export function toDocItem(n: Notes): DocItem {
     title: n.title,
     content: "",
     preview: n.preview,
+    cover: n.cover || undefined,
+    coverStyle: n.coverStyle,
     todoSummary: n.todoSummary,
     todos: n.todos,
     labels: n.labels ?? [],
@@ -194,6 +198,85 @@ export function diffLinks(prev: LinkPayload[], next: LinkPayload[]): LinkDiff {
   const removed = prev.filter((l) => !nextById.has(l.id));
 
   return { added, updated, removed, unchanged };
+}
+
+export function extractAttachments(doc: JSONContent): AttachmentPayload[] {
+  const found: AttachmentPayload[] = [];
+  const seen = new Set<string>();
+  const num = (value: unknown) => (typeof value === "number" ? value : 0);
+
+  const walk = (node?: JSONContent) => {
+    if (!node) return;
+    if (node.type === "image") {
+      const attrs = node.attrs ?? {};
+      const id = str(attrs.attachmentId);
+      const path = str(attrs.attachmentPath);
+      // note: an image from a URL has no attachment id, so it never lands here
+      if (id && path && !seen.has(id)) {
+        seen.add(id);
+        found.push({
+          id,
+          path,
+          thumbPath: str(attrs.thumbPath),
+          mime: str(attrs.mime),
+          size: num(attrs.size),
+          width: num(attrs.naturalWidth),
+          height: num(attrs.naturalHeight),
+        });
+      }
+    }
+    node.content?.forEach(walk);
+  };
+
+  walk(doc);
+  return found;
+}
+
+export function extractCoverId(doc: JSONContent): string | null {
+  let cover: string | null = null;
+  const walk = (node?: JSONContent) => {
+    if (!node || cover) return;
+    if (node.type === "image" && node.attrs?.isCover) {
+      cover = str(node.attrs.attachmentId) || null;
+    }
+    node.content?.forEach(walk);
+  };
+  walk(doc);
+  return cover;
+}
+
+// note: the thumbnail image of the doc plus a title guess (first non-empty block) for previews
+export function extractCover(
+  doc: JSONContent,
+): { thumbPath: string; title: string } | null {
+  let thumbPath = "";
+  const walk = (node?: JSONContent) => {
+    if (!node || thumbPath) return;
+    if (node.type === "image" && node.attrs?.isCover) {
+      thumbPath = str(node.attrs.thumbPath);
+    }
+    node.content?.forEach(walk);
+  };
+  walk(doc);
+  if (!thumbPath) return null;
+
+  const textOf = (node: JSONContent): string =>
+    node.text ?? (node.content ?? []).map(textOf).join("");
+  const title =
+    (doc.content ?? []).map(textOf).find((t) => t.trim().length > 0) ?? "";
+  return { thumbPath, title: title.trim() };
+}
+
+export function diffAttachments(
+  prev: AttachmentPayload[],
+  next: AttachmentPayload[],
+): AttachmentDiff {
+  const prevIds = new Set(prev.map((a) => a.id));
+  const nextIds = new Set(next.map((a) => a.id));
+  return {
+    added: next.filter((a) => !prevIds.has(a.id)),
+    removed: prev.filter((a) => !nextIds.has(a.id)),
+  };
 }
 
 export function extractLabels(doc: JSONContent): string[] {

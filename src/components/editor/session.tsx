@@ -33,8 +33,9 @@ import type {
   SlashBridge,
   SlashState,
 } from "@/components/editor/extensions/slash-command";
-import type { DocItem } from "@/lib/types";
-import { extractLabels, relative } from "@/lib/utils";
+import type { CoverStyle, DocItem } from "@/lib/types";
+import { assetUrl } from "@/lib/urls";
+import { extractCover, extractLabels, relative } from "@/lib/utils";
 
 const STATUS_TEXT: Record<SaveStatus, string> = {
   idle: "",
@@ -54,6 +55,9 @@ export interface NoteEditorApi {
   onPinned: () => void;
   onArchive: () => void;
   onSecret: () => void;
+  // note: set only while the doc has a thumbnail image; drives the Thumbnail style entry
+  cover: { src: string; title: string; style: CoverStyle } | null;
+  onCoverStyle: (style: CoverStyle) => void;
   onDelete: () => void;
   close: () => void;
 }
@@ -62,6 +66,34 @@ export const noteEditorAtom = atom<NoteEditorApi | null>(null);
 
 export function useNoteEditor() {
   return useAtomValue(noteEditorAtom);
+}
+
+function useNoteCover(editor: ReturnType<typeof useDocumentEditor>) {
+  const [cover, setCover] = useState<{ src: string; title: string } | null>(
+    null,
+  );
+
+  useEffect(() => {
+    if (!editor) return;
+
+    const sync = () => {
+      const found = extractCover(editor.getJSON());
+      const next = found
+        ? { src: assetUrl(found.thumbPath) ?? "", title: found.title }
+        : null;
+      setCover((prev) =>
+        prev?.src === next?.src && prev?.title === next?.title ? prev : next,
+      );
+    };
+
+    sync();
+    editor.on("update", sync);
+    return () => {
+      editor.off("update", sync);
+    };
+  }, [editor]);
+
+  return cover;
 }
 
 function useNoteLabels(editor: ReturnType<typeof useDocumentEditor>) {
@@ -97,6 +129,7 @@ export function EditorSession({ doc }: { doc: DocItem }) {
     archiveDoc,
     pinnedDoc,
     secretDoc,
+    coverStyleDoc,
   } = useDocumentActions();
   const [folderId, setFolderId] = useAtom(editingFolderIdAtom);
   const publish = useSetAtom(noteEditorAtom);
@@ -129,6 +162,7 @@ export function EditorSession({ doc }: { doc: DocItem }) {
   const editor = useDocumentEditor(doc.content, slashBridge, labelBridge);
   const ai = useAiEdit(editor);
   const labels = useNoteLabels(editor);
+  const cover = useNoteCover(editor);
   const store = useStore();
 
   // note: dibaca sekali saat mount; atom ini jadi false setelah save pertama
@@ -167,6 +201,14 @@ export function EditorSession({ doc }: { doc: DocItem }) {
     if (payload) secretDoc(payload, !doc.secret);
   }, [flushPayload, secretDoc, doc]);
 
+  const onCoverStyle = useCallback(
+    (style: CoverStyle) => {
+      const payload = flushPayload();
+      if (payload) coverStyleDoc(payload, style);
+    },
+    [flushPayload, coverStyleDoc],
+  );
+
   const onFolderChange = useCallback(
     (id: string | null) => {
       setFolderId(id);
@@ -190,6 +232,12 @@ export function EditorSession({ doc }: { doc: DocItem }) {
       if (!grip) return;
       if (node) grip.setAttribute("data-node-type", node.type.name);
       else grip.removeAttribute("data-node-type");
+      // note: heading levels have different first-line heights, so the grip nudge is per level
+      if (node?.type.name === "heading") {
+        grip.setAttribute("data-node-level", String(node.attrs.level));
+      } else {
+        grip.removeAttribute("data-node-level");
+      }
     },
     [],
   );
@@ -274,6 +322,10 @@ export function EditorSession({ doc }: { doc: DocItem }) {
       onPinned,
       onArchive,
       onSecret,
+      cover: cover?.src
+        ? { ...cover, style: doc.coverStyle ?? "banner" }
+        : null,
+      onCoverStyle,
       onDelete: deleteDoc,
       close,
     });

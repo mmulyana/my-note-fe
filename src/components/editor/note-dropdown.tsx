@@ -1,4 +1,5 @@
-import { IconDots } from "@tabler/icons-react";
+import { useState } from "react";
+import { IconDots, IconPhoto } from "@tabler/icons-react";
 import {
   ArchiveIcon,
   LockIcon,
@@ -11,6 +12,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ThumbnailStyleDialog } from "@/components/editor/thumbnail-style-dialog";
+import type { CoverStyle } from "@/lib/types";
 
 interface NoteDropdownProps {
   onDelete?: () => void;
@@ -18,6 +21,9 @@ interface NoteDropdownProps {
   onSecret?: () => void;
   className?: string;
   secret?: boolean;
+  // note: only passed while the note has a thumbnail image
+  cover?: { src: string; title: string; style: CoverStyle } | null;
+  onCoverStyle?: (style: CoverStyle) => void;
 }
 
 export function NoteDropdown({
@@ -26,8 +32,13 @@ export function NoteDropdown({
   onSecret,
   className,
   secret,
+  cover,
+  onCoverStyle,
 }: NoteDropdownProps) {
+  const [styleOpen, setStyleOpen] = useState(false);
+
   return (
+    <>
     <DropdownMenu>
       <DropdownMenuTrigger
         className={`grid place-items-center w-7 h-7 max-md:w-10 max-md:h-10 rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi hover:text-ink focus-visible:bg-surface-hi focus-visible:text-ink data-[state=open]:bg-surface-hi data-[state=open]:text-ink outline-none ${className ?? ""}`}
@@ -39,8 +50,21 @@ export function NoteDropdown({
 
       <DropdownMenuContent
         align="end"
-        className="w-40 bg-surface border-line-2 rounded-md shadow-card-lg py-1 px-0"
+        className="w-44 bg-surface border-line-2 rounded-md shadow-card-lg py-1 px-0"
       >
+        {cover && onCoverStyle && (
+          <DropdownMenuItem
+            className="flex items-center gap-2.5 text-[13px] rounded-none cursor-pointer dark:text-white/50"
+            onClick={(e) => {
+              e.stopPropagation();
+              setStyleOpen(true);
+            }}
+          >
+            <IconPhoto className="size-3.5" />
+            Thumbnail style
+          </DropdownMenuItem>
+        )}
+
         <DropdownMenuItem
           className="flex items-center gap-2.5 text-[13px] rounded-none cursor-pointer dark:text-white/50"
           onClick={(e) => {
@@ -80,5 +104,17 @@ export function NoteDropdown({
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+
+    {cover && onCoverStyle && (
+      <ThumbnailStyleDialog
+        open={styleOpen}
+        onOpenChange={setStyleOpen}
+        src={cover.src}
+        title={cover.title}
+        value={cover.style}
+        onChange={onCoverStyle}
+      />
+    )}
+    </>
   );
 }

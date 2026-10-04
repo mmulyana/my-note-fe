@@ -120,7 +120,7 @@ export function AccountMenu() {
   };
 
   return (
-    <div className="relative max-lg:h-10" ref={menuRef}>
+    <div className="relative max-md:h-10" ref={menuRef}>
       <button
         className="cursor-pointer rounded-full transition-colors hover:text-ink active:scale-[0.94] p-0 h-fit flex items-center"
         title={profile?.username || email || "Account"}

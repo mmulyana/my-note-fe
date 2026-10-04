@@ -9,7 +9,7 @@ import {
   isNewNoteAtom,
   editingFolderIdAtom,
 } from "@/store/document";
-import type { DocumentPayload, NoteDetail, NoteFlags } from "@/lib/types";
+import type { CoverStyle, DocumentPayload, NoteDetail, NoteFlags } from "@/lib/types";
 import { newId, deriveListFields } from "@/lib/utils";
 import { request } from "@/lib/api-client";
 import type { IApi } from "@/lib/types";
@@ -90,6 +90,7 @@ export function useDocumentActions() {
           secret: detail.data.secret,
           archived: detail.data.archived,
           pinned: detail.data.pinned,
+          coverStyle: detail.data.coverStyle,
         });
         store.set(editingIdAtom, id);
       } catch (err) {
@@ -171,11 +172,17 @@ export function useDocumentActions() {
           }
         : undefined;
 
+      const ad = payload.attachmentDiff;
+      const attachmentDiff = ad
+        ? { added: ad.added, removed: ad.removed.map((a) => a.id), cover: ad.cover }
+        : undefined;
+
       const body = {
         content: payload.content,
         preview: payload.preview,
         todoDiff,
         linkDiff,
+        attachmentDiff,
         labels: payload.labels,
         folderId: fId,
         ...flags,
@@ -264,6 +271,12 @@ export function useDocumentActions() {
     [persist],
   );
 
+  const coverStyleDoc = useCallback(
+    (payload: DocumentPayload, coverStyle: CoverStyle) =>
+      persist(payload, { flags: { coverStyle } }),
+    [persist],
+  );
+
   const deleteDoc = useCallback(async () => {
     const id = store.get(editingIdAtom);
     const wasNew = store.get(isNewNoteAtom);
@@ -290,5 +303,6 @@ export function useDocumentActions() {
     archiveDoc,
     pinnedDoc,
     secretDoc,
+    coverStyleDoc,
   };
 }

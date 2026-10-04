@@ -11,6 +11,8 @@ export type Notes = {
   id: string;
   title: string;
   preview: string;
+  cover?: string;
+  coverStyle?: CoverStyle;
   todoSummary: { total: number; done: number };
   todos?: NoteTodoItem[];
   labels: { id: string; name: string }[];
@@ -167,9 +169,30 @@ export interface LinkDiff {
 }
 
 // the shape GET /links/preview answers with
+// an image uploaded into a note; external-URL images are not attachments
+export interface AttachmentPayload {
+  id: string;
+  path: string;
+  thumbPath: string;
+  mime: string;
+  size: number;
+  width: number;
+  height: number;
+}
+
+export interface AttachmentDiff {
+  added: AttachmentPayload[];
+  removed: AttachmentPayload[];
+  // only set when the thumbnail changed: an attachment id, or null for none
+  cover?: string | null;
+}
+
 export type LinkPreview = Omit<LinkPayload, "id">;
 
+export type CoverStyle = "full" | "banner" | "overlay";
+
 export interface NoteFlags {
+  coverStyle?: CoverStyle;
   archived?: boolean;
   pinned?: boolean;
   secret?: boolean;
@@ -182,6 +205,8 @@ export interface DocumentPayload {
   todoDiff?: TodoDiff;
   links: LinkPayload[];
   linkDiff?: LinkDiff;
+  attachments: AttachmentPayload[];
+  attachmentDiff?: AttachmentDiff;
   labels: string[];
 }
 
@@ -190,6 +215,8 @@ export interface DocItem {
   title?: string;
   content: string;
   preview: string;
+  cover?: string;
+  coverStyle?: CoverStyle;
   todoSummary: { total: number; done: number };
   todos?: NoteTodoItem[];
   labels: { id: string; name: string }[];
@@ -231,4 +258,5 @@ export interface NoteDetail {
   secret?: boolean;
   pinned?: boolean;
   archived?: boolean;
+  coverStyle?: CoverStyle;
 }

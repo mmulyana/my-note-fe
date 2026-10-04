@@ -56,6 +56,8 @@ export function NoteModal() {
               onArchive={note.onArchive}
               onSecret={note.onSecret}
               secret={note.doc.secret}
+              cover={note.cover}
+              onCoverStyle={note.onCoverStyle}
             />
           </div>
         </header>

@@ -2,8 +2,14 @@ import { useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { request } from "@/lib/api-client";
 import { urls } from "@/lib/urls";
+import type { CoverStyle } from "@/lib/types";
 
-type NoteFlags = { pinned?: boolean; archived?: boolean; secret?: boolean };
+type NoteFlags = {
+  pinned?: boolean;
+  archived?: boolean;
+  secret?: boolean;
+  coverStyle?: CoverStyle;
+};
 
 export function useNoteActions() {
   const queryClient = useQueryClient();

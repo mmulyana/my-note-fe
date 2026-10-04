@@ -37,8 +37,9 @@ const ORDER_LABELS: Record<TodoSortKey, Record<SortOrder, string>> = {
   updated: { desc: "Newest first", asc: "Oldest first" },
 };
 
+// note: same md breakpoint as the avatar trigger and useIsMobile(), so every topbar control grows together on touch screens
 export const triggerClass =
-  "relative inline-flex h-8 w-9 items-center justify-center text-ink-3 transition-[color,background-color] duration-150 hover:bg-surface-2 hover:text-ink cursor-pointer";
+  "relative inline-flex h-8 w-9 max-md:h-10 max-md:w-11 items-center justify-center text-ink-3 transition-[color,background-color] duration-150 hover:bg-surface-2 hover:text-ink cursor-pointer";
 
 export const triggerActiveClass = "text-ink";
 
@@ -211,7 +212,7 @@ function TodoFilterMenu({
           activeCount > 0 && triggerActiveClass,
         )}
       >
-        <IconFilter size={18} />
+        <IconFilter size={18} className="max-md:size-5" />
         {activeCount > 0 && <span className={markerClass} />}
       </button>
       {open && (
@@ -350,7 +351,7 @@ function TodoSortMenu({
           sort.key && triggerActiveClass,
         )}
       >
-        <IconArrowsSort size={18} />
+        <IconArrowsSort size={18} className="max-md:size-5" />
         {sort.key && <span className={markerClass} />}
       </button>
       {open && (

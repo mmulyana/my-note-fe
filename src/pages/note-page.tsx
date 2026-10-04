@@ -151,6 +151,8 @@ export default function NotePage() {
               onArchive={note.onArchive}
               onSecret={note.onSecret}
               secret={note.doc.secret}
+              cover={note.cover}
+              onCoverStyle={note.onCoverStyle}
             />
           </div>,
           actionsSlot,

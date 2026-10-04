@@ -370,6 +370,13 @@ textarea {
     color: var(--ink);
     word-break: break-word;
 }
+/* note: text size of the preview inside note cards (banner and cover-less cards); tune this one value, the editor keeps its own 14px */
+:root {
+    --card-preview-font-size: 12.5px;
+}
+.rich-card-preview {
+    font-size: var(--card-preview-font-size);
+}
 /* note: mobile editor text size; breakpoint must match useIsMobile() in use-is-mobile.ts */
 @media (max-width: 767px) {
     .rich-content:not(.rich-readonly) {
@@ -562,6 +569,11 @@ textarea {
     height: auto;
     border-radius: 6px;
     border: 1px solid var(--line);
+}
+/* note: images saved before center was written have no data-align; center is the default */
+.rich-content img.rich-image:not([data-align]) {
+    margin-left: auto;
+    margin-right: auto;
 }
 /* note: saved HTML aligns a plain <img> via margin */
 .rich-content img[data-align="left"] {
@@ -788,6 +800,34 @@ textarea {
         background 0.14s,
         color 0.14s;
 }
+.rich-image-resize {
+    position: absolute;
+    top: 50%;
+    width: 10px;
+    height: 40px;
+    max-height: 60%;
+    transform: translateY(-50%);
+    border-radius: 5px;
+    border: 1px solid var(--line-2);
+    background: color-mix(in oklch, var(--surface) 85%, transparent);
+    cursor: ew-resize;
+    touch-action: none;
+    opacity: 0;
+    transition: opacity 0.14s;
+}
+.rich-image-resize[data-side="left"] {
+    left: 6px;
+}
+.rich-image-resize[data-side="right"] {
+    right: 6px;
+}
+.rich-image-wrapper:hover .rich-image-resize,
+.rich-image-resize[data-active="true"],
+.rich-content.ProseMirror-focused
+    .rich-image-wrapper.ProseMirror-selectednode
+    .rich-image-resize {
+    opacity: 1;
+}
 .rich-image-wrapper:hover .rich-image-settings-btn,
 .rich-image-settings-btn[data-state="open"] {
     opacity: 1;
@@ -906,9 +946,9 @@ textarea {
     /* note: shift past the list marker sitting in the 1.3em left padding */
     transform: translateX(-18px);
 }
-.drag-handle-btn[data-node-type="heading"] {
-    /* note: center the grip on a heading's taller first line */
-    margin-top: 3px;
+.drag-handle-btn[data-node-type="heading"][data-node-level="1"] {
+    /* note: h1 first line is 24.5px vs the 21px grip, so half the difference centers it; h2/h3 lines are about 21.8px and need no nudge */
+    margin-top: 2px;
 }
 .drag-handle-btn[data-node-type="codeBlock"] {
     /* note: line the grip up with the code block toolbar row */
@@ -922,9 +962,9 @@ textarea {
 .drag-handle-btn:active {
     cursor: grabbing;
 }
-/* note: highlight blocks picked up by the drag handle */
+/* note: highlight blocks picked up by the drag handle. A selected node only shows while the editor is focused: a doc that opens with an image has it pre-selected by ProseMirror, which should not look picked */
 .rich-content .ProseMirror-selectednoderange,
-.rich-content .ProseMirror-selectednode {
+.rich-content.ProseMirror-focused .ProseMirror-selectednode {
     background: color-mix(in oklch, var(--accent) 12%, transparent);
     border-radius: 5px;
 }

@@ -54,7 +54,7 @@ export function ViewButtons({
               view === value && cn(triggerActiveClass, "bg-surface-2"),
             )}
           >
-            <Icon size={18} />
+            <Icon size={18} className="max-md:size-5" />
           </button>
         </Fragment>
       ))}
@@ -73,7 +73,7 @@ export function ViewButtons({
               arranging && "bg-surface-2 text-brand",
             )}
           >
-            <IconArrowsMove size={18} />
+            <IconArrowsMove size={18} className="max-md:size-5" />
           </button>
         </>
       )}

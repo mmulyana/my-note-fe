@@ -10,7 +10,10 @@ import { createPortal } from "react-dom";
 import { IconCheck } from "@tabler/icons-react";
 import type { Editor } from "@tiptap/react";
 import { useApi } from "@/hooks/use-api";
-import { urls } from "@/lib/urls";
+import { request } from "@/lib/api-client";
+import { readImageMeta } from "@/lib/image";
+import { assetUrl, urls } from "@/lib/urls";
+import { newId } from "@/lib/utils";
 import type { IApi } from "@/lib/types";
 import { AiPromptInput } from "./ai-prompt-input";
 import type { SlashAnchor } from "./slash-menu";
@@ -100,6 +103,10 @@ export function SlashPopup({
           editor.chain().focus().setImage({ src }).run();
           onClose();
         }}
+        onUploaded={(attrs) => {
+          editor.chain().focus().insertContent({ type: "image", attrs }).run();
+          onClose();
+        }}
       />
     );
   } else {
@@ -139,8 +146,63 @@ export function SlashPopup({
   );
 }
 
-function ImageUrlInput({ onSubmit }: { onSubmit: (src: string) => void }) {
+const UPLOAD_ACCEPT = "image/jpeg,image/png,image/webp";
+
+async function uploadFile(file: Blob, name: string): Promise<string> {
+  const form = new FormData();
+  form.append("file", file, name);
+  form.append("location", "notes");
+  const res = await request<IApi<{ path: string }>>(urls.Uploads, {
+    method: "POST",
+    body: form,
+  });
+  return res.data.path;
+}
+
+// note: uploads the original plus a canvas-made thumbnail, then hands back the image node attrs
+async function uploadImage(file: File) {
+  const meta = await readImageMeta(file);
+  const [path, thumbPath] = await Promise.all([
+    uploadFile(file, file.name),
+    uploadFile(meta.thumb, "thumb.webp"),
+  ]);
+  return {
+    src: assetUrl(path),
+    attachmentId: newId(),
+    attachmentPath: path,
+    thumbPath,
+    mime: file.type,
+    size: file.size,
+    naturalWidth: meta.width,
+    naturalHeight: meta.height,
+  };
+}
+
+type UploadedAttrs = Awaited<ReturnType<typeof uploadImage>>;
+
+function ImageUrlInput({
+  onSubmit,
+  onUploaded,
+}: {
+  onSubmit: (src: string) => void;
+  onUploaded: (attrs: UploadedAttrs) => void;
+}) {
   const [url, setUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = async (file?: File) => {
+    if (!file) return;
+    setError("");
+    setUploading(true);
+    try {
+      onUploaded(await uploadImage(file));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed");
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -153,6 +215,26 @@ function ImageUrlInput({ onSubmit }: { onSubmit: (src: string) => void }) {
       onSubmit={handleSubmit}
       className="flex flex-col gap-2 p-1.5 text-left"
     >
+      <input
+        ref={fileRef}
+        type="file"
+        accept={UPLOAD_ACCEPT}
+        hidden
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          e.target.value = "";
+          void handleFile(file);
+        }}
+      />
+      <button
+        type="button"
+        disabled={uploading}
+        onClick={() => fileRef.current?.click()}
+        className="h-7 rounded-md text-[12px] font-medium bg-surface-hi text-ink border border-line-2 transition-colors hover:bg-surface-2 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {uploading ? "Uploading…" : "Upload image"}
+      </button>
+      {error && <p className="text-[11px] text-red-500">{error}</p>}
       <label
         htmlFor="slash-image-url"
         className="text-[10px] uppercase tracking-[0.08em] text-ink-3"

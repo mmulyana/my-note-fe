@@ -48,8 +48,7 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
   return (
     <article
       className={cn(
-        "group relative flex flex-col rounded-[12px] border border-line bg-surface text-ink overflow-hidden transition-[box-shadow,border-color] duration-150 hover:border-line-2",
-        !isSecret && "hover:shadow-card",
+        "group relative flex flex-col rounded-[12px] border border-line bg-surface text-ink overflow-hidden transition-[border-color] duration-150 hover:border-line-2",
       )}
     >
       {isSecret && (

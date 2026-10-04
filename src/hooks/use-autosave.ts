@@ -1,10 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Editor } from "@tiptap/react";
-import type { DocumentPayload, LinkPayload, TodoPayload } from "@/lib/types";
+import type {
+  AttachmentPayload,
+  DocumentPayload,
+  LinkPayload,
+  TodoPayload,
+} from "@/lib/types";
 import {
   deriveListFields,
+  diffAttachments,
   diffLinks,
   diffTodos,
+  extractAttachments,
+  extractCoverId,
   extractLabels,
   extractLinks,
   extractTodos,
@@ -31,6 +39,8 @@ export function useAutoSave({ editor, onSave, delay = 1500, startEmpty = false }
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const baselineRef = useRef<TodoPayload[] | null>(null);
   const linkBaselineRef = useRef<LinkPayload[] | null>(null);
+  const attachmentBaselineRef = useRef<AttachmentPayload[] | null>(null);
+  const coverBaselineRef = useRef<string | null | undefined>(undefined);
   const initialContentRef = useRef<string | null>(null);
   const onSaveRef = useRef(onSave);
   onSaveRef.current = onSave;
@@ -39,6 +49,8 @@ export function useAutoSave({ editor, onSave, delay = 1500, startEmpty = false }
     if (!editor) return;
     if (baselineRef.current === null) baselineRef.current = startEmpty ? [] : extractTodos(editor.getJSON());
     if (linkBaselineRef.current === null) linkBaselineRef.current = startEmpty ? [] : extractLinks(editor.getJSON());
+    if (attachmentBaselineRef.current === null) attachmentBaselineRef.current = startEmpty ? [] : extractAttachments(editor.getJSON());
+    if (coverBaselineRef.current === undefined) coverBaselineRef.current = startEmpty ? null : extractCoverId(editor.getJSON());
     if (initialContentRef.current === null) initialContentRef.current = editor.getHTML();
   }, [editor, startEmpty]);
 
@@ -52,9 +64,15 @@ export function useAutoSave({ editor, onSave, delay = 1500, startEmpty = false }
     const links = extractLinks(json);
     const linkDiff = diffLinks(linkBaselineRef.current ?? [], links);
     linkBaselineRef.current = links;
+    const attachments = extractAttachments(json);
+    const attachmentDiff = diffAttachments(attachmentBaselineRef.current ?? [], attachments);
+    attachmentBaselineRef.current = attachments;
+    const cover = extractCoverId(json);
+    if (cover !== (coverBaselineRef.current ?? null)) attachmentDiff.cover = cover;
+    coverBaselineRef.current = cover;
     const labels = extractLabels(json);
     const { preview } = deriveListFields(content);
-    return { content, preview, todos, todoDiff, links, linkDiff, labels };
+    return { content, preview, todos, todoDiff, links, linkDiff, attachments, attachmentDiff, labels };
   }, [editor]);
 
   // note: used for non-editor changes (e.g. folder picks)
