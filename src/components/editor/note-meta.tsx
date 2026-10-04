@@ -27,7 +27,7 @@ export function NoteMeta({ updatedAt, pinned, archived, floating }: NoteMetaProp
       {archived && (
         <span className="text-[10px] uppercase tracking-[0.06em]">Archived</span>
       )}
-      <span className="inline-flex items-center gap-1">
+      <span className="inline-flex items-center gap-1 w-fit">
         <IconClock size={11} className="shrink-0 opacity-80" />
         {relativeShort(updatedAt)}
       </span>
