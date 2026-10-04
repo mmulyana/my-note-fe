@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { IconMaximize } from "@tabler/icons-react";
+import { IconMaximize, IconPin, IconPinFilled } from "@tabler/icons-react";
+import { cn } from "@/lib/utils";
 import { useLocation, useNavigate } from "react-router-dom";
 import { EditorBody } from ".";
 import { useNoteEditor } from "./session";
@@ -38,6 +39,22 @@ export function NoteModal() {
             selectedId={note.folderId}
             onChange={note.onFolderChange}
           />
+          <button
+            type="button"
+            onClick={note.onPinned}
+            className={cn(
+              "grid place-items-center w-8 h-8 max-md:w-10 max-md:h-10 flex-none rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi focus-visible:bg-surface-hi focus-visible:text-ink outline-none hover:text-amber-400 cursor-pointer",
+              note.doc.pinned && "text-amber-500",
+            )}
+            aria-label={note.doc.pinned ? "Unpin note" : "Pin note"}
+            title={note.doc.pinned ? "Unpin note" : "Pin note"}
+          >
+            {note.doc.pinned ? (
+              <IconPinFilled size={18} className="max-md:size-5" />
+            ) : (
+              <IconPin size={18} className="max-md:size-5" />
+            )}
+          </button>
           <span className="ml-auto min-w-0 truncate text-[11px] text-ink-3">
             {note.updatedText}
           </span>

@@ -75,16 +75,39 @@ export default function NotePage() {
 
   if (!id || note?.doc.id !== id) return null;
 
+  const pinButton = (className: string) => (
+    <button
+      type="button"
+      onClick={note.onPinned}
+      className={cn(
+        "grid place-items-center w-8 h-8 max-md:w-10 max-md:h-10 flex-none rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi focus-visible:bg-surface-hi focus-visible:text-ink outline-none hover:text-amber-400 cursor-pointer",
+        note.doc.pinned && "text-amber-500",
+        className,
+      )}
+      aria-label={note.doc.pinned ? "Unpin note" : "Pin note"}
+      title={note.doc.pinned ? "Unpin note" : "Pin note"}
+    >
+      {note.doc.pinned ? (
+        <IconPinFilled size={18} className="max-md:size-5" />
+      ) : (
+        <IconPin size={18} className="max-md:size-5" />
+      )}
+    </button>
+  );
+
   const sideMeta = (
     <>
       <div>
         <p className="mb-1 px-1.5 max-lg:px-0 text-[10px] font-medium uppercase tracking-[0.08em] text-ink-3">
           Folder
         </p>
-        <FolderPicker
-          selectedId={note.folderId}
-          onChange={note.onFolderChange}
-        />
+        <div className="flex items-center gap-1">
+          <FolderPicker
+            selectedId={note.folderId}
+            onChange={note.onFolderChange}
+          />
+          {pinButton("max-md:hidden")}
+        </div>
       </div>
       {note.labels.length > 0 && (
         <div className="mt-4">
@@ -121,22 +144,7 @@ export default function NotePage() {
             >
               <IconArrowLeft size={15} className="max-md:size-5" />
             </button>
-            <button
-              type="button"
-              onClick={note.onPinned}
-              className={cn(
-                "grid place-items-center w-7 h-7 max-md:w-10 max-md:h-10 rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi focus-visible:bg-surface-hi focus-visible:text-ink outline-none hover:text-amber-400",
-                note.doc.pinned && "text-amber-500",
-              )}
-              aria-label="Pin note"
-              title="Pin note"
-            >
-              {note.doc.pinned ? (
-                <IconPinFilled size={15} className="max-md:size-5" />
-              ) : (
-                <IconPin size={15} className="max-md:size-5" />
-              )}
-            </button>
+            {pinButton("md:hidden")}
           </>,
           titleSlot,
         )}
@@ -153,6 +161,9 @@ export default function NotePage() {
               secret={note.doc.secret}
               cover={note.cover}
               onCoverStyle={note.onCoverStyle}
+              folderId={note.folderId}
+              onFolderChange={note.onFolderChange}
+              labels={note.labels}
             />
           </div>,
           actionsSlot,
@@ -162,7 +173,7 @@ export default function NotePage() {
           <aside className="absolute top-0 left-full ml-3 hidden h-full w-40 min-[1120px]:block">
             <div className="sticky top-2">{sideMeta}</div>
           </aside>
-          <div className="pb-3 min-[1120px]:hidden">{sideMeta}</div>
+          <div className="pb-3 max-md:hidden min-[1120px]:hidden">{sideMeta}</div>
           <div className="flex flex-col gap-2.5 pb-4">
             <EditorBody />
           </div>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { IconDots, IconPhoto } from "@tabler/icons-react";
 import {
   ArchiveIcon,
+  LabelsIcon,
   LockIcon,
   LockOpenIcon,
   TrashIcon,
@@ -12,6 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { FolderPicker } from "@/components/editor/folder-picker";
 import { ThumbnailStyleDialog } from "@/components/editor/thumbnail-style-dialog";
 import type { CoverStyle } from "@/lib/types";
 
@@ -24,6 +26,9 @@ interface NoteDropdownProps {
   // note: only passed while the note has a thumbnail image
   cover?: { src: string; title: string; style: CoverStyle } | null;
   onCoverStyle?: (style: CoverStyle) => void;
+  folderId?: string | null;
+  onFolderChange?: (id: string | null) => void;
+  labels?: string[];
 }
 
 export function NoteDropdown({
@@ -34,6 +39,9 @@ export function NoteDropdown({
   secret,
   cover,
   onCoverStyle,
+  folderId,
+  onFolderChange,
+  labels,
 }: NoteDropdownProps) {
   const [styleOpen, setStyleOpen] = useState(false);
 
@@ -52,6 +60,30 @@ export function NoteDropdown({
         align="end"
         className="w-44 bg-surface border-line-2 rounded-md shadow-card-lg py-1 px-0"
       >
+        {onFolderChange && (
+          <div className="md:hidden">
+            <FolderPicker
+              variant="menu"
+              selectedId={folderId ?? null}
+              onChange={onFolderChange}
+            />
+          </div>
+        )}
+
+        {labels && labels.length > 0 && (
+          <div className="md:hidden flex flex-wrap items-center gap-1 px-2 py-1.5">
+            {labels.map((name) => (
+              <span
+                key={name.toLowerCase()}
+                className="inline-flex max-w-full items-center gap-0.5 px-1.5 py-0.5 rounded-[8px] text-xs text-ink-2 border border-line"
+              >
+                <LabelsIcon className="h-3 w-3 shrink-0" />
+                <span className="truncate">{name}</span>
+              </span>
+            ))}
+          </div>
+        )}
+
         {cover && onCoverStyle && (
           <DropdownMenuItem
             className="flex items-center gap-2.5 text-[13px] rounded-none cursor-pointer dark:text-white/50"
