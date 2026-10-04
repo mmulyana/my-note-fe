@@ -70,7 +70,7 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
         </div>
         <div className="flex items-center gap-1">
           {doc.pinned && (
-            <IconPinFilled size={12} className="shrink-0 text-ink-2/70" />
+            <IconPinFilled size={12} className="shrink-0 text-amber-400" />
           )}
           <p>{relative(doc.updatedAt)}</p>
           {(hasCompleted || hideCompleted) && (

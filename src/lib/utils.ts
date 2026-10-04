@@ -352,6 +352,20 @@ export function newId(size = 8): string {
   return id;
 }
 
+// note: compact age for card chips: now, 5m, 3h, 2d, 1w, then a short date
+export function relativeShort(ms: number): string {
+  const seconds = Math.max(0, (Date.now() - ms) / 1000);
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 1) return "now";
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d`;
+  if (days < 35) return `${Math.floor(days / 7)}w`;
+  return new Date(ms).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
 export function relative(ms: number): string {
   try {
     return formatDistanceToNow(new Date(ms), { addSuffix: true });
