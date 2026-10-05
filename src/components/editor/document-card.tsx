@@ -1,4 +1,4 @@
-import { IconLock } from "@tabler/icons-react";
+import { IconLock, IconPinFilled } from "@tabler/icons-react";
 import { FolderIcon } from "@/components/icons";
 import { TodoProgress } from "@/components/editor/todo-progress";
 import { useDocumentActions } from "@/hooks/use-document-actions";
@@ -17,7 +17,6 @@ export function DocumentCard({ doc }: DocumentCardProps) {
 
   const { total, done } = doc.todoSummary;
   const isSecret = doc.folder?.secret || doc.secret;
-  const hasFooter = total > 0 || doc.labels.length > 0;
 
   const hasCover = Boolean(doc.cover);
   // note: overlay is image-only: the picture fills the whole card and carries the title, so folder, text preview and footer step aside
@@ -31,9 +30,9 @@ export function DocumentCard({ doc }: DocumentCardProps) {
   const meta = (
     <NoteMeta
       updatedAt={doc.updatedAt}
-      pinned={doc.pinned}
+      pinned={isOverlay && doc.pinned}
       archived={doc.archived}
-      floating={hasCover}
+      floating={isOverlay}
     />
   );
 
@@ -64,22 +63,21 @@ export function DocumentCard({ doc }: DocumentCardProps) {
         />
       )}
 
-      {!isOverlay && (!hasCover || doc.folder) && (
-        <div className="pt-3 px-3 text-xs text-ink-2/50 flex flex-col-reverse md:flex-row justify-between md:items-center">
-          <div>
-            {doc.folder && (
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-nowrap inline-flex items-center gap-1 rounded-[8px] text-xs text-ink-2">
-                  <FolderIcon className="size-3" />
-                  {doc.folder.name}
-                </span>
-              </div>
-            )}
-          </div>
-          {!hasCover && meta}
+      {!isOverlay && !hasCover && !doc.folder && !doc.pinned && <div className="pt-3" />}
+      {!isOverlay && (doc.folder || doc.pinned) && (
+        <div className="pt-3 px-3 text-xs text-ink-2/50 flex items-center gap-1.5 flex-wrap">
+          {doc.folder && (
+            <span className="text-nowrap inline-flex items-center gap-1 rounded-[8px] text-xs text-ink-2">
+              <FolderIcon className="size-3" />
+              {doc.folder.name}
+            </span>
+          )}
+          {doc.pinned && (
+            <IconPinFilled size={14} className="shrink-0 text-amber-400" aria-label="Pinned" />
+          )}
         </div>
       )}
-      {hasCover && meta}
+      {isOverlay && meta}
 
       {hidePreview ? null : doc.preview ? (
         <div
@@ -88,7 +86,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
             // note: uploaded images already show as the cover, so hide them in the text preview
             "[&_img[data-attachment-id]]:hidden",
             "rich-content rich-readonly rich-card-preview flex-1 min-h-0 px-3 pt-1.5 pb-1 overflow-hidden mask-[linear-gradient(to_bottom,black_78%,transparent)] select-none",
-            hasFooter && "-mb-3.5",
+            "-mb-3.5",
             isSecret && "pointer-events-none",
           )}
           dangerouslySetInnerHTML={{ __html: doc.preview }}
@@ -97,24 +95,25 @@ export function DocumentCard({ doc }: DocumentCardProps) {
         <div
           className={cn(
             "flex-1 min-h-0 px-3 pt-1.5 pb-2 text-[13px] italic text-ink-4",
-            hasFooter && "-mb-3.5",
+            "-mb-3.5",
           )}
         >
           Empty
         </div>
       )}
 
-      {hasFooter && !isOverlay && (
+      {!isOverlay && (
         <div
           className={cn(
-            "relative shrink-0 gap-2 px-3 pb-2.5 pt-1.5 text-xs text-ink-3 bg-linear-to-b from-transparent via-surface via-60% to-surface",
+            "relative shrink-0 flex items-center justify-between gap-2 px-3 pb-2.5 pt-1.5 text-xs text-ink-3 bg-linear-to-b from-transparent via-surface via-60% to-surface",
             // note: full has no preview text, so the title already leaves the gap
             isFull && "pt-0",
           )}
         >
           <div className="flex gap-1 items-center flex-wrap">
-            <TodoProgress done={done} total={total} />
+            {total > 0 && <TodoProgress done={done} total={total} />}
           </div>
+          {meta}
         </div>
       )}
 

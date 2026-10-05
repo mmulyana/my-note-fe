@@ -18,11 +18,11 @@ export function NoteMeta({ updatedAt, pinned, archived, floating }: NoteMetaProp
         "inline-flex h-5 shrink-0 items-center gap-1.5 rounded-full px-2 text-[11px] font-medium tabular-nums",
         floating
           ? "absolute top-2 right-2 z-5 border border-white/15 bg-black/65 text-white shadow-sm backdrop-blur-sm"
-          : "bg-surface-2 text-ink-3",
+          : "w-fit self-start md:self-auto bg-surface-2 text-ink-3",
       )}
     >
       {pinned && (
-        <IconPinFilled size={11} className={cn("shrink-0", floating ? "text-amber-300" : "text-amber-400")} aria-label="Pinned" />
+        <IconPinFilled size={14} className={cn("shrink-0", floating ? "text-amber-300" : "text-amber-400")} aria-label="Pinned" />
       )}
       {archived && (
         <span className="text-[10px] uppercase tracking-[0.06em]">Archived</span>
