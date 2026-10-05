@@ -14,10 +14,12 @@ import NotePage from "@/pages/note-page";
 import FolderPage from "./pages/folder-page";
 import FoldersPage from "./pages/folders-page";
 import ArchivePage from "./pages/archive-page";
+import NotFoundPage from "./pages/not-found-page";
 
 const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
   { path: "/register", element: <RegisterPage /> },
+  { path: "*", element: <NotFoundPage /> },
   {
     element: <ProtectedRoute />,
     // note: restores the session and shows the fallback spinner before this route tree renders

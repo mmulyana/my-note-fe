@@ -15,7 +15,7 @@ export function NoteMeta({ updatedAt, pinned, archived, floating }: NoteMetaProp
     <div
       title={`Updated ${relative(updatedAt)}`}
       className={cn(
-        "inline-flex h-5 shrink-0 items-center gap-1.5 rounded-full px-2 text-[11px] font-medium tabular-nums",
+        "inline-flex h-5 shrink-0 items-center gap-1.5 rounded-full px-2 pl-1 text-[11px] font-medium tabular-nums",
         floating
           ? "absolute top-2 right-2 z-5 border border-white/15 bg-black/65 text-white shadow-sm backdrop-blur-sm"
           : "w-fit self-start md:self-auto bg-surface-2 text-ink-3",
@@ -27,8 +27,8 @@ export function NoteMeta({ updatedAt, pinned, archived, floating }: NoteMetaProp
       {archived && (
         <span className="text-[10px] uppercase tracking-[0.06em]">Archived</span>
       )}
-      <span className="inline-flex items-center gap-1">
-        <IconClock size={11} className="shrink-0 opacity-80" />
+      <span className="inline-flex items-center gap-0.5 text-ink-2">
+        <IconClock size={14} className="shrink-0 opacity-80" />
         {relativeShort(updatedAt)}
       </span>
     </div>

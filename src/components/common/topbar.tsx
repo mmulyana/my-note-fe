@@ -20,7 +20,7 @@ export function Topbar() {
     pathname.startsWith("/folder/") || pathname.startsWith("/note/");
 
   return (
-    <header className="sticky top-0 z-30 -mx-4 mb-2 flex h-[52px] flex-none items-center gap-3.5 max-lg:h-[64px] max-lg:-mb-1 max-lg:pt-2 justify-between bg-linear-to-b from-bg via-bg/82 via-65% to-transparent px-4">
+    <header className="sticky top-0 z-30 mb-2 flex h-[52px] flex-none items-center gap-3.5 max-lg:h-[64px] max-lg:-mb-1 max-lg:pt-2 justify-between bg-linear-to-b from-bg via-bg/82 via-65% to-transparent">
       <div className="flex min-w-0 items-center gap-1.5">
         {isMobile && (
           <button

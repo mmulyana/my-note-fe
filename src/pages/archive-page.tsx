@@ -24,7 +24,7 @@ export default function ArchivePage() {
     <>
       {docs.length > 0 ? (
         <>
-          <div className="masonry grid-view">
+          <div className="masonry grid-view max-md:pt-2">
             {docs.map((d) => (
               <DocumentCard key={d.id} doc={d} />
             ))}

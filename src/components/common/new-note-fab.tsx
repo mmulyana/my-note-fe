@@ -24,7 +24,7 @@ export function NewNoteFab() {
       <DropdownMenuTrigger asChild>
         <button
           aria-label="New note"
-          className="group fixed right-4 bottom-6 z-40 grid size-12 place-items-center rounded-full bg-ink text-surface shadow-card-lg transition-transform duration-150 active:scale-95 cursor-pointer"
+          className="group fixed right-4 bottom-4 z-40 grid size-12 place-items-center rounded-full bg-ink text-surface shadow-card-lg transition-transform duration-150 active:scale-95 cursor-pointer"
         >
           <IconPlus
             size={22}

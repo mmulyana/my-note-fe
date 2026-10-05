@@ -134,27 +134,6 @@ body {
     background: color-mix(in oklch, var(--accent) 40%, transparent);
 }
 
-/* note: thin scrollbars on every scrollable element */
-* {
-    scrollbar-width: thin;
-    scrollbar-color: var(--line-2) transparent;
-}
-*::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-}
-*::-webkit-scrollbar-thumb {
-    background: var(--line-2);
-    border-radius: 5px;
-    border: 3px solid transparent;
-    background-clip: content-box;
-}
-*::-webkit-scrollbar-thumb:hover {
-    background: var(--ink-3);
-    border: 3px solid transparent;
-    background-clip: content-box;
-}
-
 button {
     font-family: inherit;
 }
@@ -979,7 +958,11 @@ textarea {
 }
 
 .main-layout {
-    scrollbar-gutter: stable;
+    /* note: dark theme only, scrollbar track uses the card color */
+    scrollbar-color: var(--line-2) var(--surface);
+}
+[data-theme="light"] .main-layout {
+    scrollbar-color: auto;
 }
 
 @theme inline {

@@ -66,17 +66,17 @@ export default function NewNoteButton({ sidebar }: { sidebar: boolean }) {
   }
 
   return (
-    <ButtonGroup className="mb-px w-full rounded-full border border-line dark:border-line-2 dark:bg-[#18191D] [&>[data-slot]:not(:has(~[data-slot]))]:rounded-r-full! bg-white">
+    <ButtonGroup className="mb-px w-full rounded-full dark:bg-[#18191D] [&>[data-slot]:not(:has(~[data-slot]))]:rounded-r-full! bg-white">
       <Button
         variant="ghost"
         onClick={openNew}
         className={cn(
           soft,
-          "flex-1 pr-8 justify-start items-center pl-1.5 rounded-l-full max-md:h-10 max-md:text-[15px]",
+          "flex-1 pr-8 justify-start items-center pl-[7px] rounded-l-full max-md:h-10 max-md:text-[15px]",
         )}
       >
-        <div className="shrink-0 w-4.5 h-4.5 max-md:w-5 max-md:h-5 flex justify-center items-center">
-          <IconPlus className="max-md:size-5" />
+        <div className="shrink-0 w-4.5 h-4.5 flex justify-center items-center">
+          <IconPlus size={18} />
         </div>
         New
       </Button>

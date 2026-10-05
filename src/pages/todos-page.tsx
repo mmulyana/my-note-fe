@@ -73,7 +73,7 @@ export default function TodosPage() {
           actionsSlot,
         )}
       {docs.length > 0 && view === "masonry" && effectiveColumns > 1 ? (
-        <div className="flex items-start gap-2 pb-4">
+        <div className="flex items-start gap-2 pb-4 max-md:pt-2">
           {masonryColumns.map((bucket, i) => (
             <div
               key={i}
@@ -89,8 +89,8 @@ export default function TodosPage() {
         <div
           className={cn(
             effectiveColumns === 1
-              ? "grid gap-2 pb-4 [&>*]:h-fit"
-              : "masonry grid-view pb-4",
+              ? "grid gap-2 pb-4 [&>*]:h-fit max-md:pt-2"
+              : "masonry grid-view pb-4 max-md:pt-2",
           )}
         >
           {docs.map((d) => (

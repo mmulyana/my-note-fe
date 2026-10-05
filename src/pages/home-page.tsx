@@ -64,7 +64,7 @@ export default function DocumentEditorPage() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full max-md:pt-2">
       {!searching && <GroupWithNotes />}
       {docs.length > 0 ? (
         <>
