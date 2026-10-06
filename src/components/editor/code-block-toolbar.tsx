@@ -1,6 +1,7 @@
 import { IconCheck, IconCopy } from "@tabler/icons-react";
 import { useState } from "react";
 import { CODE_LANGUAGES } from "@/lib/prism";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -12,17 +13,27 @@ import {
 const PLAIN = "plain";
 
 const itemClass =
-  "mono min-h-6 rounded-md py-1 text-[11px] text-ink-2 focus:bg-surface-2 focus:text-ink";
+  "mono min-h-7 rounded-[7.5px] py-1 text-[13px] text-ink-2 focus:bg-surface-2 focus:text-ink";
+
+const THEMES = [
+  { value: "auto", label: "Auto" },
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" },
+];
 
 interface CodeBlockToolbarProps {
   language: string;
   onLanguageChange: (language: string) => void;
+  codeTheme: string;
+  onThemeChange: (theme: string) => void;
   getCode: () => string;
 }
 
 export function CodeBlockToolbar({
   language,
   onLanguageChange,
+  codeTheme,
+  onThemeChange,
   getCode,
 }: CodeBlockToolbarProps) {
   const [copied, setCopied] = useState(false);
@@ -55,7 +66,7 @@ export function CodeBlockToolbar({
         <SelectContent
           position="popper"
           align="start"
-          className="max-h-64 min-w-32 rounded-lg border border-line-2 p-1 shadow-card-lg ring-0"
+          className="max-h-64 min-w-32 rounded-[12px] border border-line-2 p-1.5 shadow-card-lg ring-0"
           onCloseAutoFocus={(e) => e.preventDefault()}
         >
           <SelectItem value={PLAIN} className={itemClass}>
@@ -69,16 +80,44 @@ export function CodeBlockToolbar({
         </SelectContent>
       </Select>
 
-      <button
-        type="button"
-        className="code-block-copy"
-        title={copied ? "Copied" : "Copy code"}
-        aria-label={copied ? "Copied" : "Copy code"}
-        onClick={copy}
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-        {copied ? <IconCheck size={14} /> : <IconCopy size={14} />}
-      </button>
+      <div className="flex items-center gap-1">
+        <Select
+          value={codeTheme}
+          onValueChange={onThemeChange}
+        >
+          <SelectTrigger
+            size="sm"
+            className="code-block-lang"
+            title="Code theme"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent
+            position="popper"
+            align="start"
+            className="max-h-64 min-w-32 rounded-lg border border-line-2 p-1 shadow-card-lg ring-0"
+            onCloseAutoFocus={(e) => e.preventDefault()}
+          >
+            {THEMES.map((t) => (
+              <SelectItem key={t.value} value={t.value} className={itemClass}>
+                {t.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <button
+          type="button"
+          className="code-block-copy"
+          title={copied ? "Copied" : "Copy code"}
+          aria-label={copied ? "Copied" : "Copy code"}
+          onClick={copy}
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          {copied ? <IconCheck size={14} /> : <IconCopy size={14} />}
+        </button>
+      </div>
     </div>
   );
 }

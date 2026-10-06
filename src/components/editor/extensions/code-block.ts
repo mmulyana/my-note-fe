@@ -31,6 +31,17 @@ function buildDecorations(doc: PMNode, typeName: string): DecorationSet {
 }
 
 export const CustomCodeBlock = CodeBlock.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      codeTheme: {
+        default: "light",
+        parseHTML: (el) => el.getAttribute("data-code-theme") || "light",
+        renderHTML: (attrs) => ({ "data-code-theme": attrs.codeTheme || "light" }),
+      },
+    };
+  },
+
   addNodeView() {
     return ReactNodeViewRenderer(CodeBlockView);
   },

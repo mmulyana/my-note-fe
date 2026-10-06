@@ -11,6 +11,11 @@ import "prismjs/components/prism-yaml";
 import "prismjs/components/prism-go";
 import "prismjs/components/prism-rust";
 import "prismjs/components/prism-java";
+import "prismjs/components/prism-clike";
+import "prismjs/components/prism-c";
+import "prismjs/components/prism-cpp";
+import "prismjs/components/prism-csharp";
+import "prismjs/components/prism-ruby";
 
 const ALIASES: Record<string, string> = {
   js: "javascript",
@@ -28,6 +33,11 @@ const ALIASES: Record<string, string> = {
   golang: "go",
   rs: "rust",
   md: "markdown",
+  "c++": "cpp",
+  cc: "cpp",
+  "c#": "csharp",
+  cs: "csharp",
+  rb: "ruby",
 };
 
 const escapeHtml = (s: string): string =>
@@ -85,6 +95,9 @@ export const CODE_LANGUAGES = [
   "go",
   "rust",
   "java",
+  "cpp",
+  "csharp",
+  "ruby",
   "json",
   "bash",
   "shell",

@@ -840,10 +840,19 @@ textarea {
     padding: 0;
     font-size: inherit;
 }
+.rich-content pre[data-code-theme="light"] {
+    background: oklch(0.95 0.004 95);
+    color: oklch(0.22 0.01 95);
+}
+.rich-content pre[data-code-theme="dark"] {
+    background: oklch(0.195 0.006 264);
+    color: oklch(0.965 0.003 264);
+}
 
 /* note: code block frame with a language picker + copy bar on top */
 .rich-content .code-block {
-    border-radius: 6px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
     overflow: hidden;
     background: var(--bg-2);
     margin: 0.5em 0;
@@ -854,21 +863,62 @@ textarea {
     align-items: center;
     justify-content: space-between;
     gap: 6px;
-    padding: 8px;
-    /* border-bottom: 1px solid var(--line); */
+    padding: 6px 8px 6px 6px;
+    background: oklch(1 0 0 / 0.04);
+    border-bottom: 1px solid var(--line);
 }
 .rich-content .code-block > pre {
     margin: 0;
     border-radius: 0;
+    padding: 14px 16px;
+    font-size: 13px;
+    line-height: 1.6;
     background: transparent; /* note: the wrapper draws the frame */
+}
+.code-block[data-code-theme="light"] {
+    background: #f7f7f5;
+}
+.code-block[data-code-theme="light"] .code-block-bar {
+    background: oklch(0.95 0.004 95);
+}
+.code-block[data-code-theme="light"] > pre {
+    color: oklch(0.22 0.01 95);
+}
+.code-block[data-code-theme="light"] .code-hl {
+    --code-comment: #8a919a;
+    --code-punctuation: oklch(0.22 0.01 95);
+    --code-keyword: #c41d7f;
+    --code-string: #1a9e3f;
+    --code-number: #d4630a;
+    --code-function: #1f6feb;
+    --code-operator: #0a99c2;
+    --code-tag: #e5484d;
+    --code-attr: #b7791f;
+}
+.code-block[data-code-theme="dark"] {
+    background: oklch(0.195 0.006 264);
+}
+.code-block[data-code-theme="dark"] > pre {
+    color: oklch(0.965 0.003 264);
+}
+.code-block[data-code-theme="dark"] .code-hl {
+    --code-comment: #8b95b3;
+    --code-punctuation: oklch(0.74 0.006 264);
+    --code-keyword: #c792ea;
+    --code-string: #5af78e;
+    --code-number: #f78c6c;
+    --code-function: #82aaff;
+    --code-operator: #89ddff;
+    --code-tag: #ff6e88;
+    --code-attr: #ffd96b;
 }
 .code-block-lang,
 .code-block-copy {
     font-family: "JetBrains Mono", ui-monospace, monospace;
     font-size: 10.5px;
     color: var(--ink-3);
-    background: var(--surface-hi);
-    border-radius: 5px;
+    background: transparent;
+    border-radius: 7.5px;
     cursor: pointer;
     transition:
         color 0.14s,
@@ -876,10 +926,14 @@ textarea {
 }
 /* note: height/padding override the shadcn trigger defaults to fit this bar */
 .code-block-lang {
-    height: auto;
-    padding: 2px 4px 2px 7px;
-    gap: 3px;
-    border-radius: 5px;
+    height: 28px;
+    padding: 0 6px;
+    gap: 4px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--ink-3);
+    font-size: 12px;
 }
 .code-block-lang svg {
     width: 12px;
@@ -896,7 +950,17 @@ textarea {
 .code-block-lang:hover,
 .code-block-copy:hover {
     color: var(--ink);
-    background: var(--surface-2);
+    background: transparent;
+}
+[data-theme="light"] .code-block-lang:hover,
+[data-theme="light"] .code-block-copy:hover,
+.code-block[data-code-theme="light"] .code-block-lang:hover,
+.code-block[data-code-theme="light"] .code-block-copy:hover {
+    color: oklch(0.22 0.01 95);
+}
+.code-block[data-code-theme="dark"] .code-block-lang:hover,
+.code-block[data-code-theme="dark"] .code-block-copy:hover {
+    color: oklch(0.965 0.003 264);
 }
 .rich-content blockquote {
     border-left: 3px solid var(--line-2);
