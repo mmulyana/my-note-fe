@@ -356,6 +356,10 @@ textarea {
 .rich-card-preview {
     font-size: var(--card-preview-font-size);
 }
+/* note: uploaded images already show as the card cover, so the text preview hides them */
+.rich-card-preview img[data-attachment-id] {
+    display: none;
+}
 /* note: mobile editor text size; breakpoint must match useIsMobile() in use-is-mobile.ts */
 @media (max-width: 767px) {
     .rich-content:not(.rich-readonly) {

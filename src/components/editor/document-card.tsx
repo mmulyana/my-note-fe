@@ -83,8 +83,6 @@ export function DocumentCard({ doc }: DocumentCardProps) {
         <div
           inert={Boolean(isSecret)}
           className={cn(
-            // note: uploaded images already show as the cover, so hide them in the text preview
-            "[&_img[data-attachment-id]]:hidden",
             "rich-content rich-readonly rich-card-preview flex-1 min-h-0 px-3 pt-1.5 pb-1 overflow-hidden mask-[linear-gradient(to_bottom,black_78%,transparent)] select-none",
             "-mb-3.5",
             isSecret && "pointer-events-none",
