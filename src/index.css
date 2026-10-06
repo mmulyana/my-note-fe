@@ -763,6 +763,7 @@ textarea {
     /* note: width comes from the node's inline style; a blanket 100% breaks natural sizing */
     height: 100%;
     margin: 0;
+    border: none;
 }
 .rich-image-settings-btn {
     position: absolute;
@@ -791,7 +792,7 @@ textarea {
     max-height: 60%;
     transform: translateY(-50%);
     border-radius: 5px;
-    border: 1px solid var(--line-2);
+    border: none;
     background: color-mix(in oklch, var(--surface) 85%, transparent);
     cursor: ew-resize;
     touch-action: none;
