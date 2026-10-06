@@ -173,7 +173,7 @@ function NumberField({
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="flex h-8 w-18 shrink-0 items-center text-[11px] font-medium text-ink-3">
+      <span className="flex h-8 w-18 shrink-0 items-center text-[13px] font-medium text-ink-3">
         {label}
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">{children}</div>
