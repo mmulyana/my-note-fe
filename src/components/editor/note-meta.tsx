@@ -17,7 +17,7 @@ export function NoteMeta({ updatedAt, pinned, archived, floating }: NoteMetaProp
       className={cn(
         "inline-flex h-5 shrink-0 items-center gap-1.5 rounded-full px-2 pl-1 text-[11px] font-medium tabular-nums",
         floating
-          ? "absolute top-2 right-2 z-5 border border-white/15 bg-black/65 text-white shadow-sm backdrop-blur-sm"
+          ? "absolute top-2 right-2 z-5 border border-line bg-surface text-ink-2 shadow-sm"
           : "w-fit self-start md:self-auto bg-surface-2 text-ink-3",
       )}
     >
