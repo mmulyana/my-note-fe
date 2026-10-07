@@ -1,7 +1,6 @@
 import { IconCheck, IconCopy } from "@tabler/icons-react";
 import { useState } from "react";
 import { CODE_LANGUAGES } from "@/lib/prism";
-import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
