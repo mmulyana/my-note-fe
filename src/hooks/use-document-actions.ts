@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useStore } from "jotai";
 import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   editingIdAtom,
   editingDocAtom,
@@ -37,6 +37,7 @@ export function useDocumentActions() {
   const store = useStore();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const isMobile = useIsMobile();
 
   const resetEditing = useCallback(() => {
@@ -51,8 +52,10 @@ export function useDocumentActions() {
     (content: string) => {
       const id = newId();
       const { preview, todoSummary } = deriveListFields(content);
+      const folderId = pathname.match(/^\/folder\/([^/]+)/)?.[1] ?? null;
       store.set(hasChangedAtom, false);
       store.set(isNewNoteAtom, true);
+      store.set(editingFolderIdAtom, folderId);
       store.set(editingDocAtom, {
         id,
         content,
@@ -60,11 +63,12 @@ export function useDocumentActions() {
         todoSummary,
         updatedAt: Date.now(),
         labels: [],
+        folderId,
       });
       store.set(editingIdAtom, id);
       if (isMobile) navigate(`/note/${id}`);
     },
-    [store, isMobile, navigate],
+    [store, isMobile, navigate, pathname],
   );
 
   const openNew = useCallback(() => openNewWith(""), [openNewWith]);

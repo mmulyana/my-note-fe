@@ -54,18 +54,16 @@ export function DocumentCard({ doc }: DocumentCardProps) {
         </div>
       )}
 
-      {doc.cover && (
-        <NoteCover
-          src={assetUrl(doc.cover) ?? ""}
-          title={textTitle ? doc.title : undefined}
-          style={doc.coverStyle}
-          className={isOverlay ? "absolute inset-0" : undefined}
-        />
-      )}
-
       {!isOverlay && !hasCover && !doc.folder && !doc.pinned && <div className="pt-3" />}
       {!isOverlay && (doc.folder || doc.pinned) && (
-        <div className="pt-3 px-3 text-xs text-ink-2/50 flex items-center gap-1.5 flex-wrap">
+        <div
+          className={cn(
+            "text-xs text-ink-2/50 flex items-center gap-1.5 flex-wrap",
+            hasCover
+              ? "absolute top-2 left-2 z-5 rounded-[7.5px] bg-surface shadow-sm px-2 py-0.5"
+              : "pt-3 px-3",
+          )}
+        >
           {doc.folder && (
             <span className="text-nowrap inline-flex items-center gap-1 rounded-[8px] text-xs text-ink-2">
               <FolderIcon className="size-3" />
@@ -77,14 +75,21 @@ export function DocumentCard({ doc }: DocumentCardProps) {
           )}
         </div>
       )}
+
+      {doc.cover && (
+        <NoteCover
+          src={assetUrl(doc.cover) ?? ""}
+          title={textTitle ? doc.title : undefined}
+          style={doc.coverStyle}
+          className={isOverlay ? "absolute inset-0" : undefined}
+        />
+      )}
       {isOverlay && meta}
 
       {hidePreview ? null : doc.preview ? (
         <div
           inert={Boolean(isSecret)}
           className={cn(
-            // note: uploaded images already show as the cover, so hide them in the text preview
-            "[&_img[data-attachment-id]]:hidden",
             "rich-content rich-readonly rich-card-preview flex-1 min-h-0 px-3 pt-1.5 pb-1 overflow-hidden mask-[linear-gradient(to_bottom,black_78%,transparent)] select-none",
             "-mb-3.5",
             isSecret && "pointer-events-none",

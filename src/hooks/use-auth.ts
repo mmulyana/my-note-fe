@@ -4,6 +4,7 @@ import { authTokenAtom } from '@/store/auth';
 import { profileAtom } from '@/store/profile';
 import { clearToken, getRefreshToken, setAuthTokens } from '@/lib/auth';
 import { request } from '@/lib/api-client';
+import { queryClient } from '@/lib/query-client';
 import { urls } from '@/lib/urls';
 
 export function useAuth() {
@@ -33,6 +34,7 @@ export function useAuth() {
     clearToken();
     setTokenState(null);
     setProfile(null);
+    queryClient.clear();
   }, [setTokenState, setProfile]);
 
   return { token, isAuthenticated: !!token, login, logout };

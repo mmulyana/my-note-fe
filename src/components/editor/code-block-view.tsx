@@ -16,6 +16,7 @@ export function CodeBlockView({
   getPos,
 }: ReactNodeViewProps) {
   const language: string = node.attrs.language ?? "";
+  const codeTheme: string = node.attrs.codeTheme ?? "light";
 
   const getCode = (): string => {
     if (typeof getPos === "function") {
@@ -29,10 +30,12 @@ export function CodeBlockView({
   };
 
   return (
-    <NodeViewWrapper as="div" className="code-block">
+    <NodeViewWrapper as="div" className="code-block" data-code-theme={codeTheme}>
       <CodeBlockToolbar
         language={language}
         onLanguageChange={(lang) => updateAttributes({ language: lang })}
+        codeTheme={codeTheme}
+        onThemeChange={(theme) => updateAttributes({ codeTheme: theme })}
         getCode={getCode}
       />
       <pre className="code-hl">
