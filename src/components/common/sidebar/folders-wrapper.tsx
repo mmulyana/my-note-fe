@@ -162,8 +162,18 @@ function ListItem({ data, index, count, open, onEdit }: ListProps) {
           to={`/folder/${data.id}`}
           className="flex items-center gap-2 flex-1 min-w-0 h-full"
         >
-          <div className="w-4.5 h-4.5 flex-none flex justify-center items-center">
-            <FolderIcon />
+          <div className="w-4.5 h-4.5 flex-none flex justify-center items-center group">
+            <div className="group-hover:hidden w-4.5 h-4.5 flex-none flex justify-center items-center">
+              <FolderIcon />
+            </div>
+            <button
+              ref={handleRef}
+              type="button"
+              className="group-hover:grid hidden w-4.5 h-4.5 place-items-center text-ink-3 hover:bg-surface-hi hover:text-ink cursor-grab touch-none transition-[color,background] duration-120"
+              title="Reorder"
+            >
+              <IconGripVertical size={14} />
+            </button>
           </div>
           {open && (
             <span className="min-w-0 whitespace-nowrap overflow-hidden text-ellipsis">
@@ -222,14 +232,6 @@ function ListItem({ data, index, count, open, onEdit }: ListProps) {
               </>
             ) : (
               <>
-                <button
-                  ref={handleRef}
-                  type="button"
-                  className="w-5 h-5 grid place-items-center rounded-[4px] text-ink-3 hover:bg-surface-hi hover:text-ink cursor-grab touch-none transition-[color,background] duration-120"
-                  title="Reorder"
-                >
-                  <IconGripVertical size={14} />
-                </button>
                 <button
                   type="button"
                   className="w-5 h-5 grid place-items-center rounded-[4px] text-ink-3 hover:bg-surface-hi hover:text-ink cursor-pointer transition-[color,background] duration-120"
