@@ -1,7 +1,11 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { NavLink, useMatch } from "react-router-dom";
 import { useState } from "react";
+import { DragDropProvider } from "@dnd-kit/react";
+import { useSortable } from "@dnd-kit/react/sortable";
+import { move } from "@dnd-kit/helpers";
 import {
+  IconGripVertical,
   IconPencil,
   IconCheck,
   IconPlus,
@@ -50,6 +54,21 @@ export default function FoldersWrapper({ sidebar }: Props) {
     queryClient.invalidateQueries({ queryKey: [query.Notes] });
   };
 
+  const handleReorder = async (
+    id: string,
+    prevId: string | null,
+    nextId: string | null,
+  ) => {
+    try {
+      await request(`${urls.Folder}/${id}/position`, {
+        method: "PATCH",
+        body: { prevId, nextId },
+      });
+    } finally {
+      queryClient.invalidateQueries({ queryKey: ["folders"] });
+    }
+  };
+
   if (!sidebar) return null;
 
   return (
@@ -57,17 +76,44 @@ export default function FoldersWrapper({ sidebar }: Props) {
       <div className="flex flex-col gap-0.5 mt-5">
         <div className="text-sm text-ink-3 px-2 font-medium">Folders</div>
         <div className="h-fit max-h-96 overflow-y-auto">
-          {data?.data?.map((data) => {
-            return (
-              <ListItem
-                key={data.id}
-                data={data}
-                count={counts?.data?.folders?.[data.id] ?? 0}
-                open={sidebar}
-                onEdit={handleEditFolder}
-              />
-            );
-          })}
+          <DragDropProvider
+            onDragOver={(event) => {
+              queryClient.setQueryData(
+                ["folders"],
+                (prev: IApi<any[]> | undefined) =>
+                  prev ? { ...prev, data: move(prev.data, event) } : prev,
+              );
+            }}
+            onDragEnd={(event) => {
+              const activeId = event.operation.source?.id;
+              if (event.canceled || activeId == null) {
+                queryClient.invalidateQueries({ queryKey: ["folders"] });
+                return;
+              }
+              const list =
+                queryClient.getQueryData<IApi<any[]>>(["folders"])?.data ?? [];
+              const i = list.findIndex((f) => f.id === activeId);
+              if (i < 0) return;
+              handleReorder(
+                String(activeId),
+                list[i - 1]?.id ?? null,
+                list[i + 1]?.id ?? null,
+              );
+            }}
+          >
+            {data?.data?.map((data, index) => {
+              return (
+                <ListItem
+                  key={data.id}
+                  data={data}
+                  index={index}
+                  count={counts?.data?.folders?.[data.id] ?? 0}
+                  open={sidebar}
+                  onEdit={handleEditFolder}
+                />
+              );
+            })}
+          </DragDropProvider>
         </div>
         <NewFolder />
       </div>
@@ -77,12 +123,18 @@ export default function FoldersWrapper({ sidebar }: Props) {
 
 type ListProps = {
   data: any;
+  index: number;
   count: number;
   open: boolean;
   onEdit: (id: string, name: string) => void;
 };
 
-function ListItem({ data, count, open, onEdit }: ListProps) {
+function ListItem({ data, index, count, open, onEdit }: ListProps) {
+  const { ref, handleRef, isDragging } = useSortable({
+    id: data.id,
+    index,
+    transition: { duration: 250, easing: "cubic-bezier(0.25, 1, 0.5, 1)" },
+  });
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(data.name);
   const isActive = !!useMatch({ path: `/folder/${data.id}`, end: true });
@@ -96,7 +148,9 @@ function ListItem({ data, count, open, onEdit }: ListProps) {
 
   return (
     <div
+      ref={ref}
       className={cn(
+        isDragging && "opacity-60",
         "flex items-center h-8 px-2 rounded-full text-sm font-medium transition-[background,color] duration-150 group",
         open ? "gap-2" : "justify-center gap-0",
         isActive ? "text-ink font-semibold bg-line/60" : "text-ink-3",
@@ -168,6 +222,14 @@ function ListItem({ data, count, open, onEdit }: ListProps) {
               </>
             ) : (
               <>
+                <button
+                  ref={handleRef}
+                  type="button"
+                  className="w-5 h-5 grid place-items-center rounded-[4px] text-ink-3 hover:bg-surface-hi hover:text-ink cursor-grab touch-none transition-[color,background] duration-120"
+                  title="Reorder"
+                >
+                  <IconGripVertical size={14} />
+                </button>
                 <button
                   type="button"
                   className="w-5 h-5 grid place-items-center rounded-[4px] text-ink-3 hover:bg-surface-hi hover:text-ink cursor-pointer transition-[color,background] duration-120"
