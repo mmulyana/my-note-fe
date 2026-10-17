@@ -10,7 +10,7 @@ import {
 } from "react";
 import { atom, useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { DragHandle } from "@tiptap/extension-drag-handle-react";
-import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
+import type { Node as ProseMirrorNode, ResolvedPos } from "@tiptap/pm/model";
 import {
   isNewNoteAtom,
   editingFolderIdAtom,
@@ -26,6 +26,7 @@ import { useIsMobile } from "@/hooks/use-is-mobile";
 import { LabelSuggestMenu } from "@/components/editor/label-suggest-menu";
 import { AiBubbleMenu } from "@/components/editor/ai-bubble-menu";
 import { AiLoader } from "@/components/editor/ai-loader";
+import { TableMenu } from "@/components/editor/table-menu";
 import {
   SlashMenu,
   type SlashActionId,
@@ -49,6 +50,18 @@ const STATUS_TEXT: Record<SaveStatus, string> = {
   saving: "Saving…",
   saved: "Saved",
 };
+
+const TABLE_CONTENT_RULES = [
+  {
+    id: "excludeTableContent",
+    evaluate: ({ $pos, depth }: { $pos: ResolvedPos; depth: number }) => {
+      for (let d = depth - 1; d > 0; d--) {
+        if ($pos.node(d).type.name === "table") return 1000;
+      }
+      return 0;
+    },
+  },
+];
 
 export interface NoteEditorApi {
   doc: DocItem;
@@ -326,6 +339,7 @@ export function EditorSession({ doc }: { doc: DocItem }) {
           busy={ai.status === "streaming"}
         />
       )}
+      {editor && <TableMenu editor={editor} />}
       {editor && (
         <SlashMenu
           editor={editor}
@@ -370,7 +384,7 @@ export function EditorSession({ doc }: { doc: DocItem }) {
           editor={editor}
           // edge detection deducts 500×depth near a node's top/left edge,
           // which excludes one-line task items (depth 2) entirely
-          nested={{ edgeDetection: "none" }}
+          nested={{ edgeDetection: "none", rules: TABLE_CONTENT_RULES }}
           onNodeChange={handleDragNodeChange}
         >
           <div ref={gripRef} className="drag-handle-btn" title="Drag to move">
