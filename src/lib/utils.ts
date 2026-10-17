@@ -37,6 +37,8 @@ export function cn(...inputs: ClassValue[]) {
 export function toDocItem(n: Notes): DocItem {
   return {
     id: n.id,
+    parentId: n.parentId ?? null,
+    childCount: n.childCount ?? 0,
     title: n.title,
     content: "",
     preview: n.preview,

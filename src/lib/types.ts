@@ -7,8 +7,12 @@ export type NoteTodoItem = {
   priority: TodoPriority;
 };
 
+export type NoteRef = { id: string; title: string };
+
 export type Notes = {
   id: string;
+  parentId?: string | null;
+  childCount?: number;
   title: string;
   preview: string;
   cover?: string;
@@ -212,6 +216,10 @@ export interface DocumentPayload {
 
 export interface DocItem {
   id: string;
+  parentId?: string | null;
+  parent?: NoteRef | null;
+  children?: DocItem[];
+  childCount?: number;
   title?: string;
   content: string;
   preview: string;
@@ -247,6 +255,9 @@ export interface FeedbackResponse {
 
 export interface NoteDetail {
   id: string;
+  parentId?: string | null;
+  parent?: NoteRef | null;
+  children?: Notes[];
   title: string;
   content: string;
   todos: unknown[];
