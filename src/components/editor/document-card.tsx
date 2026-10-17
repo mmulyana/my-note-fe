@@ -113,7 +113,7 @@ export function DocumentCard({ doc, onOpen }: DocumentCardProps) {
       {!isOverlay && (
         <div
           className={cn(
-            "relative shrink-0 flex items-center justify-between gap-2 px-3 pb-2.5 pt-1.5 text-xs text-ink-3 bg-linear-to-b from-transparent via-surface via-60% to-surface",
+            "relative shrink-0 flex items-center justify-between gap-2 px-3 pb-3 pt-1.5 text-xs text-ink-3 bg-linear-to-b from-transparent via-surface via-60% to-surface",
             // note: full has no preview text, so the title already leaves the gap
             isFull && "pt-0",
           )}
