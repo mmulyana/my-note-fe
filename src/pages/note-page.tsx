@@ -11,6 +11,7 @@ import { EditorBody } from "@/components/editor";
 import { useNoteEditor } from "@/components/editor/session";
 import { FolderPicker } from "@/components/editor/folder-picker";
 import { NoteDropdown } from "@/components/editor/note-dropdown";
+import { ParentCrumb, SubNotesList } from "@/components/editor/sub-notes";
 import { LabelsIcon } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
@@ -105,6 +106,7 @@ export default function NotePage() {
           <FolderPicker
             selectedId={note.folderId}
             onChange={note.onFolderChange}
+            disabled={Boolean(note.doc.parentId)}
           />
           {pinButton("max-md:hidden")}
         </div>
@@ -155,6 +157,17 @@ export default function NotePage() {
               {note.updatedText}
             </span>
             <NoteDropdown
+              moveTo={
+                note.isNew
+                  ? undefined
+                  : {
+                      noteId: note.doc.id,
+                      currentParentId: note.doc.parentId,
+                      onMove: note.moveToParent,
+                    }
+              }
+              folderLocked={Boolean(note.doc.parentId)}
+              onAddSubNote={note.isNew ? undefined : note.addChild}
               onDelete={handleDelete}
               onArchive={note.onArchive}
               onSecret={note.onSecret}
@@ -175,7 +188,9 @@ export default function NotePage() {
           </aside>
           <div className="pb-3 max-md:hidden min-[1120px]:hidden">{sideMeta}</div>
           <div className="flex flex-col gap-2.5 pb-4">
+            <ParentCrumb />
             <EditorBody />
+            <SubNotesList inline />
           </div>
         </div>
       </div>

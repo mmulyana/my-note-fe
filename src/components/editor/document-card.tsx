@@ -10,9 +10,10 @@ import { cn } from "@/lib/utils";
 
 interface DocumentCardProps {
   doc: DocItem;
+  onOpen?: (id: string) => void;
 }
 
-export function DocumentCard({ doc }: DocumentCardProps) {
+export function DocumentCard({ doc, onOpen }: DocumentCardProps) {
   const { openNote } = useDocumentActions();
 
   const { total, done } = doc.todoSummary;
@@ -32,11 +33,13 @@ export function DocumentCard({ doc }: DocumentCardProps) {
       updatedAt={doc.updatedAt}
       pinned={isOverlay && doc.pinned}
       archived={doc.archived}
+      isChild={Boolean(doc.parentId)}
+      childCount={doc.childCount}
       floating={isOverlay}
     />
   );
 
-  const handleOpen = () => openNote(doc.id);
+  const handleOpen = () => (onOpen ?? openNote)(doc.id);
 
   return (
     <article

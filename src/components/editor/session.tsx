@@ -11,9 +11,15 @@ import {
 import { atom, useAtom, useAtomValue, useSetAtom, useStore } from "jotai";
 import { DragHandle } from "@tiptap/extension-drag-handle-react";
 import type { Node as ProseMirrorNode } from "@tiptap/pm/model";
-import { isNewNoteAtom, editingFolderIdAtom } from "@/store/document";
+import {
+  isNewNoteAtom,
+  editingFolderIdAtom,
+  editingDocAtom,
+  noteSwitchingAtom,
+} from "@/store/document";
 import { useAutoSave, type SaveStatus } from "@/hooks/use-autosave";
 import { useDocumentActions } from "@/hooks/use-document-actions";
+import { useNoteActions } from "@/hooks/use-note-actions";
 import { useDocumentEditor } from "@/hooks/use-editor";
 import { useAiEdit } from "@/hooks/use-ai-edit";
 import { useIsMobile } from "@/hooks/use-is-mobile";
@@ -52,6 +58,11 @@ export interface NoteEditorApi {
   updatedText: string;
   menus: ReactNode;
   onFolderChange: (id: string | null) => void;
+  isNew: boolean;
+  openRelated: (id: string) => Promise<void>;
+  switching: boolean;
+  addChild: () => Promise<void>;
+  moveToParent: (target: MoveTarget | null) => Promise<void>;
   onPinned: () => void;
   onArchive: () => void;
   onSecret: () => void;
@@ -61,6 +72,8 @@ export interface NoteEditorApi {
   onDelete: () => void;
   close: () => void;
 }
+
+export type MoveTarget = Pick<DocItem, "id" | "title" | "folder" | "secret" | "archived">;
 
 export const noteEditorAtom = atom<NoteEditorApi | null>(null);
 
@@ -130,8 +143,14 @@ export function EditorSession({ doc }: { doc: DocItem }) {
     pinnedDoc,
     secretDoc,
     coverStyleDoc,
+    openNewChild,
+    openRelated: navigateTo,
   } = useDocumentActions();
+  const { setParent } = useNoteActions();
   const [folderId, setFolderId] = useAtom(editingFolderIdAtom);
+  const setDoc = useSetAtom(editingDocAtom);
+  const isNew = useAtomValue(isNewNoteAtom);
+  const switching = useAtomValue(noteSwitchingAtom) !== null;
   const publish = useSetAtom(noteEditorAtom);
   const isMobile = useIsMobile();
 
@@ -171,9 +190,7 @@ export function EditorSession({ doc }: { doc: DocItem }) {
   const { status, triggerSave, flushPayload } = useAutoSave({
     editor,
     startEmpty: startedNewRef.current,
-    onSave: async (payload, overrideFolderId) => {
-      autoSave(payload, overrideFolderId);
-    },
+    onSave: (payload, overrideFolderId) => autoSave(payload, overrideFolderId),
   });
 
   // note: doc atom isnt refreshed by autosave, so track the last save locally
@@ -211,10 +228,64 @@ export function EditorSession({ doc }: { doc: DocItem }) {
 
   const onFolderChange = useCallback(
     (id: string | null) => {
+      if (doc.parentId) return;
       setFolderId(id);
       triggerSave(id);
     },
-    [setFolderId, triggerSave],
+    [doc.parentId, setFolderId, triggerSave],
+  );
+
+  const saveBeforeLeaving = useCallback(async () => {
+    if (status !== "dirty") return;
+    const payload = flushPayload();
+    if (payload) await autoSave(payload);
+  }, [status, flushPayload, autoSave]);
+
+  const openRelated = useCallback(
+    async (id: string) => {
+      await saveBeforeLeaving();
+      await navigateTo(id, editor ? editor.getHTML() : doc.content);
+    },
+    [saveBeforeLeaving, navigateTo, editor, doc.content],
+  );
+
+  const addChild = useCallback(async () => {
+    await saveBeforeLeaving();
+    const parent = {
+      id: doc.id,
+      title: doc.title,
+      folderId,
+      folder: doc.folder,
+      secret: doc.secret,
+      archived: doc.archived,
+    };
+    openNewChild(parent);
+  }, [saveBeforeLeaving, openNewChild, doc, folderId]);
+
+  const moveToParent = useCallback(
+    async (target: MoveTarget | null) => {
+      await saveBeforeLeaving();
+      await setParent(doc.id, target?.id ?? null);
+      setDoc((prev) =>
+        prev
+          ? {
+              ...prev,
+              parentId: target?.id ?? null,
+              parent: target ? { id: target.id, title: target.title ?? "" } : null,
+              ...(target
+                ? {
+                    folder: target.folder ?? null,
+                    folderId: target.folder?.id ?? null,
+                    secret: target.secret,
+                    archived: target.archived,
+                  }
+                : {}),
+            }
+          : prev,
+      );
+      if (target) setFolderId(target.folder?.id ?? null);
+    },
+    [saveBeforeLeaving, setParent, doc.id, setDoc, setFolderId],
   );
 
   const handleSlashPick = (id: SlashActionId, anchor: SlashAnchor) => {
@@ -319,6 +390,11 @@ export function EditorSession({ doc }: { doc: DocItem }) {
       updatedText,
       menus,
       onFolderChange,
+      isNew,
+      openRelated,
+      switching,
+      addChild,
+      moveToParent,
       onPinned,
       onArchive,
       onSecret,
