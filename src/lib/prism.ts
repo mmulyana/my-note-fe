@@ -106,4 +106,5 @@ export const CODE_LANGUAGES = [
   "markdown",
   "css",
   "html",
+  "text",
 ] as const;

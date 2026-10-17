@@ -9,6 +9,7 @@ import { CustomCodeBlock } from "../components/editor/extensions/code-block";
 import { CustomImage } from "../components/editor/extensions/image";
 import { LinkCard } from "../components/editor/extensions/link-card";
 import { LabelTag } from "../components/editor/extensions/label-tag";
+import { MarkdownPaste } from "../components/editor/extensions/markdown-paste";
 import {
   SlashCommand,
   type SlashBridge,
@@ -39,6 +40,7 @@ export function useDocumentEditor(
       LinkCard,
       LabelTag.configure({ bridge: labelBridge }),
       Markdown,
+      MarkdownPaste,
       SlashCommand.configure({ bridge: slashBridge }),
       Placeholder.configure({
         placeholder: "Write something, or type / for commands",
