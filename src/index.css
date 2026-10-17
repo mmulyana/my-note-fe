@@ -356,6 +356,16 @@ textarea {
 .rich-card-preview {
     font-size: var(--card-preview-font-size);
 }
+.rich-card-preview table {
+    min-width: 0;
+    font-size: 0.78em;
+    line-height: 1.35;
+}
+.rich-card-preview th,
+.rich-card-preview td {
+    padding: 2px 5px;
+    overflow-wrap: anywhere;
+}
 /* note: uploaded images already show as the card cover, so the text preview hides them */
 .rich-card-preview img[data-attachment-id] {
     display: none;
@@ -847,6 +857,45 @@ textarea {
 .rich-content pre[data-code-theme="dark"] {
     background: oklch(0.195 0.006 264);
     color: oklch(0.965 0.003 264);
+}
+
+.rich-content .tableWrapper {
+    overflow-x: auto;
+    margin: 0.5em 0;
+}
+.rich-content table {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
+    min-width: 360px;
+}
+.rich-content th,
+.rich-content td {
+    position: relative;
+    border: 1px solid var(--line-2);
+    padding: 6px 10px;
+    vertical-align: top;
+    text-align: left;
+}
+.rich-content th {
+    background: var(--surface-hi);
+    font-weight: 600;
+}
+.rich-content th,
+.rich-content td {
+    -webkit-touch-callout: none;
+}
+.rich-content th > p,
+.rich-content td > p {
+    margin: 0;
+}
+.rich-content .selectedCell::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    opacity: 0.12;
+    pointer-events: none;
 }
 
 /* note: code block frame with a language picker + copy bar on top */
