@@ -1,6 +1,8 @@
 import type { DocItem } from "@/lib/types";
 import { atom } from "jotai";
 
+export const noteViewAtom = atom<"note" | "children">("note");
+
 /** The ID of the note currently being edited (null = no note open) */
 export const editingIdAtom = atom<string | null>(null);
 
@@ -12,6 +14,10 @@ export const hasChangedAtom = atom(false);
 
 /** Whether this is a brand-new note (not yet persisted to the backend) */
 export const isNewNoteAtom = atom(false);
+
+export const noteModalOpenAtom = atom(false);
+
+export const noteSwitchingAtom = atom<string | null>(null);
 
 /** Folder ID currently selected for the open note */
 export const editingFolderIdAtom = atom<string | null>(null);

@@ -8,9 +8,12 @@ import {
   hasChangedAtom,
   isNewNoteAtom,
   editingFolderIdAtom,
+  noteModalOpenAtom,
+  noteSwitchingAtom,
+  noteViewAtom,
 } from "@/store/document";
-import type { CoverStyle, DocumentPayload, NoteDetail, NoteFlags } from "@/lib/types";
-import { newId, deriveListFields } from "@/lib/utils";
+import type { CoverStyle, DocItem, DocumentPayload, NoteDetail, NoteFlags } from "@/lib/types";
+import { newId, deriveListFields, toDocItem } from "@/lib/utils";
 import { request } from "@/lib/api-client";
 import type { IApi } from "@/lib/types";
 import { useIsMobile } from "@/hooks/use-is-mobile";
@@ -46,6 +49,9 @@ export function useDocumentActions() {
     store.set(hasChangedAtom, false);
     store.set(isNewNoteAtom, false);
     store.set(editingFolderIdAtom, null);
+    store.set(noteModalOpenAtom, false);
+    store.set(noteSwitchingAtom, null);
+    store.set(noteViewAtom, "note");
   }, [store]);
 
   const openNewWith = useCallback(
@@ -66,6 +72,7 @@ export function useDocumentActions() {
         folderId,
       });
       store.set(editingIdAtom, id);
+      store.set(noteModalOpenAtom, true);
       if (isMobile) navigate(`/note/${id}`);
     },
     [store, isMobile, navigate, pathname],
@@ -73,35 +80,84 @@ export function useDocumentActions() {
 
   const openNew = useCallback(() => openNewWith(""), [openNewWith]);
 
-  const openNoteData = useCallback(
-    async (id: string) => {
-      try {
-        const detail = await request<IApi<NoteDetail>>(urls.Note(id));
-        store.set(hasChangedAtom, false);
-        store.set(editingFolderIdAtom, detail.data.folderId ?? null);
-        store.set(editingDocAtom, {
-          id: detail.data.id,
-          content: detail.data.content,
-          preview: "",
-          todoSummary: { total: 0, done: 0 },
-          labels: (detail.data.labels ?? []).map(({ id, name }) => ({
-            id,
-            name,
-          })),
-          folderId: detail.data.folderId ?? null,
-          updatedAt: new Date(detail.data.updatedAt).getTime(),
-          folder: detail.data.folder,
-          secret: detail.data.secret,
-          archived: detail.data.archived,
-          pinned: detail.data.pinned,
-          coverStyle: detail.data.coverStyle,
-        });
-        store.set(editingIdAtom, id);
-      } catch (err) {
-        console.error("Failed to fetch note detail:", err);
-      }
+  const openNewChild = useCallback(
+    (parent: Pick<DocItem, "id" | "title" | "folderId" | "folder" | "secret" | "archived">) => {
+      const id = newId();
+      const folderId = parent.folderId ?? null;
+      store.set(hasChangedAtom, false);
+      store.set(isNewNoteAtom, true);
+      store.set(editingFolderIdAtom, folderId);
+      store.set(editingDocAtom, {
+        id,
+        content: "",
+        preview: "",
+        todoSummary: { total: 0, done: 0 },
+        updatedAt: Date.now(),
+        labels: [],
+        folderId,
+        folder: parent.folder,
+        secret: parent.secret,
+        archived: parent.archived,
+        parentId: parent.id,
+        parent: { id: parent.id, title: parent.title ?? "" },
+      });
+      store.set(editingIdAtom, id);
+      store.set(noteViewAtom, "note");
+      store.set(noteModalOpenAtom, true);
+      if (isMobile || pathname.startsWith("/note/")) navigate(`/note/${id}`);
+    },
+    [store, isMobile, navigate, pathname],
+  );
+
+  const fetchNoteDoc = useCallback(async (id: string): Promise<DocItem | null> => {
+    try {
+      const detail = await request<IApi<NoteDetail>>(urls.Note(id));
+      return {
+        id: detail.data.id,
+        parentId: detail.data.parentId ?? null,
+        parent: detail.data.parent ?? null,
+        title: detail.data.title,
+        children: (detail.data.children ?? []).map(toDocItem),
+        content: detail.data.content,
+        preview: "",
+        todoSummary: { total: 0, done: 0 },
+        labels: (detail.data.labels ?? []).map(({ id, name }) => ({
+          id,
+          name,
+        })),
+        folderId: detail.data.folderId ?? null,
+        updatedAt: new Date(detail.data.updatedAt).getTime(),
+        folder: detail.data.folder,
+        secret: detail.data.secret,
+        archived: detail.data.archived,
+        pinned: detail.data.pinned,
+        coverStyle: detail.data.coverStyle,
+      };
+    } catch (err) {
+      console.error("Failed to fetch note detail:", err);
+      return null;
+    }
+  }, []);
+
+  const showNoteDoc = useCallback(
+    (doc: DocItem) => {
+      store.set(hasChangedAtom, false);
+      store.set(isNewNoteAtom, false);
+      store.set(editingFolderIdAtom, doc.folderId ?? null);
+      store.set(editingDocAtom, doc);
+      store.set(editingIdAtom, doc.id);
+      store.set(noteViewAtom, "note");
+      store.set(noteModalOpenAtom, true);
     },
     [store],
+  );
+
+  const openNoteData = useCallback(
+    async (id: string) => {
+      const doc = await fetchNoteDoc(id);
+      if (doc) showNoteDoc(doc);
+    },
+    [fetchNoteDoc, showNoteDoc],
   );
 
   const openNote = useCallback(
@@ -196,7 +252,11 @@ export function useDocumentActions() {
         if (isNewNote) {
           await request<IApi<CreateNoteResponse>>(urls.Notes, {
             method: "POST",
-            body: { id: editingId, content: payload.content },
+            body: {
+              id: editingId,
+              content: payload.content,
+              parentId: store.get(editingDocAtom)?.parentId ?? undefined,
+            },
           });
           store.set(isNewNoteAtom, false);
         }
@@ -217,13 +277,14 @@ export function useDocumentActions() {
   );
 
   const closeEditor = useCallback(
-    async (finalContent: string) => {
+    async (finalContent: string, { reset = true }: { reset?: boolean } = {}) => {
       // note: snapshot before the reset, the final PATCH still needs these
       const id = store.get(editingIdAtom);
       const changed = store.get(hasChangedAtom);
       const wasNew = store.get(isNewNoteAtom);
       const folderId = store.get(editingFolderIdAtom);
-      resetEditing();
+      const hasChildren = (store.get(editingDocAtom)?.children?.length ?? 0) > 0;
+      if (reset) resetEditing();
 
       if (!id) return;
 
@@ -231,7 +292,7 @@ export function useDocumentActions() {
         return;
       }
 
-      if (isEmptyHtml(finalContent)) {
+      if (isEmptyHtml(finalContent) && !hasChildren) {
         if (!wasNew) {
           try {
             await request(urls.Note(id), { method: "DELETE" });
@@ -257,6 +318,24 @@ export function useDocumentActions() {
       }
     },
     [store, resetEditing, queryClient],
+  );
+
+  const openRelated = useCallback(
+    async (id: string, finalContent: string) => {
+      if (isMobile || pathname.startsWith("/note/")) {
+        await closeEditor(finalContent);
+        navigate(`/note/${id}`);
+        return;
+      }
+      store.set(noteSwitchingAtom, id);
+      const next = await fetchNoteDoc(id);
+      if (next) {
+        await closeEditor(finalContent, { reset: false });
+        showNoteDoc(next);
+      }
+      store.set(noteSwitchingAtom, null);
+    },
+    [isMobile, pathname, navigate, store, fetchNoteDoc, closeEditor, showNoteDoc],
   );
 
   const archiveDoc = useCallback(
@@ -299,6 +378,8 @@ export function useDocumentActions() {
   return {
     openNew,
     openNewWith,
+    openNewChild,
+    openRelated,
     openNote,
     openNoteData,
     autoSave,
