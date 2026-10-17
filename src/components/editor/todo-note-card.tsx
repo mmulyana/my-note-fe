@@ -1,5 +1,6 @@
 import {
   IconArrowUpRight,
+  IconCornerLeftUp,
   IconEye,
   IconEyeOff,
   IconPinFilled,
@@ -59,12 +60,23 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
 
       <div className="pt-3 px-3 text-xs text-ink-2/50 flex flex-col-reverse md:flex-row justify-between md:items-center">
         <div>
-          {doc.folder && (
+          {(doc.folder || doc.parentId) && (
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-nowrap inline-flex items-center gap-1 rounded-[8px] text-xs text-ink-2">
-                <FolderIcon className="size-3" />
-                {doc.folder.name}
-              </span>
+              {doc.folder && (
+                <span className="text-nowrap inline-flex items-center gap-1 rounded-[8px] text-xs text-ink-2">
+                  <FolderIcon className="size-3" />
+                  {doc.folder.name}
+                </span>
+              )}
+              {doc.parentId && (
+                <span
+                  title="Sub-note"
+                  className="text-nowrap inline-flex items-center gap-1 rounded-[8px] text-xs text-ink-2"
+                >
+                  <IconCornerLeftUp size={12} />
+                  Sub-note
+                </span>
+              )}
             </div>
           )}
         </div>
