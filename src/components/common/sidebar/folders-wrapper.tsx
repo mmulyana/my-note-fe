@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { NavLink, useMatch } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DragDropProvider } from "@dnd-kit/react";
 import { useSortable } from "@dnd-kit/react/sortable";
 import { move } from "@dnd-kit/helpers";
@@ -69,6 +69,12 @@ export default function FoldersWrapper({ sidebar }: Props) {
     }
   };
 
+  // note: rows mounted after the first load are new, so only they animate in; reopening the sidebar resets it
+  const loaded = useRef(false);
+  useEffect(() => {
+    loaded.current = sidebar && Boolean(data);
+  }, [sidebar, data]);
+
   if (!sidebar) return null;
 
   return (
@@ -109,6 +115,7 @@ export default function FoldersWrapper({ sidebar }: Props) {
                   index={index}
                   count={counts?.data?.folders?.[data.id] ?? 0}
                   open={sidebar}
+                  animateIn={loaded.current}
                   onEdit={handleEditFolder}
                 />
               );
@@ -126,15 +133,18 @@ type ListProps = {
   index: number;
   count: number;
   open: boolean;
+  animateIn: boolean;
   onEdit: (id: string, name: string) => void;
 };
 
-function ListItem({ data, index, count, open, onEdit }: ListProps) {
+function ListItem({ data, index, count, open, animateIn, onEdit }: ListProps) {
   const { ref, handleRef, isDragging } = useSortable({
     id: data.id,
     index,
     transition: { duration: 250, easing: "cubic-bezier(0.25, 1, 0.5, 1)" },
   });
+  // note: captured at mount so the class stays put and the animation isn't cut when the parent re-renders
+  const [enter] = useState(animateIn);
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(data.name);
   const isActive = !!useMatch({ path: `/folder/${data.id}`, end: true });
@@ -151,6 +161,7 @@ function ListItem({ data, index, count, open, onEdit }: ListProps) {
       ref={ref}
       className={cn(
         isDragging && "opacity-60",
+        enter && "animate-in fade-in slide-in-from-top-1 duration-200 motion-reduce:slide-in-from-top-0",
         "flex items-center h-8 px-2 rounded-full text-sm font-medium transition-[background,color] duration-150 group",
         open ? "gap-2" : "justify-center gap-0",
         isActive ? "text-ink font-semibold bg-line/60" : "text-ink-3",
