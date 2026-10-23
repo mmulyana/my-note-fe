@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import { noteModalOpenAtom, noteViewAtom } from "@/store/document";
 import { IconArrowLeft, IconMaximize, IconPin, IconPinFilled } from "@tabler/icons-react";
@@ -19,6 +19,7 @@ export function NoteModal() {
   const { pathname } = useLocation();
   const isNotePage = pathname.startsWith("/note/");
   const close = note?.close;
+  const seenList = useRef(false);
 
   useEffect(() => {
     if (!close || isNotePage) return;
@@ -29,16 +30,20 @@ export function NoteModal() {
     return () => document.removeEventListener("keydown", handler);
   }, [close, isNotePage]);
 
-  if (!open || isNotePage) return null;
+  if (listView) seenList.current = true;
+  if (!open || isNotePage) {
+    seenList.current = false;
+    return null;
+  }
 
   return (
     <div
-      className="fixed inset-0 z-50 flex justify-center bg-black/55 backdrop-blur-[3px] overflow-y-auto items-start pt-[max(48px,8vh)] px-4 pb-4"
+      className="fixed inset-0 z-50 flex justify-center bg-black/55 backdrop-blur-[3px] animate-[modal-backdrop-in_0.15s_cubic-bezier(0.23,1,0.32,1)] overflow-y-auto items-start pt-[max(48px,8vh)] px-4 pb-4"
       onMouseDown={note?.close}
     >
       <div className="flex w-full max-w-180 flex-col">
       <div
-        className="relative bg-surface animate-[modal-in_0.18s_cubic-bezier(0.3,0.7,0.4,1)] w-full rounded-[16px] border border-line-2 shadow-card-lg"
+        className="relative bg-surface animate-[modal-in_0.18s_cubic-bezier(0.23,1,0.32,1)] w-full rounded-[16px] border border-line-2 shadow-card-lg"
         onMouseDown={(e) => e.stopPropagation()}
       >
         {note ? (
@@ -118,8 +123,18 @@ export function NoteModal() {
             />
           </div>
         </header>
-        {listView && <SubNotesList />}
-        <div className={cn(listView && "hidden")}>
+        {listView && (
+          <div className="animate-[view-in_0.15s_cubic-bezier(0.23,1,0.32,1)]">
+            <SubNotesList />
+          </div>
+        )}
+        {/* note: the body stays mounted (hidden) to keep the editor alive; display none to block replays the animation, but only once the list has been shown so the first open doesn't double up with modal-in */}
+        <div
+          className={cn(
+            listView && "hidden",
+            !listView && seenList.current && "animate-[view-in_0.15s_cubic-bezier(0.23,1,0.32,1)]",
+          )}
+        >
           {note.doc.parent && (
             <div className="px-3.5 pt-1">
               <ParentCrumb />
