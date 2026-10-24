@@ -253,7 +253,7 @@ export function SlashMenu({
       id="slash-menu"
       role="listbox"
       aria-label="Commands"
-      className="fixed z-60 max-h-64 overflow-y-auto rounded-xl border border-line-2 bg-surface p-1 shadow-card-lg"
+      className="thin-scroll fixed z-60 max-h-64 overflow-y-auto rounded-xl border border-line-2 bg-surface p-1 shadow-card-lg"
       style={{
         left,
         width: MENU_W,

@@ -81,7 +81,7 @@ export default function FoldersWrapper({ sidebar }: Props) {
     <>
       <div className="flex flex-col gap-0.5 mt-5">
         <div className="text-sm text-ink-3 px-2 font-medium">Folders</div>
-        <div className="h-fit max-h-96 overflow-y-auto">
+        <div className="thin-scroll h-fit max-h-56 overflow-y-auto">
           <DragDropProvider
             onDragOver={(event) => {
               queryClient.setQueryData(
@@ -161,7 +161,7 @@ function ListItem({ data, index, count, open, animateIn, onEdit }: ListProps) {
       ref={ref}
       className={cn(
         isDragging && "opacity-60",
-        enter && "animate-in fade-in slide-in-from-top-1 duration-200 motion-reduce:slide-in-from-top-0",
+        enter && "animate-in fade-in slide-in-from-bottom-1 duration-200 motion-reduce:slide-in-from-bottom-0",
         "flex items-center h-8 px-2 rounded-full text-sm font-medium transition-[background,color] duration-150 group",
         open ? "gap-2" : "justify-center gap-0",
         isActive ? "text-ink font-semibold bg-line/60" : "text-ink-3",
