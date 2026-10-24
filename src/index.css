@@ -1067,6 +1067,80 @@ textarea {
 .code-block[data-code-theme="dark"] .code-block-copy:hover {
     color: oklch(0.965 0.003 264);
 }
+@media (min-width: 768px) {
+    .rich-content:not(.rich-readonly) {
+        font-size: 16px;
+    }
+}
+.rich-content:not(.rich-readonly) {
+    line-height: 1.85;
+    --check-size: calc(0.9375rem * var(--touch-scale));
+}
+.rich-content:not(.rich-readonly) > * + * {
+    margin-top: 0.3em;
+}
+.rich-content:not(.rich-readonly) > p {
+    line-height: 1.4;
+}
+.rich-content:not(.rich-readonly) > * + p {
+    margin-top: 0.2em;
+}
+.rich-content:not(.rich-readonly) h1,
+.rich-content:not(.rich-readonly) h2,
+.rich-content:not(.rich-readonly) h3 {
+    position: relative;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin-top: 0.2em;
+}
+.rich-content:not(.rich-readonly) h1 {
+    font-size: 1.65em;
+    line-height: 1.3;
+    margin-top: 0.2em;
+}
+.rich-content:not(.rich-readonly) h2 {
+    font-size: 1.3em;
+    line-height: 1.35;
+}
+.rich-content:not(.rich-readonly) h3 {
+    font-size: 1.12em;
+    line-height: 1.4;
+}
+.rich-content:not(.rich-readonly) h1:first-child,
+.rich-content:not(.rich-readonly) h2:first-child,
+.rich-content:not(.rich-readonly) h3:first-child {
+    margin-top: 0;
+}
+.rich-content:not(.rich-readonly) ul[data-type="taskList"] li label {
+    margin-top: calc((1lh - var(--check-size)) / 2 - 0.5px);
+}
+.rich-content:not(.rich-readonly)
+    ul[data-type="taskList"]
+    li:has(h1:first-child)
+    label {
+    font-size: 1.65em;
+    line-height: 1.3;
+}
+.rich-content:not(.rich-readonly)
+    ul[data-type="taskList"]
+    li:has(h2:first-child)
+    label {
+    font-size: 1.3em;
+    line-height: 1.35;
+}
+.rich-content:not(.rich-readonly)
+    ul[data-type="taskList"]
+    li:has(h3:first-child)
+    label {
+    font-size: 1.12em;
+    line-height: 1.4;
+}
+.rich-content:not(.rich-readonly) u {
+    text-underline-offset: 4px;
+}
+.rich-content:not(.rich-readonly) s {
+    color: var(--ink-3);
+}
 .rich-content blockquote {
     border-left: 3px solid var(--line-2);
     padding-left: 0.85em;
@@ -1094,14 +1168,23 @@ textarea {
         background 0.14s,
         color 0.14s;
 }
-/* note: per-block nudges; data-node-type comes from DragHandle onNodeChange */
 .drag-handle-btn[data-node-type="listItem"] {
-    /* note: shift past the list marker sitting in the 1.3em left padding */
     transform: translateX(-18px);
 }
-.drag-handle-btn[data-node-type="heading"][data-node-level="1"] {
-    /* note: h1 first line is 24.5px vs the 21px grip, so half the difference centers it; h2/h3 lines are about 21.8px and need no nudge */
+.drag-handle-btn[data-node-type="listItem"],
+.drag-handle-btn[data-node-type="taskItem"] {
+    margin-top: 4px;
+}
+.drag-handle-btn[data-node-type="heading"][data-node-level="2"] {
+    margin-top: 3.5px;
+}
+.drag-handle-btn[data-node-type="heading"][data-node-level="3"] {
     margin-top: 2px;
+}
+/* note: per-block nudges; data-node-type comes from DragHandle onNodeChange */
+.drag-handle-btn[data-node-type="heading"][data-node-level="1"] {
+    /* note: h1 first line is about 34px vs the 21px grip, so half the difference centers it */
+    margin-top: 7px;
 }
 .drag-handle-btn[data-node-type="codeBlock"] {
     /* note: line the grip up with the code block toolbar row */
@@ -1131,6 +1214,10 @@ textarea {
     pointer-events: none;
 }
 
+.thin-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-2) transparent;
+}
 .main-layout {
     /* note: dark theme only, scrollbar track uses the card color */
     scrollbar-color: var(--line-2) var(--surface);
