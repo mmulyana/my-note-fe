@@ -71,7 +71,7 @@ function FolderTile({ folder }: { folder: FolderWithNotes }) {
       onDrop={handleDrop}
       className={cn(
         dropping && "ring-2 ring-brand scale-[1.02]",
-        "group flex flex-col rounded-[16px] bg-surface p-2 outline-none shadow-[0_1px_2px_rgb(0_0_0/0.04),0_4px_16px_rgb(0_0_0/0.05)] transition-shadow duration-200 hover:shadow-[0_2px_4px_rgb(0_0_0/0.05),0_8px_24px_rgb(0_0_0/0.08)] focus-visible:ring-2 focus-visible:ring-brand",
+        "group flex flex-col rounded-[16px] bg-surface p-2 outline-none transition-shadow duration-200 hover:shadow-[0_2px_4px_rgb(0_0_0/0.05),0_8px_24px_rgb(0_0_0/0.08)] focus-visible:ring-2 focus-visible:ring-brand",
       )}
     >
       <div className="relative aspect-4/3 w-full">
