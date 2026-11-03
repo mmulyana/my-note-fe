@@ -86,14 +86,14 @@ function SidebarNav({ sidebar, onToggle, onNavigate }: SidebarNavProps) {
     >
       <nav
         className={cn(
-          "h-full overflow-y-auto px-2.5 pt-2.5",
+          "flex h-full flex-col",
           onToggle && "border-r border-line",
           onToggle && (sidebar ? "w-64 sidebar-reveal" : "w-fit"),
         )}
       >
         <div
           className={cn(
-            "flex justify-between items-center group",
+            "flex h-12 flex-none justify-between items-center group px-2.5",
             sidebar ? "w-full" : "w-fit",
           )}
         >
@@ -124,8 +124,9 @@ function SidebarNav({ sidebar, onToggle, onNavigate }: SidebarNavProps) {
             </button>
           )}
         </div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-2.5">
         <div className={cn(sidebar && "sidebar-content-enter")}>
-          <div className="mt-4 flex flex-col gap-1">
+          <div className="mt-2 flex flex-col gap-1">
             <NewNoteButton sidebar={sidebar} />
             {navItems.map(({ to, label, icon: Icon }) => {
               const count = counts?.data?.[countKeys[to]] ?? 0;
@@ -164,6 +165,7 @@ function SidebarNav({ sidebar, onToggle, onNavigate }: SidebarNavProps) {
         <div className={cn(sidebar && "sidebar-folders-enter")}>
           <FoldersWrapper sidebar={sidebar} />
           <LabelsWrapper sidebar={sidebar} onNavigate={onNavigate} />
+        </div>
         </div>
       </nav>
     </div>

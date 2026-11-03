@@ -29,7 +29,7 @@ export default function LabelsWrapper({ sidebar, onNavigate }: Props) {
   return (
     <div className="flex flex-col gap-1.5 mt-4 pb-4">
       <div className="text-sm text-ink-3 px-2 font-medium">Labels</div>
-      <div className="flex flex-row flex-wrap gap-1.5 px-1">
+      <div className="thin-scroll flex max-h-40 flex-row flex-wrap content-start gap-1.5 overflow-y-auto px-1">
         {labels.map((label) => (
           <NavLink
             key={label.id}

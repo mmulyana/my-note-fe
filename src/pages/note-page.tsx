@@ -11,6 +11,7 @@ import { EditorBody } from "@/components/editor";
 import { useNoteEditor } from "@/components/editor/session";
 import { FolderPicker } from "@/components/editor/folder-picker";
 import { NoteDropdown } from "@/components/editor/note-dropdown";
+import { ParentCrumb, SubNotesCards } from "@/components/editor/sub-notes";
 import { LabelsIcon } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
@@ -105,6 +106,7 @@ export default function NotePage() {
           <FolderPicker
             selectedId={note.folderId}
             onChange={note.onFolderChange}
+            disabled={Boolean(note.doc.parentId)}
           />
           {pinButton("max-md:hidden")}
         </div>
@@ -155,6 +157,17 @@ export default function NotePage() {
               {note.updatedText}
             </span>
             <NoteDropdown
+              moveTo={
+                note.isNew
+                  ? undefined
+                  : {
+                      noteId: note.doc.id,
+                      currentParentId: note.doc.parentId,
+                      onMove: note.moveToParent,
+                    }
+              }
+              folderLocked={Boolean(note.doc.parentId)}
+              onAddSubNote={note.isNew ? undefined : note.addChild}
               onDelete={handleDelete}
               onArchive={note.onArchive}
               onSecret={note.onSecret}
@@ -170,12 +183,21 @@ export default function NotePage() {
         )}
       <div className="note-page pt-2.5">
         <div className="relative mx-auto w-full max-w-180">
-          <aside className="absolute top-0 left-full ml-3 hidden h-full w-40 min-[1120px]:block">
-            <div className="sticky top-2">{sideMeta}</div>
+          <aside className="absolute top-0 left-full ml-3 hidden h-full w-56 min-[1120px]:block">
+            <div className="thin-scroll sticky top-2 max-h-[calc(100vh-5rem)] overflow-y-auto pr-1">
+              {sideMeta}
+              <div className="mt-5">
+                <SubNotesCards hideWhenEmpty />
+              </div>
+            </div>
           </aside>
           <div className="pb-3 max-md:hidden min-[1120px]:hidden">{sideMeta}</div>
           <div className="flex flex-col gap-2.5 pb-4">
+            <ParentCrumb />
             <EditorBody />
+            <div className="mt-2 min-[1120px]:hidden">
+              <SubNotesCards layout="grid" hideWhenEmpty />
+            </div>
           </div>
         </div>
       </div>

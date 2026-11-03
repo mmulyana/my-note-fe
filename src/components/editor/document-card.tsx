@@ -10,9 +10,10 @@ import { cn } from "@/lib/utils";
 
 interface DocumentCardProps {
   doc: DocItem;
+  onOpen?: (id: string) => void;
 }
 
-export function DocumentCard({ doc }: DocumentCardProps) {
+export function DocumentCard({ doc, onOpen }: DocumentCardProps) {
   const { openNote } = useDocumentActions();
 
   const { total, done } = doc.todoSummary;
@@ -32,16 +33,18 @@ export function DocumentCard({ doc }: DocumentCardProps) {
       updatedAt={doc.updatedAt}
       pinned={isOverlay && doc.pinned}
       archived={doc.archived}
+      isChild={Boolean(doc.parentId)}
+      childCount={doc.childCount}
       floating={isOverlay}
     />
   );
 
-  const handleOpen = () => openNote(doc.id);
+  const handleOpen = () => (onOpen ?? openNote)(doc.id);
 
   return (
     <article
       className={cn(
-        "group relative flex flex-col cursor-pointer rounded-[12px] border border-line bg-surface text-ink overflow-hidden outline-none transition-[border-color] duration-150 hover:border-line-2 focus-visible:ring-2 focus-visible:ring-brand",
+        "group relative flex flex-col cursor-pointer rounded-[16px] bg-surface text-ink overflow-hidden outline-none shadow-[0_1px_2px_rgb(0_0_0/0.04),0_4px_16px_rgb(0_0_0/0.05)] transition-shadow duration-200 hover:shadow-[0_2px_4px_rgb(0_0_0/0.05),0_8px_24px_rgb(0_0_0/0.08)] focus-visible:ring-2 focus-visible:ring-brand",
         isOverlay && "min-h-48",
       )}
       tabIndex={0}
@@ -110,7 +113,7 @@ export function DocumentCard({ doc }: DocumentCardProps) {
       {!isOverlay && (
         <div
           className={cn(
-            "relative shrink-0 flex items-center justify-between gap-2 px-3 pb-2.5 pt-1.5 text-xs text-ink-3 bg-linear-to-b from-transparent via-surface via-60% to-surface",
+            "relative shrink-0 flex items-center justify-between gap-2 px-3 pb-3 pt-1.5 text-xs text-ink-3 bg-linear-to-b from-transparent via-surface via-60% to-surface",
             // note: full has no preview text, so the title already leaves the gap
             isFull && "pt-0",
           )}

@@ -326,7 +326,7 @@ function PickList({
       role="menu"
       aria-label={title}
       onKeyDown={handleKeyDown}
-      className="flex max-h-64 flex-col overflow-y-auto"
+      className="thin-scroll flex max-h-64 flex-col overflow-y-auto"
     >
       <div
         aria-hidden

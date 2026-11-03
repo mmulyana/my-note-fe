@@ -1,5 +1,7 @@
+import { useState } from "react";
 import {
   IconArrowUpRight,
+  IconCornerLeftUp,
   IconEye,
   IconEyeOff,
   IconPinFilled,
@@ -29,6 +31,8 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
     `todos-hide-completed:${doc.id}`,
     false,
   );
+  // note: only the hide/show button staggers rows; ticking a single task collapses its row right away
+  const [stagger, setStagger] = useState(false);
   const queryClient = useQueryClient();
 
   const { mutate: toggle } = useMutation({
@@ -44,11 +48,12 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
   const hasCompleted = items.some((item) => item.checked);
   const isSecret = doc.folder?.secret || doc.secret;
   const handleOpen = () => openNote(doc.id);
+  let completedIndex = -1;
 
   return (
     <article
       className={cn(
-        "group relative flex flex-col rounded-[12px] border border-line bg-surface text-ink overflow-hidden transition-[border-color] duration-150 hover:border-line-2",
+        "group relative flex flex-col rounded-[16px] bg-surface text-ink overflow-hidden shadow-[0_1px_2px_rgb(0_0_0/0.04),0_4px_16px_rgb(0_0_0/0.05)] transition-shadow duration-200 hover:shadow-[0_2px_4px_rgb(0_0_0/0.05),0_8px_24px_rgb(0_0_0/0.08)]",
       )}
     >
       {isSecret && (
@@ -59,12 +64,23 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
 
       <div className="pt-3 px-3 text-xs text-ink-2/50 flex flex-col-reverse md:flex-row justify-between md:items-center">
         <div>
-          {doc.folder && (
+          {(doc.folder || doc.parentId) && (
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-nowrap inline-flex items-center gap-1 rounded-[8px] text-xs text-ink-2">
-                <FolderIcon className="size-3" />
-                {doc.folder.name}
-              </span>
+              {doc.folder && (
+                <span className="text-nowrap inline-flex items-center gap-1 rounded-[8px] text-xs text-ink-2">
+                  <FolderIcon className="size-3" />
+                  {doc.folder.name}
+                </span>
+              )}
+              {doc.parentId && (
+                <span
+                  title="Sub-note"
+                  className="text-nowrap inline-flex items-center gap-1 rounded-[8px] text-xs text-ink-2"
+                >
+                  <IconCornerLeftUp size={12} />
+                  Sub-note
+                </span>
+              )}
             </div>
           )}
         </div>
@@ -78,7 +94,10 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
               <span aria-hidden className="mx-1 h-3.5 w-px flex-none bg-line-2" />
               <button
                 type="button"
-                onClick={() => setHideCompleted(!hideCompleted)}
+                onClick={() => {
+                  setStagger(true);
+                  setHideCompleted(!hideCompleted);
+                }}
                 title={hideCompleted ? "Show completed" : "Hide completed"}
                 aria-label={hideCompleted ? "Show completed" : "Hide completed"}
                 className="grid h-6 w-6 place-items-center rounded-[4px] text-ink-3 transition-colors hover:bg-surface-2 hover:text-ink cursor-pointer"
@@ -110,23 +129,40 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
             {doc.title}
           </h2>
         )}
-        {items.map((item) =>
-          hideCompleted && item.checked ? null : (
+        {items.map((item) => {
+          // note: hidden rows stay mounted and collapse, so the card height eases instead of jumping
+          const hidden = hideCompleted && item.checked;
+          if (item.checked) completedIndex += 1;
+          const delay = stagger && item.checked ? Math.min(completedIndex, 6) * 45 : 0;
+          return (
           <div
             key={item.id}
+            inert={hidden}
+            aria-hidden={hidden}
+            style={{ transitionDelay: `${delay}ms` }}
+            className={cn(
+              "grid transition-[grid-template-rows,opacity] duration-200 ease-out motion-reduce:transition-[opacity]",
+              hidden ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100",
+            )}
+          >
+          <div className="min-h-0 overflow-hidden">
+          <div
             className="flex items-start gap-2 py-1"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex h-4.5 flex-none items-center gap-2 pt-1">
               <TaskCheckbox
                 checked={item.checked}
-                onChange={(checked) => toggle({ id: item.id, checked })}
+                onChange={(checked) => {
+                  setStagger(false);
+                  toggle({ id: item.id, checked });
+                }}
               />
               <TaskPriority priority={item.priority} />
             </div>
             <span
               className={cn(
-                "text-[15px] flex-1 min-w-0 leading-snug break-words line-clamp-1",
+                "text-[15px] flex-1 min-w-0 leading-snug break-words line-clamp-1 transition-colors duration-200 ease-out",
                 item.checked && "line-through text-ink-3",
               )}
             >
@@ -140,8 +176,10 @@ export function TodoNoteCard({ doc }: TodoNoteCardProps) {
               showActions={false}
             />
           </div>
-          ),
-        )}
+          </div>
+          </div>
+          );
+        })}
       </div>
     </article>
   );

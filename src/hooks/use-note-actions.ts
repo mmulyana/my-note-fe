@@ -31,6 +31,20 @@ export function useNoteActions() {
     [refresh],
   );
 
+  const setParent = useCallback(
+    async (id: string, parentId: string | null) => {
+      try {
+        await request(urls.NoteParent(id), {
+          method: "PATCH",
+          body: { parentId },
+        });
+      } finally {
+        await refresh();
+      }
+    },
+    [refresh],
+  );
+
   const remove = useCallback(
     async (id: string) => {
       try {
@@ -59,5 +73,5 @@ export function useNoteActions() {
     [refresh, queryClient],
   );
 
-  return { setFlags, remove, moveToFolder };
+  return { setFlags, setParent, remove, moveToFolder };
 }

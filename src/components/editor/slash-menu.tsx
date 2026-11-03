@@ -10,6 +10,7 @@ import {
   IconPhoto,
   IconPin,
   IconPinFilled,
+  IconTable,
   IconTagFilled,
   IconTypography,
 } from "@tabler/icons-react";
@@ -116,6 +117,14 @@ export function SlashMenu({
         icon: <IconCheckbox size={15} />,
         keywords: ["checkbox", "task", "todo", "check"],
         run: (c) => c.toggleTaskList(),
+      },
+      {
+        id: "table",
+        title: "Table",
+        group: "Blocks",
+        icon: <IconTable size={15} />,
+        keywords: ["table", "grid", "rows", "columns"],
+        run: (c) => c.insertTable({ rows: 3, cols: 3, withHeaderRow: true }),
       },
       {
         id: "image",
@@ -244,7 +253,7 @@ export function SlashMenu({
       id="slash-menu"
       role="listbox"
       aria-label="Commands"
-      className="fixed z-60 max-h-64 overflow-y-auto rounded-xl border border-line-2 bg-surface p-1 shadow-card-lg"
+      className="thin-scroll fixed z-60 max-h-64 overflow-y-auto rounded-xl border border-line-2 bg-surface p-1 shadow-card-lg"
       style={{
         left,
         width: MENU_W,

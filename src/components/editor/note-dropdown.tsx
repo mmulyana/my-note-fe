@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { IconDots, IconPhoto } from "@tabler/icons-react";
+import { IconDots, IconPhoto, IconPlus, IconSubtask } from "@tabler/icons-react";
 import {
   ArchiveIcon,
   LabelsIcon,
@@ -15,9 +15,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { FolderPicker } from "@/components/editor/folder-picker";
 import { ThumbnailStyleDialog } from "@/components/editor/thumbnail-style-dialog";
+import { MoveToDialog } from "@/components/editor/move-to-dialog";
+import type { MoveTarget } from "@/components/editor/session";
 import type { CoverStyle } from "@/lib/types";
 
 interface NoteDropdownProps {
+  // note: omitted while the note is not saved yet, there is nothing to move
+  moveTo?: {
+    noteId: string;
+    currentParentId?: string | null;
+    onMove: (target: MoveTarget | null) => Promise<void>;
+  };
+  folderLocked?: boolean;
+  onAddSubNote?: () => void;
   onDelete?: () => void;
   onArchive?: () => void;
   onSecret?: () => void;
@@ -32,6 +42,9 @@ interface NoteDropdownProps {
 }
 
 export function NoteDropdown({
+  moveTo,
+  folderLocked,
+  onAddSubNote,
   onDelete,
   onArchive,
   onSecret,
@@ -44,6 +57,7 @@ export function NoteDropdown({
   labels,
 }: NoteDropdownProps) {
   const [styleOpen, setStyleOpen] = useState(false);
+  const [moveOpen, setMoveOpen] = useState(false);
 
   return (
     <>
@@ -66,6 +80,7 @@ export function NoteDropdown({
               variant="menu"
               selectedId={folderId ?? null}
               onChange={onFolderChange}
+              disabled={folderLocked}
             />
           </div>
         )}
@@ -94,6 +109,32 @@ export function NoteDropdown({
           >
             <IconPhoto className="size-3.5" />
             Thumbnail style
+          </DropdownMenuItem>
+        )}
+
+        {onAddSubNote && (
+          <DropdownMenuItem
+            className="flex items-center gap-2.5 text-[13px] rounded-none cursor-pointer dark:text-white/50"
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddSubNote();
+            }}
+          >
+            <IconPlus className="size-3.5" />
+            Add sub-note
+          </DropdownMenuItem>
+        )}
+
+        {moveTo && (
+          <DropdownMenuItem
+            className="flex items-center gap-2.5 text-[13px] rounded-none cursor-pointer dark:text-white/50"
+            onClick={(e) => {
+              e.stopPropagation();
+              setMoveOpen(true);
+            }}
+          >
+            <IconSubtask className="size-3.5" />
+            Move to…
           </DropdownMenuItem>
         )}
 
@@ -136,6 +177,16 @@ export function NoteDropdown({
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+
+    {moveTo && (
+      <MoveToDialog
+        open={moveOpen}
+        onOpenChange={setMoveOpen}
+        noteId={moveTo.noteId}
+        currentParentId={moveTo.currentParentId}
+        onMove={moveTo.onMove}
+      />
+    )}
 
     {cover && onCoverStyle && (
       <ThumbnailStyleDialog

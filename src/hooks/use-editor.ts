@@ -3,6 +3,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Markdown } from "@tiptap/markdown";
 import { TaskList } from "@tiptap/extension-list";
+import { Table, TableRow, TableHeader, TableCell } from "@tiptap/extension-table";
 import { CustomTaskItem } from "../components/editor/extensions/custom-task-item";
 import { CustomCodeBlock } from "../components/editor/extensions/code-block";
 import { CustomImage } from "../components/editor/extensions/image";
@@ -31,6 +32,10 @@ export function useDocumentEditor(
       CustomImage.configure({
         HTMLAttributes: { class: "rich-image" },
       }),
+      Table.configure({ resizable: false }),
+      TableRow,
+      TableHeader,
+      TableCell,
       LinkCard,
       LabelTag.configure({ bridge: labelBridge }),
       Markdown,

@@ -69,7 +69,10 @@ function FolderTile({ folder }: { folder: FolderWithNotes }) {
       }}
       onDragLeave={() => setDropping(false)}
       onDrop={handleDrop}
-      className={cn(dropping && "ring-2 ring-brand scale-[1.02]", "group flex flex-col rounded-[12px] border border-line bg-surface p-2 outline-none transition-[border-color] duration-150 hover:border-line-2 focus-visible:ring-2 focus-visible:ring-brand")}
+      className={cn(
+        dropping && "ring-2 ring-brand scale-[1.02]",
+        "group flex flex-col rounded-[16px] bg-surface p-2 outline-none shadow-[0_1px_2px_rgb(0_0_0/0.04),0_4px_16px_rgb(0_0_0/0.05)] transition-shadow duration-200 hover:shadow-[0_2px_4px_rgb(0_0_0/0.05),0_8px_24px_rgb(0_0_0/0.08)] focus-visible:ring-2 focus-visible:ring-brand",
+      )}
     >
       <div className="relative aspect-4/3 w-full">
         <div
@@ -128,31 +131,43 @@ function NoteChip({
   return (
     <div
       className={cn(
-        "absolute inset-0 origin-bottom overflow-hidden rounded-lg border border-line bg-surface-2 p-1.5 sm:p-2 shadow-xs transition-transform duration-200 ease-out",
+        "absolute inset-0 origin-bottom overflow-hidden rounded-lg bg-surface-2 p-1.5 sm:p-2 shadow-xs transition-transform duration-200 ease-out",
         dimmed && "bg-surface-hi",
         className,
       )}
     >
-      <div
-        className={cn(
-          "text-sm font-medium leading-snug line-clamp-2 text-ink-2",
-          dimmed && "text-ink-3",
-        )}
-      >
-        {note.title?.trim() || "Untitled"}
-      </div>
-      <div aria-hidden className="mt-1.5 sm:mt-2 flex flex-col gap-1">
-        {BAR_WIDTHS.map((w) => (
+      {note.preview ? (
+        <div
+          className={cn(
+            "rich-content rich-readonly rich-card-preview w-[200%] origin-top-left scale-50 select-none pointer-events-none",
+            dimmed && "opacity-60",
+          )}
+          dangerouslySetInnerHTML={{ __html: note.preview }}
+        />
+      ) : (
+        <>
           <div
-            key={w}
             className={cn(
-              "h-1.5 rounded-full",
-              dimmed ? "bg-line" : "bg-line-2",
-              w,
+              "text-sm font-medium leading-snug line-clamp-2 text-ink-2",
+              dimmed && "text-ink-3",
             )}
-          />
-        ))}
-      </div>
+          >
+            {note.title?.trim() || "Untitled"}
+          </div>
+          <div aria-hidden className="mt-1.5 sm:mt-2 flex flex-col gap-1">
+            {BAR_WIDTHS.map((w) => (
+              <div
+                key={w}
+                className={cn(
+                  "h-1.5 rounded-full",
+                  dimmed ? "bg-line" : "bg-line-2",
+                  w,
+                )}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

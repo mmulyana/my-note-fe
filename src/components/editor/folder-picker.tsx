@@ -22,12 +22,15 @@ interface FolderPickerProps {
   selectedId: string | null;
   onChange: (id: string | null) => void;
   variant?: "button" | "menu";
+  // note: a sub-note always follows its parent's folder
+  disabled?: boolean;
 }
 
 export function FolderPicker({
   selectedId,
   onChange,
   variant = "button",
+  disabled = false,
 }: FolderPickerProps) {
   const { data } = useApi<IApi<Folder[]>>({
     url: urls.Folder,
@@ -61,7 +64,11 @@ export function FolderPicker({
   if (variant === "menu") {
     return (
       <DropdownMenuSub>
-        <DropdownMenuSubTrigger className="text-[13px] text-ink-2 rounded-none cursor-pointer">
+        <DropdownMenuSubTrigger
+          disabled={disabled}
+          title={disabled ? "Follows the parent note's folder" : undefined}
+          className="text-[13px] text-ink-2 rounded-none cursor-pointer"
+        >
           <FolderIcon className="size-3.5 text-ink-3" />
           {selected ? selected.name : "Folder"}
         </DropdownMenuSubTrigger>
@@ -75,6 +82,8 @@ export function FolderPicker({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
+        disabled={disabled}
+        title={disabled ? "Follows the parent note's folder" : undefined}
         className="inline-flex items-center h-7 justify-center gap-1 rounded-lg text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi hover:text-ink focus-visible:bg-surface-hi focus-visible:text-ink data-[state=open]:bg-surface-hi data-[state=open]:text-ink outline-none disabled:opacity-40 disabled:pointer-events-none px-1.5 text-xs hover:cursor-pointer max-lg:px-0"
         onClick={(e) => e.stopPropagation()}
       >
