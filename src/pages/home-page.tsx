@@ -1,3 +1,4 @@
+import { SelectionBar } from "@/components/editor/selection-bar";
 import { GroupWithNotes } from "@/components/editor/group-with-notes";
 import { NotesBoard, type ReorderMove } from "@/components/editor/notes-board";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
@@ -65,6 +66,7 @@ export default function DocumentEditorPage() {
 
   return (
     <div className="w-full max-md:pt-2">
+      <SelectionBar />
       {!searching && <GroupWithNotes />}
       {docs.length > 0 ? (
         <>

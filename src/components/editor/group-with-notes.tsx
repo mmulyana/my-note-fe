@@ -3,6 +3,10 @@ import { buildQuery, cn, folderNoteCount } from "@/lib/utils";
 import { IconLock } from "@tabler/icons-react";
 import { useApi } from "@/hooks/use-api";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useSetAtom } from "jotai";
+import { useNoteActions } from "@/hooks/use-note-actions";
+import { NOTE_DRAG_TYPE, selectedNoteIdsAtom } from "@/store/home-view";
 import { urls } from "@/lib/urls";
 
 export function GroupWithNotes() {
@@ -41,11 +45,31 @@ function FolderTile({ folder }: { folder: FolderWithNotes }) {
   const isSecret = Boolean(folder.secret);
 
   const stack = [...previews].reverse();
+  const { moveToFolder } = useNoteActions();
+  const setSelected = useSetAtom(selectedNoteIdsAtom);
+  const [dropping, setDropping] = useState(false);
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    setDropping(false);
+    const raw = e.dataTransfer.getData(NOTE_DRAG_TYPE);
+    if (!raw) return;
+    const ids: string[] = JSON.parse(raw);
+    setSelected([]);
+    await moveToFolder(ids, folder.id);
+  };
 
   return (
     <Link
       to={`/folder/${folder.id}`}
-      className="group flex flex-col rounded-[12px] border border-line bg-surface p-2 outline-none transition-[border-color] duration-150 hover:border-line-2 focus-visible:ring-2 focus-visible:ring-brand"
+      onDragOver={(e) => {
+        if (!e.dataTransfer.types.includes(NOTE_DRAG_TYPE)) return;
+        e.preventDefault();
+        setDropping(true);
+      }}
+      onDragLeave={() => setDropping(false)}
+      onDrop={handleDrop}
+      className={cn(dropping && "ring-2 ring-brand scale-[1.02]", "group flex flex-col rounded-[12px] border border-line bg-surface p-2 outline-none transition-[border-color] duration-150 hover:border-line-2 focus-visible:ring-2 focus-visible:ring-brand")}
     >
       <div className="relative aspect-4/3 w-full">
         <div

@@ -43,5 +43,21 @@ export function useNoteActions() {
     [refresh],
   );
 
-  return { setFlags, remove };
+  const moveToFolder = useCallback(
+    async (ids: string[], folderId: string | null) => {
+      try {
+        await request(urls.NotesFolder, { method: "PATCH", body: { ids, folderId } });
+      } catch (err) {
+        console.error("Failed to move notes:", err);
+      }
+      await Promise.all([
+        refresh(),
+        queryClient.invalidateQueries({ queryKey: ["folders"] }),
+        queryClient.invalidateQueries({ queryKey: ["notes", "counts"] }),
+      ]);
+    },
+    [refresh, queryClient],
+  );
+
+  return { setFlags, remove, moveToFolder };
 }
