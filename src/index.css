@@ -156,7 +156,6 @@ textarea {
 }
 .masonry.grid-view > * {
     height: 100%;
-    overflow: hidden;
 }
 .note-page {
     padding-right: var(--app-sidebar-width, 16rem);

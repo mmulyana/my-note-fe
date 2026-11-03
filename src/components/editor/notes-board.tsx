@@ -153,7 +153,7 @@ function SortableCard({
       ref={ref}
       className={cn(
         view === "grid"
-          ? "h-full min-w-0 overflow-hidden [&_article]:h-full"
+          ? "h-full min-w-0 [&_article]:h-full"
           : "min-w-0 [&_article]:max-h-90",
         arranging && "cursor-grab select-none touch-manipulation",
       )}
