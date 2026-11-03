@@ -128,6 +128,24 @@ export function NotesBoard({
   );
 }
 
+function setDragPreview(e: React.DragEvent<HTMLElement>, count: number) {
+  const source = e.currentTarget;
+  const rect = source.getBoundingClientRect();
+  const ghost = document.createElement("div");
+  ghost.style.cssText = `position:fixed;top:-9999px;left:-9999px;width:${rect.width}px;height:${rect.height}px;transform:rotate(3deg) scale(0.9);border-radius:16px;box-shadow:0 12px 32px rgb(0 0 0/0.25);overflow:hidden;opacity:0.95`;
+  ghost.appendChild(source.cloneNode(true));
+  if (count > 1) {
+    const badge = document.createElement("span");
+    badge.textContent = String(count);
+    badge.style.cssText =
+      "position:absolute;top:8px;right:8px;min-width:24px;height:24px;padding:0 7px;display:grid;place-items:center;border-radius:9999px;background:#111;color:#fff;font:600 12px sans-serif";
+    ghost.appendChild(badge);
+  }
+  document.body.appendChild(ghost);
+  e.dataTransfer.setDragImage(ghost, e.clientX - rect.left, e.clientY - rect.top);
+  setTimeout(() => ghost.remove(), 0);
+}
+
 function SortableCard({
   doc,
   index,
@@ -176,6 +194,7 @@ function SortableCard({
         if (!selected) return;
         e.dataTransfer.setData(NOTE_DRAG_TYPE, JSON.stringify(selectedIds));
         e.dataTransfer.effectAllowed = "move";
+        setDragPreview(e, selectedIds.length);
       }}
     >
       {/* note: inert card while arranging so a click or native image drag never fights the drag pointer events */}
