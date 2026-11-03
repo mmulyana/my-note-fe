@@ -44,7 +44,7 @@ export function DocumentCard({ doc, onOpen }: DocumentCardProps) {
   return (
     <article
       className={cn(
-        "group relative flex flex-col cursor-pointer rounded-[16px] bg-surface text-ink overflow-hidden outline-none transition-shadow duration-200 hover:shadow-[0_2px_4px_rgb(0_0_0/0.05),0_8px_24px_rgb(0_0_0/0.08)] focus-visible:ring-2 focus-visible:ring-brand",
+        "group relative flex flex-col cursor-pointer rounded-[16px] bg-surface text-ink overflow-hidden outline-none shadow-[0_1px_3px_rgb(0_0_0/0.06)] transition-shadow duration-200 hover:shadow-[0_2px_8px_rgb(0_0_0/0.1)] focus-visible:ring-2 focus-visible:ring-brand",
         isOverlay && "min-h-48",
       )}
       tabIndex={0}
