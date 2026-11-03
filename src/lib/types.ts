@@ -38,6 +38,7 @@ export type Folder = {
 export type FolderNotePreview = {
   title: string | null;
   text?: string;
+  preview?: string;
 };
 
 export type FolderWithNotes = Folder & {

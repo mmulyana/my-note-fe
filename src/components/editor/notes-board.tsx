@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useAtom } from "jotai";
 import { DragDropProvider } from "@dnd-kit/react";
 import { useSortable } from "@dnd-kit/react/sortable";
 import { move } from "@dnd-kit/helpers";
@@ -6,7 +7,7 @@ import { DocumentCard } from "@/components/editor/document-card";
 import { NoteContextMenu } from "@/components/editor/note-context-menu";
 import { useColumnCount } from "@/hooks/use-column-count";
 import type { DocItem } from "@/lib/types";
-import type { HomeView } from "@/store/home-view";
+import { NOTE_DRAG_TYPE, selectedNoteIdsAtom, type HomeView } from "@/store/home-view";
 import { cn } from "@/lib/utils";
 
 export type ReorderMove = {
@@ -127,6 +128,24 @@ export function NotesBoard({
   );
 }
 
+function setDragPreview(e: React.DragEvent<HTMLElement>, count: number) {
+  const source = e.currentTarget;
+  const rect = source.getBoundingClientRect();
+  const ghost = document.createElement("div");
+  ghost.style.cssText = `position:fixed;top:-9999px;left:-9999px;width:${rect.width}px;height:${rect.height}px;transform:rotate(3deg) scale(0.9);border-radius:16px;box-shadow:0 12px 32px rgb(0 0 0/0.25);overflow:hidden;opacity:0.95`;
+  ghost.appendChild(source.cloneNode(true));
+  if (count > 1) {
+    const badge = document.createElement("span");
+    badge.textContent = String(count);
+    badge.style.cssText =
+      "position:absolute;top:8px;right:8px;min-width:24px;height:24px;padding:0 7px;display:grid;place-items:center;border-radius:9999px;background:#111;color:#fff;font:600 12px sans-serif";
+    ghost.appendChild(badge);
+  }
+  document.body.appendChild(ghost);
+  e.dataTransfer.setDragImage(ghost, e.clientX - rect.left, e.clientY - rect.top);
+  setTimeout(() => ghost.remove(), 0);
+}
+
 function SortableCard({
   doc,
   index,
@@ -138,13 +157,16 @@ function SortableCard({
   arranging: boolean;
   view: HomeView;
 }) {
+  const [selectedIds, setSelectedIds] = useAtom(selectedNoteIdsAtom);
+  const selecting = selectedIds.length > 0;
+  const selected = selectedIds.includes(doc.id);
   const { ref } = useSortable({
     id: doc.id,
     index,
     type: "item",
     accept: "item",
     group: "notes",
-    disabled: !arranging,
+    disabled: !arranging || selecting,
     transition: { duration: 250, easing: "cubic-bezier(0.25, 1, 0.5, 1)" },
   });
 
@@ -153,14 +175,31 @@ function SortableCard({
       ref={ref}
       className={cn(
         view === "grid"
-          ? "h-full min-w-0 overflow-hidden [&_article]:h-full"
+          ? "h-full min-w-0 [&_article]:h-full"
           : "min-w-0 [&_article]:max-h-90",
         arranging && "cursor-grab select-none touch-manipulation",
+        selecting && "cursor-pointer select-none rounded-[16px] transition-shadow",
+        selected && "ring-2 ring-brand ring-offset-2 ring-offset-bg",
       )}
+      draggable={selected}
+      onClickCapture={(e) => {
+        if (!selecting) return;
+        e.preventDefault();
+        e.stopPropagation();
+        setSelectedIds((ids) =>
+          ids.includes(doc.id) ? ids.filter((id) => id !== doc.id) : [...ids, doc.id],
+        );
+      }}
+      onDragStart={(e) => {
+        if (!selected) return;
+        e.dataTransfer.setData(NOTE_DRAG_TYPE, JSON.stringify(selectedIds));
+        e.dataTransfer.effectAllowed = "move";
+        setDragPreview(e, selectedIds.length);
+      }}
     >
       {/* note: inert card while arranging so a click or native image drag never fights the drag pointer events */}
-      <NoteContextMenu doc={doc} disabled={arranging}>
-        <div className={cn("h-full", arranging && "pointer-events-none")}>
+      <NoteContextMenu doc={doc} disabled={arranging || selecting}>
+        <div className={cn("h-full", (arranging || selecting) && "pointer-events-none")}>
           <DocumentCard doc={doc} />
         </div>
       </NoteContextMenu>

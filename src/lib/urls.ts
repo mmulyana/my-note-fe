@@ -4,6 +4,7 @@ export const urls = {
   Note: (id: string) => `/notes/${id}`,
   NotePosition: (id: string) => `/notes/${id}/position`,
   NoteFlags: (id: string) => `/notes/${id}/flags`,
+  NotesFolder: "/notes/folder",
   NoteParent: (id: string) => `/notes/${id}/parent`,
   Todos: "/todos",
   TodosGroupedByDate: (from: string, to: string, tz: string) =>

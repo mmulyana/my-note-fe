@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
-import { IconSubtask } from "@tabler/icons-react";
+import { useSetAtom } from "jotai";
+import { IconChecks, IconSubtask } from "@tabler/icons-react";
 import { MoveToDialog } from "@/components/editor/move-to-dialog";
 import {
   ArchiveIcon,
@@ -15,6 +16,7 @@ import {
 } from "@/components/ui/context-menu";
 import { useNoteActions } from "@/hooks/use-note-actions";
 import type { DocItem } from "@/lib/types";
+import { selectedNoteIdsAtom } from "@/store/home-view";
 
 interface NoteContextMenuProps {
   doc: DocItem;
@@ -27,6 +29,7 @@ const itemClass =
 
 export function NoteContextMenu({ doc, disabled, children }: NoteContextMenuProps) {
   const { setFlags, setParent, remove } = useNoteActions();
+  const setSelected = useSetAtom(selectedNoteIdsAtom);
   const [moveOpen, setMoveOpen] = useState(false);
 
   if (disabled) return <>{children}</>;
@@ -39,6 +42,13 @@ export function NoteContextMenu({ doc, disabled, children }: NoteContextMenuProp
         <ContextMenuItem className={itemClass} onSelect={() => setMoveOpen(true)}>
           <IconSubtask className="size-3.5" />
           Move to…
+        </ContextMenuItem>
+        <ContextMenuItem
+          className={itemClass}
+          onSelect={() => setSelected([doc.id])}
+        >
+          <IconChecks size={14} />
+          Select
         </ContextMenuItem>
         <ContextMenuItem
           className={itemClass}
