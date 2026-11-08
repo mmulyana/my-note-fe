@@ -37,24 +37,13 @@ const SHEET_STYLES = [
 
 const BAR_WIDTHS = ["w-full", "w-4/5", "w-3/5"];
 
-const TINT_PALETTE = [
-  "#7c5cff",
-  "#3b82f6",
-  "#f5b800",
-  "#ef4444",
-  "#10b981",
-  "#ec4899",
-  "#f97316",
-  "#14b8a6",
-];
+const NEUTRAL_TINT = "#8b93a1";
 
 function folderTint(folder: FolderWithNotes): string {
   if (folder.color && /^(#|rgb|hsl|oklch)/i.test(folder.color)) {
     return folder.color;
   }
-  let hash = 0;
-  for (const ch of folder.id) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
-  return TINT_PALETTE[hash % TINT_PALETTE.length];
+  return NEUTRAL_TINT;
 }
 
 function shortAgo(iso?: string): string | null {
