@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { DocumentCard } from "@/components/editor/document-card";
+import { FolderColorPicker } from "@/components/common/folder-color-picker";
 import { InfiniteSentinel } from "@/components/common/infinite-sentinel";
 import { useApi } from "@/hooks/use-api";
 import { useInfiniteApi } from "@/hooks/use-infinite-api";
@@ -126,6 +127,11 @@ export default function FolderPage() {
     saveFolder({ ...folder, isolated: !folder.isolated });
   };
 
+  const changeColor = (color: string) => {
+    if (!folder || folder.color === color) return;
+    saveFolder({ ...folder, color });
+  };
+
   const removeFolder = async () => {
     if (!id) return;
     setDeleting(true);
@@ -214,7 +220,7 @@ export default function FolderPage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="w-44 bg-surface border-line-2 rounded-md shadow-card-lg py-1 px-0"
+              className="w-52 bg-surface border-line-2 rounded-md shadow-card-lg py-1 px-0"
             >
               <DropdownMenuItem
                 className="flex items-center gap-2.5 text-[13px] rounded-none cursor-pointer dark:text-white/50"
@@ -249,6 +255,11 @@ export default function FolderPage() {
                 )}
                 {folder?.isolated ? "Show in All notes" : "Hide from All notes"}
               </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-line" />
+              <FolderColorPicker
+                value={folder?.color}
+                onChange={changeColor}
+              />
               <DropdownMenuSeparator className="bg-line" />
               <DropdownMenuItem
                 variant="destructive"
