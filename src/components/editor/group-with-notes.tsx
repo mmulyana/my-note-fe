@@ -67,6 +67,11 @@ function FolderTile({ folder }: { folder: FolderWithNotes }) {
   const isSecret = Boolean(folder.secret);
   const ago = shortAgo(folder.updatedAt);
   const tint = folderTint(folder);
+  const isNeutral = tint === NEUTRAL_TINT;
+  const backShade =
+    isNeutral
+      ? "brightness-[0.55] in-data-[theme=light]:brightness-100"
+      : "brightness-[0.55]";
 
   const { moveToFolder } = useNoteActions();
   const setSelected = useSetAtom(selectedNoteIdsAtom);
@@ -92,8 +97,14 @@ function FolderTile({ folder }: { folder: FolderWithNotes }) {
       }}
       onDragLeave={() => setDropping(false)}
       onDrop={handleDrop}
-      style={{ "--folder-tint": tint } as React.CSSProperties}
+      style={
+        isNeutral
+          ? undefined
+          : ({ "--folder-tint": tint } as React.CSSProperties)
+      }
       className={cn(
+        isNeutral &&
+          "[--folder-tint:#8b93a1] in-data-[theme=light]:[--folder-tint:#d3d7de]",
         "group flex flex-col rounded-[16px] bg-surface-2 p-2.5 pb-3 outline-none transition-[background,box-shadow,transform] duration-200 hover:bg-surface-hi focus-visible:ring-2 focus-visible:ring-brand",
         dropping && "ring-2 ring-brand scale-[1.02]",
       )}
@@ -101,11 +112,11 @@ function FolderTile({ folder }: { folder: FolderWithNotes }) {
       <div className="relative aspect-[5/4] w-full">
         <div
           aria-hidden
-          className="absolute inset-x-0 bottom-0 top-[14%] rounded-xl bg-(--folder-tint) brightness-[0.55] shadow-[0_6px_16px_-6px_rgb(0_0_0/0.45)]"
+          className={cn(backShade, "absolute inset-x-0 bottom-[20%] top-[14%] rounded-tr-xl bg-(--folder-tint)")}
         />
         <div
           aria-hidden
-          className="absolute left-0 top-[8%] h-[10%] w-[38%] rounded-t-lg bg-(--folder-tint) brightness-[0.55]"
+          className={cn(backShade, "absolute left-0 top-[8%] h-[10%] w-[38%] rounded-t-lg bg-(--folder-tint)")}
         />
 
         <div
