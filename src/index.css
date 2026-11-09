@@ -1359,8 +1359,8 @@ textarea {
     --shock-core: oklch(1 0 0 / 0.24);
     --shock-a: rgb(64 224 140 / 0.2);
     --shock-b: rgb(72 156 255 / 0.24);
-    --shock-band: 14%;
-    --shock-split: 2.4%;
+    --shock-band: 19%;
+    --shock-split: 3.2%;
 }
 [data-theme="light"] {
     --shock-core: color-mix(in oklab, var(--accent) 22%, transparent);
