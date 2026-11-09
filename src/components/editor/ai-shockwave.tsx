@@ -4,6 +4,7 @@ import { useAtomValue } from "jotai";
 import { SHOCKWAVE_THEMES, shockwaveThemeAtom } from "@/store/shockwave";
 import type { Editor } from "@tiptap/react";
 import type { AiEditStatus } from "@/hooks/use-ai-edit";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
 export const SHOCKWAVE_HOST_ATTR = "data-shockwave-host";
 
@@ -15,6 +16,7 @@ interface AiShockwaveProps {
 interface Wave {
   id: number;
   host: HTMLElement;
+  page: boolean;
   x: number;
   y: number;
   size: number;
@@ -39,6 +41,7 @@ export function AiShockwave({ editor, status }: AiShockwaveProps) {
   const colors = SHOCKWAVE_THEMES.find((t) => t.value === themeId)?.colors;
   const prevStatus = useRef<AiEditStatus>(status);
   const nextId = useRef(0);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const prev = prevStatus.current;
@@ -47,19 +50,18 @@ export function AiShockwave({ editor, status }: AiShockwaveProps) {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (editor.isDestroyed) return;
 
-    const host = editor.view.dom.closest<HTMLElement>(`[${SHOCKWAVE_HOST_ATTR}]`);
-    if (!host) return;
-
-    const box = host.getBoundingClientRect();
-    const caret = editor.view.coordsAtPos(editor.state.selection.head);
-    const x = caret.left - box.left;
-    const y = caret.bottom - box.top;
-    const reach = Math.hypot(
-      Math.max(x, box.width - x),
-      Math.max(y, box.height - y),
-    );
-    setWave({ id: nextId.current++, host, x, y, size: reach * 2 });
-  }, [status, editor]);
+    const modal = isMobile
+      ? null
+      : document.querySelector<HTMLElement>(`[${SHOCKWAVE_HOST_ATTR}]`);
+    const host = modal ?? document.body;
+    const box = modal
+      ? modal.getBoundingClientRect()
+      : new DOMRect(0, 0, window.innerWidth, window.innerHeight);
+    const x = box.width / 2;
+    const y = box.height;
+    const size = Math.hypot(x, y) * 2;
+    setWave({ id: nextId.current++, host, page: !modal, x, y, size });
+  }, [status, editor, isMobile]);
 
   if (!wave) return null;
 
@@ -68,13 +70,16 @@ export function AiShockwave({ editor, status }: AiShockwaveProps) {
     "--sy": `${wave.y}px`,
     "--sd": `${wave.size}px`,
     ...(colors && {
-      "--shock-a": `color-mix(in srgb, ${colors[0]} 14%, transparent)`,
-      "--shock-b": `color-mix(in srgb, ${colors[1]} 16%, transparent)`,
+      "--shock-a": `color-mix(in srgb, ${colors[0]} 22%, transparent)`,
+      "--shock-b": `color-mix(in srgb, ${colors[1]} 24%, transparent)`,
     }),
   } as CSSProperties;
 
   return createPortal(
-    <div className="ai-shockwave" aria-hidden>
+    <div
+      className={wave.page ? "ai-shockwave ai-shockwave-page" : "ai-shockwave"}
+      aria-hidden
+    >
       <svg width="0" height="0" className="absolute">
         <filter
           id="ai-shockwave-bend"
@@ -88,7 +93,7 @@ export function AiShockwave({ editor, status }: AiShockwaveProps) {
           <feDisplacementMap
             in="SourceGraphic"
             in2="map"
-            scale="1.2"
+            scale="2"
             xChannelSelector="R"
             yChannelSelector="G"
           />

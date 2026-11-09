@@ -1356,16 +1356,16 @@ textarea {
     initial-value: 0%;
 }
 :root {
-    --shock-core: oklch(1 0 0 / 0.16);
-    --shock-a: rgb(64 224 140 / 0.12);
-    --shock-b: rgb(72 156 255 / 0.14);
-    --shock-band: 7%;
-    --shock-split: 1.6%;
+    --shock-core: oklch(1 0 0 / 0.24);
+    --shock-a: rgb(64 224 140 / 0.2);
+    --shock-b: rgb(72 156 255 / 0.24);
+    --shock-band: 14%;
+    --shock-split: 2.4%;
 }
 [data-theme="light"] {
-    --shock-core: color-mix(in oklab, var(--accent) 14%, transparent);
-    --shock-a: rgb(20 190 110 / 0.12);
-    --shock-b: rgb(40 130 255 / 0.14);
+    --shock-core: color-mix(in oklab, var(--accent) 22%, transparent);
+    --shock-a: rgb(20 190 110 / 0.2);
+    --shock-b: rgb(40 130 255 / 0.24);
 }
 .ai-shockwave {
     position: absolute;
@@ -1374,6 +1374,11 @@ textarea {
     overflow: hidden;
     border-radius: inherit;
     pointer-events: none;
+}
+.ai-shockwave-page {
+    position: fixed;
+    z-index: 70;
+    border-radius: 0;
 }
 .ai-shockwave-ring {
     position: absolute;

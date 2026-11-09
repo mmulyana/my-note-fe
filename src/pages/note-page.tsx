@@ -182,7 +182,7 @@ export default function NotePage() {
           actionsSlot,
         )}
       <div className="note-page pt-2.5">
-        <div data-shockwave-host className="relative mx-auto w-full max-w-180">
+        <div className="relative mx-auto w-full max-w-180">
           <aside className="absolute top-0 left-full ml-3 hidden h-full w-56 min-[1120px]:block">
             <div className="thin-scroll sticky top-2 max-h-[calc(100vh-5rem)] overflow-y-auto pr-1">
               {sideMeta}
