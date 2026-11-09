@@ -40,6 +40,7 @@ export function NoteModal() {
     >
       <div className="relative flex w-full max-w-200 flex-col">
       <div
+        data-shockwave-host
         className="relative bg-surface animate-[modal-in_0.18s_cubic-bezier(0.23,1,0.32,1)] w-full rounded-[16px] border border-line-2 shadow-card-lg"
         onMouseDown={(e) => e.stopPropagation()}
       >

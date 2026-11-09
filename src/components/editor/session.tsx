@@ -26,6 +26,7 @@ import { useIsMobile } from "@/hooks/use-is-mobile";
 import { LabelSuggestMenu } from "@/components/editor/label-suggest-menu";
 import { AiBubbleMenu } from "@/components/editor/ai-bubble-menu";
 import { AiLoader } from "@/components/editor/ai-loader";
+import { AiShockwave } from "@/components/editor/ai-shockwave";
 import { TableMenu } from "@/components/editor/table-menu";
 import {
   SlashMenu,
@@ -367,6 +368,7 @@ export function EditorSession({ doc }: { doc: DocItem }) {
           keyHandlerRef={labelKeyRef}
         />
       )}
+      {editor && <AiShockwave editor={editor} status={ai.status} />}
       {editor && (
         <AiLoader
           editor={editor}

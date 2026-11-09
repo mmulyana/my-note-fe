@@ -1349,3 +1349,86 @@ textarea {
 [data-dnd-placeholder] > * {
     visibility: hidden;
 }
+
+@property --ai-shock-r {
+    syntax: "<percentage>";
+    inherits: true;
+    initial-value: 0%;
+}
+:root {
+    --shock-core: oklch(1 0 0 / 0.16);
+    --shock-a: rgb(64 224 140 / 0.12);
+    --shock-b: rgb(72 156 255 / 0.14);
+    --shock-band: 7%;
+    --shock-split: 1.6%;
+}
+[data-theme="light"] {
+    --shock-core: color-mix(in oklab, var(--accent) 14%, transparent);
+    --shock-a: rgb(20 190 110 / 0.12);
+    --shock-b: rgb(40 130 255 / 0.14);
+}
+.ai-shockwave {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    overflow: hidden;
+    border-radius: inherit;
+    pointer-events: none;
+}
+.ai-shockwave-ring {
+    position: absolute;
+    left: var(--sx);
+    top: var(--sy);
+    width: var(--sd);
+    height: var(--sd);
+    margin: calc(var(--sd) / -2) 0 0 calc(var(--sd) / -2);
+    animation: ai-shockwave 1200ms cubic-bezier(0.22, 0.7, 0.25, 1) forwards;
+}
+.ai-shockwave-halo,
+.ai-shockwave-bend {
+    position: absolute;
+    inset: 0;
+}
+.ai-shockwave-halo {
+    background:
+        radial-gradient(
+            circle closest-side,
+            transparent calc(var(--ai-shock-r) - var(--shock-band) + var(--shock-split)),
+            var(--shock-a) calc(var(--ai-shock-r) + var(--shock-split)),
+            transparent calc(var(--ai-shock-r) + var(--shock-band) + var(--shock-split))
+        ),
+        radial-gradient(
+            circle closest-side,
+            transparent calc(var(--ai-shock-r) - var(--shock-band)),
+            var(--shock-core) var(--ai-shock-r),
+            transparent calc(var(--ai-shock-r) + var(--shock-band))
+        ),
+        radial-gradient(
+            circle closest-side,
+            transparent calc(var(--ai-shock-r) - var(--shock-band) - var(--shock-split)),
+            var(--shock-b) calc(var(--ai-shock-r) - var(--shock-split)),
+            transparent calc(var(--ai-shock-r) + var(--shock-band) - var(--shock-split))
+        );
+}
+.ai-shockwave-bend {
+    backdrop-filter: url(#ai-shockwave-bend);
+    mask-image: radial-gradient(
+        circle closest-side,
+        transparent calc(var(--ai-shock-r) - var(--shock-band)),
+        #000 var(--ai-shock-r),
+        transparent calc(var(--ai-shock-r) + var(--shock-band))
+    );
+}
+@keyframes ai-shockwave {
+    0% {
+        --ai-shock-r: 0%;
+        opacity: 0;
+    }
+    12% {
+        opacity: 1;
+    }
+    100% {
+        --ai-shock-r: 112%;
+        opacity: 0;
+    }
+}

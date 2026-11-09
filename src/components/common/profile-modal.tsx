@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/dialog";
 import { useApi } from "@/hooks/use-api";
 import { profileAtom } from "@/store/profile";
+import { shockwaveThemeAtom } from "@/store/shockwave";
+import { ShockwaveColorPicker } from "@/components/common/shockwave-color-picker";
 import { assetUrl, urls } from "@/lib/urls";
 import type { IApi } from "@/lib/types";
 
@@ -24,6 +26,8 @@ interface ProfileModalProps {
 
 export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
   const [profile, setProfile] = useAtom(profileAtom);
+  const [savedWave, setSavedWave] = useAtom(shockwaveThemeAtom);
+  const [wave, setWave] = useState(savedWave);
   const [username, setUsername] = useState(profile?.username ?? "");
   const [photo, setPhoto] = useState<string | null>(profile?.photo ?? null);
   const [preview, setPreview] = useState<string | undefined>(
@@ -33,6 +37,7 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
 
   useEffect(() => {
     if (!open) return;
+    setWave(savedWave);
     setUsername(profile?.username ?? "");
     setPhoto(profile?.photo ?? null);
     setPreview(assetUrl(profile?.photo));
@@ -86,6 +91,8 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
     const body: { username?: string; photo?: string | null } = {};
     if (trimmed !== (profile?.username ?? "")) body.username = trimmed;
     if (photo !== (profile?.photo ?? null)) body.photo = photo;
+
+    if (wave !== savedWave) setSavedWave(wave);
 
     if (Object.keys(body).length === 0) {
       onOpenChange(false);
@@ -162,6 +169,8 @@ export function ProfileModal({ open, onOpenChange }: ProfileModalProps) {
             className="text-[13px] font-[inherit] text-ink bg-surface-2 border border-line rounded-[6px] px-3 py-2 outline-none focus:border-accent"
           />
         </label>
+
+        <ShockwaveColorPicker value={wave} onChange={setWave} />
 
         <DialogFooter>
           <button
