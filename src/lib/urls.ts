@@ -27,6 +27,9 @@ export const urls = {
   Profile: "/me",
   ChangePassword: "/me/password",
   Feedback: "/feedback",
+  Releases: "/releases?limit=30",
+  ReleasesUnread: "/releases/unread",
+  ReleasesSeen: "/releases/seen",
   AiStream: "/ai/stream",
   AiUsage: "/ai/usage",
 };

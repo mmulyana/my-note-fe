@@ -3,11 +3,13 @@ import { buildQuery, cn, folderNoteCount } from "@/lib/utils";
 import { IconLock } from "@tabler/icons-react";
 import { useApi } from "@/hooks/use-api";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSetAtom } from "jotai";
 import { useNoteActions } from "@/hooks/use-note-actions";
 import { NOTE_DRAG_TYPE, selectedNoteIdsAtom } from "@/store/home-view";
 import { urls } from "@/lib/urls";
+import { highlightPreviewHtml } from "@/lib/prism";
+import { watchNativeDrag } from "@/lib/drag";
 
 export function GroupWithNotes() {
   const { data } = useApi<IApi<FolderWithNotes[]>>({
@@ -77,6 +79,12 @@ function FolderTile({ folder }: { folder: FolderWithNotes }) {
   const setSelected = useSetAtom(selectedNoteIdsAtom);
   const [dropping, setDropping] = useState(false);
 
+  // note: if the drag is lost mid-way (screenshot overlay, Esc) dragleave never fires, so clear the hint here
+  useEffect(() => {
+    if (!dropping) return;
+    return watchNativeDrag(() => setDropping(false));
+  }, [dropping]);
+
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     setDropping(false);
@@ -95,7 +103,11 @@ function FolderTile({ folder }: { folder: FolderWithNotes }) {
         e.preventDefault();
         setDropping(true);
       }}
-      onDragLeave={() => setDropping(false)}
+      onDragLeave={(e) => {
+        // note: moving between the tile's own children also fires dragleave; only clear when the pointer really left
+        if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+        setDropping(false);
+      }}
       onDrop={handleDrop}
       style={
         isNeutral
@@ -105,8 +117,9 @@ function FolderTile({ folder }: { folder: FolderWithNotes }) {
       className={cn(
         isNeutral &&
           "[--folder-tint:#8b93a1] in-data-[theme=light]:[--folder-tint:#d3d7de]",
-        "group flex flex-col rounded-[16px] bg-surface-2 p-2.5 pb-3 outline-none transition-[background,box-shadow,transform] duration-200 hover:bg-surface-hi focus-visible:ring-2 focus-visible:ring-brand",
-        dropping && "ring-2 ring-brand scale-[1.02]",
+        // note: invisible pad slightly wider than the scaled tile, so growing under the pointer never drops the hover
+        "group relative flex flex-col before:absolute before:-inset-1.5 before:content-[''] rounded-[16px] bg-surface-2 p-2.5 pb-3 outline-none transition-[background,box-shadow,transform] duration-200 hover:bg-surface-hi focus-visible:ring-2 focus-visible:ring-brand",
+        dropping && "scale-[1.02] bg-[color-mix(in_oklab,var(--surface-2),black_5%)]! hover:bg-[color-mix(in_oklab,var(--surface-2),black_5%)]!",
       )}
     >
       <div className="relative aspect-[5/4] w-full">
@@ -178,7 +191,7 @@ function Sheet({
       {note.preview ? (
         <div
           className="rich-content rich-readonly rich-card-preview w-[200%] origin-top-left scale-50 select-none pointer-events-none"
-          dangerouslySetInnerHTML={{ __html: note.preview }}
+          dangerouslySetInnerHTML={{ __html: highlightPreviewHtml(note.preview) }}
         />
       ) : (
         <>

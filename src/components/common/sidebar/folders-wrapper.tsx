@@ -18,6 +18,10 @@ import { cn } from "@/lib/utils";
 import { useApi } from "@/hooks/use-api";
 import { query } from "@/lib/query";
 import { FolderIcon } from "@/components/icons";
+import { watchNativeDrag } from "@/lib/drag";
+import { useSetAtom } from "jotai";
+import { useNoteActions } from "@/hooks/use-note-actions";
+import { NOTE_DRAG_TYPE, selectedNoteIdsAtom } from "@/store/home-view";
 
 type Props = {
   sidebar: boolean;
@@ -148,6 +152,25 @@ function ListItem({ data, index, count, open, animateIn, onEdit }: ListProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(data.name);
   const isActive = !!useMatch({ path: `/folder/${data.id}`, end: true });
+  const { moveToFolder } = useNoteActions();
+  const setSelected = useSetAtom(selectedNoteIdsAtom);
+  const [dropping, setDropping] = useState(false);
+
+  // note: if the drag is lost mid-way (screenshot overlay, Esc) dragleave never fires, so clear the hint here
+  useEffect(() => {
+    if (!dropping) return;
+    return watchNativeDrag(() => setDropping(false));
+  }, [dropping]);
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    setDropping(false);
+    const raw = e.dataTransfer.getData(NOTE_DRAG_TYPE);
+    if (!raw) return;
+    const ids: string[] = JSON.parse(raw);
+    setSelected([]);
+    await moveToFolder(ids, data.id);
+  };
 
   const handleEdit = () => {
     if (editName.trim()) {
@@ -159,8 +182,19 @@ function ListItem({ data, index, count, open, animateIn, onEdit }: ListProps) {
   return (
     <div
       ref={ref}
+      onDragOver={(e) => {
+        if (!e.dataTransfer.types.includes(NOTE_DRAG_TYPE)) return;
+        e.preventDefault();
+        setDropping(true);
+      }}
+      onDragLeave={(e) => {
+        if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+        setDropping(false);
+      }}
+      onDrop={handleDrop}
       className={cn(
         isDragging && "opacity-60",
+        dropping && "bg-line/90 text-ink",
         enter && "animate-in fade-in slide-in-from-bottom-1 duration-200 motion-reduce:slide-in-from-bottom-0",
         "flex items-center h-8 px-2 rounded-full text-sm font-medium transition-[background,color] duration-150 group",
         open ? "gap-2" : "justify-center gap-0",

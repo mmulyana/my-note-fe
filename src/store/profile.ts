@@ -6,6 +6,7 @@ export interface Profile {
   username?: string | null;
   photo?: string | null;
   isGuest?: boolean;
+  isAdmin?: boolean;
 }
 
 const STORAGE_KEY = "mynote-profile";

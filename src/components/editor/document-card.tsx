@@ -6,6 +6,7 @@ import type { DocItem } from "@/lib/types";
 import { NoteCover } from "@/components/editor/note-cover";
 import { NoteMeta } from "@/components/editor/note-meta";
 import { assetUrl } from "@/lib/urls";
+import { highlightPreviewHtml } from "@/lib/prism";
 import { cn } from "@/lib/utils";
 
 interface DocumentCardProps {
@@ -97,7 +98,7 @@ export function DocumentCard({ doc, onOpen }: DocumentCardProps) {
             "-mb-3.5",
             isSecret && "pointer-events-none",
           )}
-          dangerouslySetInnerHTML={{ __html: doc.preview }}
+          dangerouslySetInnerHTML={{ __html: highlightPreviewHtml(doc.preview) }}
         />
       ) : (
         <div

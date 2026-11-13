@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAtomValue } from "jotai";
 import {
   IconDeviceDesktop,
+  IconGift,
   IconLogout,
   IconMessageReport,
   IconKey,
@@ -29,8 +30,21 @@ import {
 import { ProfileModal } from "@/components/common/profile-modal";
 import { AiUsageModal } from "@/components/common/ai-usage-modal";
 import { FeedbackModal } from "@/components/common/feedback-modal";
+import {
+  UpdatesModal,
+  useUnreleasedCount,
+} from "@/components/common/updates-modal";
 import { UpgradeGuestModal } from "@/components/common/upgrade-guest-modal";
 import { ChangePasswordModal } from "@/components/common/change-password-modal";
+
+type DialogKey =
+  | "profile"
+  | "usage"
+  | "feedback"
+  | "updates"
+  | "upgrade"
+  | "password"
+  | "logout";
 
 const ITEM =
   "flex w-full items-center gap-2.5 px-3 py-2 max-md:py-3 text-left text-[13px] max-md:text-sm text-ink-2 transition-colors hover:text-ink cursor-pointer";
@@ -77,12 +91,8 @@ export function AccountMenu() {
   const profile = useAtomValue(profileAtom);
   const [theme, setTheme] = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [usageOpen, setUsageOpen] = useState(false);
-  const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [upgradeOpen, setUpgradeOpen] = useState(false);
-  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
-  const [confirmLogout, setConfirmLogout] = useState(false);
+  const [dialog, setDialog] = useState<DialogKey | null>(null);
+  const unreleased = useUnreleasedCount();
   const menuRef = useRef<HTMLDivElement>(null);
 
   const email = profile?.email ?? "";
@@ -105,15 +115,20 @@ export function AccountMenu() {
     return () => document.removeEventListener("mousedown", handler);
   }, [menuOpen]);
 
-  const openFrom = (open: (value: boolean) => void) => () => {
+  const openFrom = (key: DialogKey) => () => {
     setMenuOpen(false);
-    open(true);
+    setDialog(key);
   };
+
+  const dialogProps = (key: DialogKey) => ({
+    open: dialog === key,
+    onOpenChange: (open: boolean) => setDialog(open ? key : null),
+  });
 
   const handleLogoutClick = () => {
     setMenuOpen(false);
     if (isGuest) {
-      setConfirmLogout(true);
+      setDialog("logout");
       return;
     }
     logout();
@@ -150,29 +165,38 @@ export function AccountMenu() {
 
           <div className="py-1">
             {isGuest && (
-              <button className={ITEM} onClick={openFrom(setUpgradeOpen)}>
+              <button className={ITEM} onClick={openFrom("upgrade")}>
                 <IconUserPlus className={ICON} />
                 Save account
               </button>
             )}
-            <button className={ITEM} onClick={openFrom(setProfileOpen)}>
+            <button className={ITEM} onClick={openFrom("profile")}>
               <IconUserCircle className={ICON} />
               Profile
             </button>
             {!isGuest && (
               <button
                 className={ITEM}
-                onClick={openFrom(setChangePasswordOpen)}
+                onClick={openFrom("password")}
               >
                 <IconKey className={ICON} />
                 Change password
               </button>
             )}
-            <button className={ITEM} onClick={openFrom(setUsageOpen)}>
+            <button className={ITEM} onClick={openFrom("usage")}>
               <SparklesIcon gradient={false} className={ICON} />
               AI Usage
             </button>
-            <button className={ITEM} onClick={openFrom(setFeedbackOpen)}>
+            <button className={ITEM} onClick={openFrom("updates")}>
+              <IconGift className={ICON} />
+              What's new
+              {unreleased > 0 && (
+                <span className="ml-auto rounded-full bg-brand px-1.5 text-[10px] font-semibold leading-4 text-white">
+                  {unreleased}
+                </span>
+              )}
+            </button>
+            <button className={ITEM} onClick={openFrom("feedback")}>
               <IconMessageReport className={ICON} />
               Send Feedback
             </button>
@@ -211,16 +235,14 @@ export function AccountMenu() {
           </div>
         </div>
       )}
-      <ProfileModal open={profileOpen} onOpenChange={setProfileOpen} />
-      <AiUsageModal open={usageOpen} onOpenChange={setUsageOpen} />
-      <FeedbackModal open={feedbackOpen} onOpenChange={setFeedbackOpen} />
-      <UpgradeGuestModal open={upgradeOpen} onOpenChange={setUpgradeOpen} />
-      <ChangePasswordModal
-        open={changePasswordOpen}
-        onOpenChange={setChangePasswordOpen}
-      />
+      <ProfileModal {...dialogProps("profile")} />
+      <AiUsageModal {...dialogProps("usage")} />
+      <UpdatesModal {...dialogProps("updates")} />
+      <FeedbackModal {...dialogProps("feedback")} />
+      <UpgradeGuestModal {...dialogProps("upgrade")} />
+      <ChangePasswordModal {...dialogProps("password")} />
 
-      <Dialog open={confirmLogout} onOpenChange={setConfirmLogout}>
+      <Dialog {...dialogProps("logout")}>
         <DialogContent showClose={false}>
           <DialogHeader>
             <DialogTitle>Logout as guest?</DialogTitle>
@@ -231,13 +253,13 @@ export function AccountMenu() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="secondary" onClick={() => setConfirmLogout(false)}>
+            <Button variant="secondary" onClick={() => setDialog(null)}>
               Cancel
             </Button>
             <Button
               variant="destructive"
               onClick={() => {
-                setConfirmLogout(false);
+                setDialog(null);
                 logout();
               }}
             >

@@ -50,6 +50,29 @@ export function highlightCode(code: string, language: string): string {
   return grammar ? Prism.highlight(code, grammar, name) : escapeHtml(code);
 }
 
+const previewCache = new Map<string, string>();
+
+// note: card previews are plain saved HTML with no editor node view, so highlight their code blocks here
+export function highlightPreviewHtml(html: string): string {
+  if (!html.includes("<pre")) return html;
+  const cached = previewCache.get(html);
+  if (cached !== undefined) return cached;
+
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  doc.querySelectorAll("pre > code").forEach((code) => {
+    const language =
+      Array.from(code.classList)
+        .find((c) => c.startsWith("language-"))
+        ?.slice("language-".length) ?? "";
+    code.innerHTML = highlightCode(code.textContent ?? "", language);
+    code.parentElement?.classList.add("code-hl");
+  });
+
+  const result = doc.body.innerHTML;
+  previewCache.set(html, result);
+  return result;
+}
+
 export interface CodeToken {
   length: number;
   className: string | null;

@@ -93,6 +93,7 @@ export interface ProfileResponse {
   username: string | null;
   photo: string | null;
   isGuest: boolean;
+  isAdmin?: boolean;
 }
 
 export interface Todo {
@@ -252,6 +253,26 @@ export interface FeedbackResponse {
   title: string;
   status: string;
   createdAt: string;
+}
+
+export type ReleaseTag = "new" | "improved" | "fixed";
+
+export interface Release {
+  id: string;
+  version: string;
+  title: string;
+  tag: ReleaseTag;
+  summary: string;
+  content: string;
+  image: string;
+  publishedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ReleasesUnread {
+  count: number;
+  lastSeenAt: string | null;
 }
 
 export interface NoteDetail {

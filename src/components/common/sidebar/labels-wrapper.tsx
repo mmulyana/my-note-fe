@@ -27,9 +27,9 @@ export default function LabelsWrapper({ sidebar, onNavigate }: Props) {
   if (!sidebar || labels.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-1.5 mt-4 pb-4">
-      <div className="text-sm text-ink-3 px-2 font-medium">Labels</div>
-      <div className="thin-scroll flex max-h-40 flex-row flex-wrap content-start gap-1.5 overflow-y-auto px-1">
+    <div className="flex min-h-0 flex-col gap-1.5 mt-4 pb-4">
+      <div className="flex-none text-sm text-ink-3 px-2 font-medium">Labels</div>
+      <div className="thin-scroll flex min-h-16 flex-row flex-wrap content-start gap-1.5 overflow-y-auto px-1">
         {labels.map((label) => (
           <NavLink
             key={label.id}

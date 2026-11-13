@@ -268,6 +268,8 @@ async function hydrate(editor: Editor, id: string, url: string) {
   const { state } = editor;
   const tr = state.tr;
 
+  const host = hostOf(url);
+
   if (preview) {
     tr.setNodeMarkup(pos, undefined, {
       ...node.attrs,
@@ -277,6 +279,18 @@ async function hydrate(editor: Editor, id: string, url: string) {
       image: preview.image ?? "",
       favicon: preview.favicon ?? "",
       siteName: preview.siteName ?? "",
+      state: "ready" as LinkCardState,
+    });
+  } else if (host) {
+    // note: favicon lewat layanan favicon supaya tetap ada walau preview gagal (img tidak kena CORS)
+    tr.setNodeMarkup(pos, undefined, {
+      ...node.attrs,
+      url,
+      title: url.replace(/^https?:\/\/(www\.)?/i, "").replace(/\/$/, ""),
+      description: "",
+      image: "",
+      favicon: `https://icons.duckduckgo.com/ip3/${host}.ico`,
+      siteName: host,
       state: "ready" as LinkCardState,
     });
   } else {

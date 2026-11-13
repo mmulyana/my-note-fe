@@ -124,8 +124,8 @@ function SidebarNav({ sidebar, onToggle, onNavigate }: SidebarNavProps) {
             </button>
           )}
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto px-2.5">
-        <div className={cn(sidebar && "sidebar-content-enter")}>
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-2.5">
+        <div className={cn("flex-none", sidebar && "sidebar-content-enter")}>
           <div className="mt-2 flex flex-col gap-1">
             <NewNoteButton sidebar={sidebar} />
             {navItems.map(({ to, label, icon: Icon }) => {
@@ -162,7 +162,12 @@ function SidebarNav({ sidebar, onToggle, onNavigate }: SidebarNavProps) {
             })}
           </div>
         </div>
-        <div className={cn(sidebar && "sidebar-folders-enter")}>
+        <div
+          className={cn(
+            "flex min-h-0 flex-1 flex-col",
+            sidebar && "sidebar-folders-enter",
+          )}
+        >
           <FoldersWrapper sidebar={sidebar} />
           <LabelsWrapper sidebar={sidebar} onNavigate={onNavigate} />
         </div>

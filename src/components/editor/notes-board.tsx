@@ -9,6 +9,7 @@ import { useColumnCount } from "@/hooks/use-column-count";
 import type { DocItem } from "@/lib/types";
 import { NOTE_DRAG_TYPE, selectedNoteIdsAtom, type HomeView } from "@/store/home-view";
 import { cn } from "@/lib/utils";
+import { watchNativeDrag } from "@/lib/drag";
 
 export type ReorderMove = {
   id: string;
@@ -132,18 +133,39 @@ function setDragPreview(e: React.DragEvent<HTMLElement>, count: number) {
   const source = e.currentTarget;
   const rect = source.getBoundingClientRect();
   const ghost = document.createElement("div");
-  ghost.style.cssText = `position:fixed;top:-9999px;left:-9999px;width:${rect.width}px;height:${rect.height}px;transform:rotate(3deg) scale(0.9);border-radius:16px;box-shadow:0 12px 32px rgb(0 0 0/0.25);overflow:hidden;opacity:0.95`;
-  ghost.appendChild(source.cloneNode(true));
-  if (count > 1) {
-    const badge = document.createElement("span");
-    badge.textContent = String(count);
-    badge.style.cssText =
-      "position:absolute;top:8px;right:8px;min-width:24px;height:24px;padding:0 7px;display:grid;place-items:center;border-radius:9999px;background:#111;color:#fff;font:600 12px sans-serif";
-    ghost.appendChild(badge);
-  }
+  const offsetX = e.clientX - rect.left;
+  const offsetY = e.clientY - rect.top;
+  const place = (x: number, y: number) =>
+    `translate(${x - offsetX * 0.7}px,${y - offsetY * 0.7}px) scale(0.7)`;
+  ghost.style.cssText = `position:fixed;top:0;left:0;transform-origin:0 0;z-index:9999;pointer-events:none;width:${rect.width}px;height:${rect.height}px;transform:${place(e.clientX, e.clientY)}`;
+  const behind = ["rotate(-6deg) translate(-8px,4px)", "rotate(5deg) translate(8px,2px)"];
+  behind.slice(0, Math.min(count - 1, 2)).forEach((t) => {
+    const sheet = document.createElement("div");
+    sheet.style.cssText = `position:absolute;inset:0;border-radius:16px;background:var(--surface);border:1px solid var(--line);box-shadow:0 6px 16px rgb(0 0 0/0.15);transform:${t}`;
+    ghost.appendChild(sheet);
+  });
+  const front = document.createElement("div");
+  front.style.cssText =
+    "position:absolute;inset:0;border-radius:16px;overflow:hidden;box-shadow:0 12px 32px rgb(0 0 0/0.25);transform:rotate(3deg)";
+  front.appendChild(source.cloneNode(true));
+  ghost.appendChild(front);
   document.body.appendChild(ghost);
-  e.dataTransfer.setDragImage(ghost, e.clientX - rect.left, e.clientY - rect.top);
-  setTimeout(() => ghost.remove(), 0);
+  // note: the browser dims its native drag image, so hide it and move an opaque clone with the cursor instead
+  // note: the blank image must be attached to the DOM, otherwise the browser falls back to its dimmed default
+  const blank = document.createElement("div");
+  blank.style.cssText =
+    "position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0.01";
+  document.body.appendChild(blank);
+  e.dataTransfer.setDragImage(blank, 0, 0);
+  setTimeout(() => blank.remove(), 0);
+  const follow = (ev: DragEvent) => {
+    ghost.style.transform = place(ev.clientX, ev.clientY);
+  };
+  document.addEventListener("dragover", follow);
+  watchNativeDrag(() => {
+    document.removeEventListener("dragover", follow);
+    ghost.remove();
+  });
 }
 
 function SortableCard({
@@ -178,8 +200,10 @@ function SortableCard({
           ? "h-full min-w-0 [&_article]:h-full"
           : "min-w-0 [&_article]:max-h-90",
         arranging && "cursor-grab select-none touch-manipulation",
-        selecting && "cursor-pointer select-none rounded-[16px] transition-shadow",
-        selected && "ring-2 ring-brand ring-offset-2 ring-offset-bg",
+        selecting && "cursor-pointer select-none",
+        // note: wrapper stays relative at all times, otherwise the fading ::after border jumps to the page when selection ends
+        "relative rounded-[16px] after:pointer-events-none after:absolute after:inset-0 after:z-10 after:rounded-[16px] after:border-2 after:border-transparent after:transition-colors",
+        selected && "after:border-brand",
       )}
       draggable={selected}
       onClickCapture={(e) => {
