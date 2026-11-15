@@ -1,15 +1,14 @@
+import { IconChevronRight } from "@tabler/icons-react";
 import { FolderIcon } from "@/components/icons";
 import { useApi } from "@/hooks/use-api";
 import { urls } from "@/lib/urls";
+import { cn } from "@/lib/utils";
 import type { IApi } from "@/lib/types";
 import {
   DropdownMenuCheckboxItem,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuContent,
   DropdownMenuTrigger,
   DropdownMenuLabel,
-  DropdownMenuSub,
   DropdownMenu,
 } from "@/components/ui/dropdown-menu";
 
@@ -21,9 +20,11 @@ interface Folder {
 interface FolderPickerProps {
   selectedId: string | null;
   onChange: (id: string | null) => void;
-  variant?: "button" | "menu";
+  variant?: "button" | "list" | "trigger";
   // note: a sub-note always follows its parent's folder
   disabled?: boolean;
+  // note: "trigger" only, called instead of onChange since it just opens the list panel
+  onRequestOpen?: () => void;
 }
 
 export function FolderPicker({
@@ -31,6 +32,7 @@ export function FolderPicker({
   onChange,
   variant = "button",
   disabled = false,
+  onRequestOpen,
 }: FolderPickerProps) {
   const { data } = useApi<IApi<Folder[]>>({
     url: urls.Folder,
@@ -44,6 +46,8 @@ export function FolderPicker({
     onChange(selectedId === id ? null : id);
   };
 
+  const itemRounded = variant === "list" ? "rounded-none" : "rounded-lg";
+
   const items =
     folders.length === 0 ? (
       <p className="px-2 py-1.5 text-[12px] text-ink-3">No folders yet</p>
@@ -54,28 +58,36 @@ export function FolderPicker({
           checked={selectedId === folder.id}
           onCheckedChange={() => toggle(folder.id)}
           onSelect={(e) => e.preventDefault()}
-          className="text-[13px] text-ink-2 rounded-lg cursor-pointer focus:bg-accent focus:text-accent-foreground"
+          className={cn(
+            "text-[13px] text-ink-2 cursor-pointer focus:bg-accent focus:text-accent-foreground",
+            itemRounded,
+          )}
         >
           {folder.name}
         </DropdownMenuCheckboxItem>
       ))
     );
 
-  if (variant === "menu") {
+  if (variant === "list") {
+    return items;
+  }
+
+  if (variant === "trigger") {
     return (
-      <DropdownMenuSub>
-        <DropdownMenuSubTrigger
-          disabled={disabled}
-          title={disabled ? "Follows the parent note's folder" : undefined}
-          className="text-[13px] text-ink-2 rounded-none cursor-pointer"
-        >
-          <FolderIcon className="size-3.5 text-ink-3" />
-          {selected ? selected.name : "Folder"}
-        </DropdownMenuSubTrigger>
-        <DropdownMenuSubContent className="w-44 bg-surface border-line-2 rounded-xl shadow-card-lg p-1">
-          {items}
-        </DropdownMenuSubContent>
-      </DropdownMenuSub>
+      <button
+        type="button"
+        disabled={disabled}
+        title={disabled ? "Follows the parent note's folder" : undefined}
+        onClick={(e) => {
+          e.stopPropagation();
+          onRequestOpen?.();
+        }}
+        className="flex min-h-7 w-full cursor-pointer items-center gap-2 rounded-none px-2 py-1.5 text-left text-sm outline-hidden select-none hover:bg-accent focus:bg-accent disabled:pointer-events-none disabled:opacity-50"
+      >
+        <FolderIcon className="size-3.5 shrink-0 text-ink-3" />
+        <span className="truncate">{selected ? selected.name : "Folder"}</span>
+        <IconChevronRight className="ml-auto size-3.5 shrink-0 text-ink-3" />
+      </button>
     );
   }
 

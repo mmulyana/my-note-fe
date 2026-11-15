@@ -124,7 +124,7 @@ export function NoteModal() {
       </div>
       {panelOpen && (
         <aside
-          className="thin-scroll absolute right-2 top-14 z-20 max-h-[70vh] w-64 overflow-y-auto animate-[view-in_0.15s_cubic-bezier(0.23,1,0.32,1)] min-[1180px]:top-0 min-[1180px]:right-auto min-[1180px]:left-full min-[1180px]:ml-3"
+          className="thin-scroll absolute right-2 top-14 z-20 max-h-[70vh] w-64 overflow-y-auto animate-[panel-emerge_0.2s_cubic-bezier(0.23,1,0.32,1)] min-[1180px]:top-0 min-[1180px]:right-auto min-[1180px]:left-full min-[1180px]:ml-3"
           onMouseDown={(e) => e.stopPropagation()}
         >
           <SubNotesCards />

@@ -19,6 +19,7 @@ export function DocumentCard({ doc, onOpen }: DocumentCardProps) {
 
   const { total, done } = doc.todoSummary;
   const isSecret = doc.folder?.secret || doc.secret;
+  const hasChildren = (doc.childCount ?? 0) > 0;
 
   const hasCover = Boolean(doc.cover);
   // note: overlay is image-only: the picture fills the whole card and carries the title, so folder, text preview and footer step aside
@@ -43,15 +44,22 @@ export function DocumentCard({ doc, onOpen }: DocumentCardProps) {
   const handleOpen = () => (onOpen ?? openNote)(doc.id);
 
   return (
-    <article
-      className={cn(
-        "group relative flex flex-col cursor-pointer rounded-[16px] bg-surface text-ink overflow-hidden outline-none shadow-[0_1px_3px_rgb(0_0_0/0.06)] transition-shadow duration-200 hover:shadow-[0_2px_8px_rgb(0_0_0/0.1)] focus-visible:ring-2 focus-visible:ring-brand",
-        isOverlay && "min-h-48",
+    <div className="relative h-full">
+      {hasChildren && (
+        <div
+          aria-hidden
+          className="absolute inset-0 -z-10 rotate-[3deg] rounded-[16px] bg-surface-hi shadow-[0_1px_3px_rgb(0_0_0/0.15)]"
+        />
       )}
-      tabIndex={0}
-      onClick={handleOpen}
-      onKeyDown={(e) => e.key === "Enter" && handleOpen()}
-    >
+      <article
+        className={cn(
+          "group relative flex flex-col cursor-pointer rounded-[16px] bg-surface text-ink overflow-hidden outline-none shadow-[0_1px_3px_rgb(0_0_0/0.06)] transition-shadow duration-200 hover:shadow-[0_2px_8px_rgb(0_0_0/0.1)] focus-visible:ring-2 focus-visible:ring-brand",
+          isOverlay && "min-h-48",
+        )}
+        tabIndex={0}
+        onClick={handleOpen}
+        onKeyDown={(e) => e.key === "Enter" && handleOpen()}
+      >
       {isSecret && (
         <div className="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-md bg-black/5 pointer-events-none">
           <IconLock size={22} className="text-gray-500" />
@@ -133,5 +141,6 @@ export function DocumentCard({ doc, onOpen }: DocumentCardProps) {
         </div>
       )}
     </article>
+    </div>
   );
 }

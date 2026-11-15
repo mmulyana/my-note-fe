@@ -1,6 +1,11 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { IconArrowLeft, IconPin, IconPinFilled } from "@tabler/icons-react";
+import {
+  IconArrowLeft,
+  IconPin,
+  IconPinFilled,
+  IconStack2,
+} from "@tabler/icons-react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAtomValue, useStore } from "jotai";
 import { editingIdAtom } from "@/store/document";
@@ -12,6 +17,7 @@ import { useNoteEditor } from "@/components/editor/session";
 import { FolderPicker } from "@/components/editor/folder-picker";
 import { NoteDropdown } from "@/components/editor/note-dropdown";
 import { ParentCrumb, SubNotesCards } from "@/components/editor/sub-notes";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { LabelsIcon } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +32,7 @@ export default function NotePage() {
   const titleSlot = useAtomValue(topbarTitleSlotAtom);
   const actionsSlot = useAtomValue(topbarActionsSlotAtom);
   const handledIdRef = useRef<string | null>(null);
+  const [subNotesOpen, setSubNotesOpen] = useState(false);
 
   useEffect(() => {
     if (!id || handledIdRef.current === id) return;
@@ -75,6 +82,8 @@ export default function NotePage() {
   }, []);
 
   if (!id || note?.doc.id !== id) return null;
+
+  const childCount = note.doc.children?.length ?? 0;
 
   const pinButton = (className: string) => (
     <button
@@ -156,6 +165,32 @@ export default function NotePage() {
             <span className="hidden sm:inline mr-1 min-w-0 truncate text-[11px] text-ink-3">
               {note.updatedText}
             </span>
+            {isMobile && childCount > 0 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setSubNotesOpen(true)}
+                  className="inline-flex h-7 items-center gap-0.5 rounded-lg px-1.5 text-xs tabular-nums text-ink-3 transition-[background,color] duration-150 hover:bg-surface-hi hover:text-ink cursor-pointer"
+                  aria-label={`${childCount} sub-notes`}
+                  title="Sub-notes"
+                >
+                  <IconStack2 size={15} />
+                  {childCount}
+                </button>
+                <Sheet open={subNotesOpen} onOpenChange={setSubNotesOpen}>
+                  <SheetContent
+                    side="bottom"
+                    aria-describedby={undefined}
+                    className="bg-surface-2"
+                  >
+                    <SheetTitle className="sr-only">Sub-notes</SheetTitle>
+                    <div className="thin-scroll overflow-y-auto px-3 pb-3 pt-6">
+                      <SubNotesCards layout="grid" />
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </>
+            )}
             <NoteDropdown
               moveTo={
                 note.isNew
@@ -195,9 +230,11 @@ export default function NotePage() {
           <div className="flex flex-col gap-2.5 pb-4">
             <ParentCrumb />
             <EditorBody />
-            <div className="mt-2 min-[1120px]:hidden">
-              <SubNotesCards layout="grid" hideWhenEmpty />
-            </div>
+            {!isMobile && (
+              <div className="mt-2 min-[1120px]:hidden">
+                <SubNotesCards layout="grid" hideWhenEmpty />
+              </div>
+            )}
           </div>
         </div>
       </div>

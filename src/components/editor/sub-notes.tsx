@@ -80,8 +80,12 @@ export function SubNotesCards({
           : "flex flex-col",
       )}
     >
-      {children.map((child) => (
-        <div key={child.id} className="h-48 [&>article]:h-full">
+      {children.map((child, i) => (
+        <div
+          key={child.id}
+          className="h-48 [&_article]:h-full animate-[sub-note-in_0.2s_cubic-bezier(0.23,1,0.32,1)_both]"
+          style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}
+        >
           <DocumentCard doc={child} onOpen={note.openRelated} />
         </div>
       ))}

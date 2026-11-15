@@ -147,7 +147,7 @@ textarea {
 }
 
 .masonry.grid-view {
-    --masonry-gap: 8px;
+    --masonry-gap: 10px;
     --columns: 2;
     display: grid;
     grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
@@ -301,6 +301,50 @@ textarea {
 
 @media (prefers-reduced-motion: reduce) {
     @keyframes modal-in {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+}
+
+/* note: sub-notes panel slides out from the modal's edge, transform only, no fade */
+@keyframes panel-emerge {
+    from {
+        transform: translateX(-28px);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    @keyframes panel-emerge {
+        from {
+            transform: translateX(0);
+        }
+        to {
+            transform: translateX(0);
+        }
+    }
+}
+
+/* note: sub-note cards enter one at a time, staggered left-to-right via animation-delay on each card */
+@keyframes sub-note-in {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    @keyframes sub-note-in {
         from {
             opacity: 0;
         }
