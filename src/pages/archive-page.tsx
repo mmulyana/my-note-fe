@@ -1,4 +1,6 @@
-import { DocumentCard } from "@/components/editor/document-card";
+import { useAtomValue } from "jotai";
+import { NotesBoard } from "@/components/editor/notes-board";
+import { homeViewAtom } from "@/store/home-view";
 import { InfiniteSentinel } from "@/components/common/infinite-sentinel";
 import { IconFileText } from "@tabler/icons-react";
 import { useInfiniteApi } from "@/hooks/use-infinite-api";
@@ -6,7 +8,10 @@ import type { DocItem, Notes } from "@/lib/types";
 import { toDocItem } from "@/lib/utils";
 import { urls } from "@/lib/urls";
 
+const noopReorder = async () => {};
+
 export default function ArchivePage() {
+  const view = useAtomValue(homeViewAtom);
   const {
     items: notes,
     hasNextPage,
@@ -24,10 +29,13 @@ export default function ArchivePage() {
     <>
       {docs.length > 0 ? (
         <>
-          <div className="masonry grid-view max-md:pt-2">
-            {docs.map((d) => (
-              <DocumentCard key={d.id} doc={d} />
-            ))}
+          <div className="max-md:pt-2">
+            <NotesBoard
+              docs={docs}
+              view={view}
+              arranging={false}
+              onReorder={noopReorder}
+            />
           </div>
           <InfiniteSentinel
             hasNextPage={hasNextPage}

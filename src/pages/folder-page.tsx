@@ -33,7 +33,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { DocumentCard } from "@/components/editor/document-card";
+import { NotesBoard } from "@/components/editor/notes-board";
 import { FolderColorPicker } from "@/components/common/folder-color-picker";
 import { InfiniteSentinel } from "@/components/common/infinite-sentinel";
 import { useApi } from "@/hooks/use-api";
@@ -42,9 +42,13 @@ import { request } from "@/lib/api-client";
 import type { DocItem, Folder, IApi, Notes } from "@/lib/types";
 import { toDocItem } from "@/lib/utils";
 import { urls } from "@/lib/urls";
+import { homeViewAtom } from "@/store/home-view";
 import { topbarActionsSlotAtom, topbarTitleSlotAtom } from "@/store/topbar";
 
+const noopReorder = async () => {};
+
 export default function FolderPage() {
+  const view = useAtomValue(homeViewAtom);
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -304,10 +308,13 @@ export default function FolderPage() {
 
       {docs.length > 0 ? (
         <>
-          <div className="masonry grid-view max-md:pt-2">
-            {docs.map((d) => (
-              <DocumentCard key={d.id} doc={d} />
-            ))}
+          <div className="max-md:pt-2">
+            <NotesBoard
+              docs={docs}
+              view={view}
+              arranging={false}
+              onReorder={noopReorder}
+            />
           </div>
           <InfiniteSentinel
             hasNextPage={hasNextPage}
