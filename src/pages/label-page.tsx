@@ -1,6 +1,8 @@
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { DocumentCard } from "@/components/editor/document-card";
+import { useAtomValue } from "jotai";
+import { NotesBoard } from "@/components/editor/notes-board";
+import { homeViewAtom } from "@/store/home-view";
 import { IconFileText } from "@tabler/icons-react";
 import { InfiniteSentinel } from "@/components/common/infinite-sentinel";
 import { useApi } from "@/hooks/use-api";
@@ -9,7 +11,10 @@ import type { DocItem, IApi, Notes } from "@/lib/types";
 import { toDocItem } from "@/lib/utils";
 import { urls } from "@/lib/urls";
 
+const noopReorder = async () => {};
+
 export default function LabelPage() {
+  const view = useAtomValue(homeViewAtom);
   const { name: labelName } = useParams<{ name: string }>();
 
   const { data: labelsData } = useApi<IApi<{ id: string; name: string }[]>>({
@@ -41,10 +46,13 @@ export default function LabelPage() {
     <>
       {docs.length > 0 ? (
         <>
-          <div className="masonry grid-view max-md:pt-2">
-            {docs.map((d) => (
-              <DocumentCard key={d.id} doc={d} />
-            ))}
+          <div className="max-md:pt-2">
+            <NotesBoard
+              docs={docs}
+              view={view}
+              arranging={false}
+              onReorder={noopReorder}
+            />
           </div>
           <InfiniteSentinel
             hasNextPage={hasNextPage}
